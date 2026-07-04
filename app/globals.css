@@ -32,24 +32,43 @@ body {
 .paper-texture {
   background-color: var(--paper);
   background-image:
-    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.62), transparent 26rem),
-    radial-gradient(circle at 80% 5%, rgba(236, 169, 11, 0.14), transparent 22rem),
+    radial-gradient(
+      circle at 20% 15%,
+      rgba(255, 255, 255, 0.62),
+      transparent 26rem
+    ),
+    radial-gradient(
+      circle at 80% 5%,
+      rgba(236, 169, 11, 0.14),
+      transparent 22rem
+    ),
     linear-gradient(90deg, rgba(8, 39, 71, 0.045) 1px, transparent 1px),
     linear-gradient(rgba(8, 39, 71, 0.025) 1px, transparent 1px);
-  background-size: auto, auto, 25vw 100%, 100% 34px;
+  background-size:
+    auto,
+    auto,
+    25vw 100%,
+    100% 34px;
 }
 
 .hero-shell::after {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  content: "";
+  content: '';
   opacity: 0.28;
   mix-blend-mode: multiply;
   background-image:
     radial-gradient(rgba(8, 39, 71, 0.2) 0.7px, transparent 0.7px),
-    linear-gradient(115deg, transparent 0 46%, rgba(255, 255, 255, 0.55) 47% 49%, transparent 50% 100%);
-  background-size: 14px 14px, 100% 100%;
+    linear-gradient(
+      115deg,
+      transparent 0 46%,
+      rgba(255, 255, 255, 0.55) 47% 49%,
+      transparent 50% 100%
+    );
+  background-size:
+    14px 14px,
+    100% 100%;
 }
 
 .poster-window {
@@ -65,11 +84,19 @@ body {
   min-height: 360px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 73% 24%, rgba(236, 169, 11, 0.18), transparent 15rem),
+    radial-gradient(
+      circle at 73% 24%,
+      rgba(236, 169, 11, 0.18),
+      transparent 15rem
+    ),
     linear-gradient(90deg, rgba(8, 39, 71, 0.08) 1px, transparent 1px),
     linear-gradient(rgba(8, 39, 71, 0.035) 1px, transparent 1px),
     var(--cloud, #f8f4ea);
-  background-size: auto, 18% 100%, 100% 32px, auto;
+  background-size:
+    auto,
+    18% 100%,
+    100% 32px,
+    auto;
 }
 
 .poster-scene::after,
@@ -78,13 +105,15 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  content: "";
+  content: '';
   opacity: 0.28;
   mix-blend-mode: multiply;
   background-image:
     radial-gradient(rgba(8, 39, 71, 0.18) 0.55px, transparent 0.55px),
     linear-gradient(120deg, rgba(255, 255, 255, 0.35), transparent 42%);
-  background-size: 10px 10px, 100% 100%;
+  background-size:
+    10px 10px,
+    100% 100%;
 }
 
 .poster-sun {
@@ -124,7 +153,9 @@ body {
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.13) 1px, transparent 1px),
     var(--sun);
-  background-size: 18px 100%, auto;
+  background-size:
+    18px 100%,
+    auto;
 }
 
 .poster-dots {
@@ -161,7 +192,7 @@ body {
   position: absolute;
   width: 7px;
   height: 7px;
-  content: "";
+  content: '';
   background: var(--sun);
 }
 
@@ -247,9 +278,22 @@ body {
   z-index: 5;
   height: 32%;
   background:
-    repeating-linear-gradient(170deg, rgba(255, 255, 255, 0.24) 0 2px, transparent 2px 18px),
+    repeating-linear-gradient(
+      170deg,
+      rgba(255, 255, 255, 0.24) 0 2px,
+      transparent 2px 18px
+    ),
     linear-gradient(180deg, rgba(33, 71, 103, 0.25), rgba(33, 71, 103, 0.06));
-  clip-path: polygon(0 24%, 21% 45%, 38% 35%, 57% 55%, 74% 30%, 100% 48%, 100% 100%, 0 100%);
+  clip-path: polygon(
+    0 24%,
+    21% 45%,
+    38% 35%,
+    57% 55%,
+    74% 30%,
+    100% 48%,
+    100% 100%,
+    0 100%
+  );
 }
 
 .hero-skyline {
@@ -323,7 +367,7 @@ body {
   top: -7px;
   width: 10px;
   height: 10px;
-  content: "";
+  content: '';
   border-radius: 999px;
   background: var(--ink);
 }
@@ -351,7 +395,7 @@ body {
 .route-map::before,
 .route-map::after {
   position: absolute;
-  content: "";
+  content: '';
   border: 1px solid rgba(8, 39, 71, 0.45);
   border-color: rgba(8, 39, 71, 0.45) transparent transparent transparent;
   border-radius: 50% 50% 0 0;
@@ -432,15 +476,6 @@ body {
   animation-delay: 780ms;
 }
 
-.bridge-band {
-  position: absolute;
-  inset: auto -4vw 0 -4vw;
-  z-index: 25;
-  height: 32vh;
-  min-height: 190px;
-  pointer-events: none;
-}
-
 .bridge-deck {
   position: absolute;
   left: 0;
@@ -499,7 +534,7 @@ body {
   left: -2px;
   width: 12px;
   height: 12px;
-  content: "";
+  content: '';
   border-radius: 999px;
   background: var(--ink);
 }
@@ -545,10 +580,12 @@ body {
   inset: auto -6rem -8rem auto;
   width: 18rem;
   height: 18rem;
-  content: "";
+  content: '';
   border-radius: 999px;
   background: rgba(236, 169, 11, 0.18);
-  transition: transform 500ms ease, opacity 500ms ease;
+  transition:
+    transform 500ms ease,
+    opacity 500ms ease;
 }
 
 .week-card:hover::before {
@@ -564,11 +601,17 @@ body {
 .island-system::before {
   position: absolute;
   inset: 0;
-  content: "";
+  content: '';
   background:
     linear-gradient(90deg, rgba(242, 235, 220, 0.08) 1px, transparent 1px),
-    radial-gradient(circle at 72% 38%, rgba(236, 169, 11, 0.24), transparent 16rem);
-  background-size: 7vw 100%, auto;
+    radial-gradient(
+      circle at 72% 38%,
+      rgba(236, 169, 11, 0.24),
+      transparent 16rem
+    );
+  background-size:
+    7vw 100%,
+    auto;
 }
 
 .river-field {
@@ -600,10 +643,27 @@ body {
   top: 10%;
   width: 23%;
   height: 72%;
-  clip-path: polygon(38% 0, 70% 8%, 91% 33%, 78% 62%, 55% 100%, 26% 78%, 5% 44%, 16% 13%);
+  clip-path: polygon(
+    38% 0,
+    70% 8%,
+    91% 33%,
+    78% 62%,
+    55% 100%,
+    26% 78%,
+    5% 44%,
+    16% 13%
+  );
   background:
-    repeating-linear-gradient(46deg, rgba(8, 39, 71, 0.42) 0 1px, transparent 1px 12px),
-    repeating-linear-gradient(132deg, rgba(8, 39, 71, 0.32) 0 1px, transparent 1px 15px),
+    repeating-linear-gradient(
+      46deg,
+      rgba(8, 39, 71, 0.42) 0 1px,
+      transparent 1px 12px
+    ),
+    repeating-linear-gradient(
+      132deg,
+      rgba(8, 39, 71, 0.32) 0 1px,
+      transparent 1px 15px
+    ),
     rgba(242, 235, 220, 0.46);
 }
 
@@ -634,7 +694,7 @@ body {
   top: 1.5rem;
   width: 16rem;
   height: 8rem;
-  content: "";
+  content: '';
   border: 1.7rem solid rgba(242, 235, 220, 0.78);
   border-top: 0;
   border-radius: 0 0 999px 999px;
@@ -652,7 +712,7 @@ body {
   top: 25%;
   width: 54%;
   height: 44%;
-  content: "";
+  content: '';
   border: 1px solid rgba(242, 235, 220, 0.72);
   border-color: rgba(242, 235, 220, 0.72) transparent transparent transparent;
   border-radius: 50% 50% 0 0;
@@ -738,15 +798,27 @@ body {
   inset: 0;
   overflow: hidden;
   background:
-    radial-gradient(circle at 74% 20%, rgba(236, 169, 11, 0.14), transparent 13rem),
+    radial-gradient(
+      circle at 74% 20%,
+      rgba(236, 169, 11, 0.14),
+      transparent 13rem
+    ),
     linear-gradient(180deg, var(--paper), #ede4d2);
 }
 
 .collage-map {
   position: absolute;
   background:
-    repeating-linear-gradient(14deg, rgba(8, 39, 71, 0.2) 0 1px, transparent 1px 15px),
-    repeating-linear-gradient(92deg, rgba(8, 39, 71, 0.12) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(
+      14deg,
+      rgba(8, 39, 71, 0.2) 0 1px,
+      transparent 1px 15px
+    ),
+    repeating-linear-gradient(
+      92deg,
+      rgba(8, 39, 71, 0.12) 0 1px,
+      transparent 1px 18px
+    ),
     var(--paper);
   filter: drop-shadow(0 14px 28px rgba(8, 39, 71, 0.14));
 }
@@ -1085,11 +1157,6 @@ body {
 }
 
 @media (max-width: 1023px) {
-  .bridge-band {
-    height: 20vh;
-    min-height: 130px;
-  }
-
   .bridge-arch {
     width: 42vw;
     border-width: 18px;
@@ -1138,7 +1205,11 @@ body {
 
 @media (max-width: 640px) {
   .paper-texture {
-    background-size: auto, auto, 100% 100%, 100% 28px;
+    background-size:
+      auto,
+      auto,
+      100% 100%,
+      100% 28px;
   }
 
   .poster-window {
@@ -1196,10 +1267,6 @@ body {
   .poster-route-line,
   .dots-b {
     display: none;
-  }
-
-  .bridge-band {
-    opacity: 0.74;
   }
 
   .island-system {

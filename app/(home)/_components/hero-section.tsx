@@ -79,20 +79,6 @@ function PosterScene() {
   );
 }
 
-function BridgeBand() {
-  return (
-    <div aria-hidden className="bridge-band">
-      <div className="bridge-deck" />
-      <div className="bridge-arch arch-one" />
-      <div className="bridge-arch arch-two" />
-      <div className="bridge-arch arch-three" />
-      <span className="walker walker-a" />
-      <span className="walker walker-b" />
-      <span className="walker walker-c" />
-    </div>
-  );
-}
-
 export function HeroSection() {
   return (
     <section className="hero-shell paper-texture relative min-h-[88svh] border-b border-line">
@@ -132,7 +118,7 @@ export function HeroSection() {
         </div>
       </div>
 
-      <BridgeBand />
+ 
     </section>
   );
 }
