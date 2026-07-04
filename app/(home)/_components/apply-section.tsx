@@ -4,7 +4,7 @@ export function ApplySection() {
       <div className="mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[1fr_0.58fr] lg:items-end">
         <div>
           <p className="font-mono text-xs font-bold tracking-[0.36em] text-sun">Join Arch.ai</p>
-          <h2 className="font-poster text-[clamp(3rem,10vw,8rem)] uppercase leading-[0.82] tracking-[0.08em] text-ink">
+          <h2 className="font-poster text-[clamp(2.5rem,10vw,6rem)] uppercase leading-[0.82] tracking-[0.08em] text-ink">
             Cross the bridge
           </h2>
         </div>

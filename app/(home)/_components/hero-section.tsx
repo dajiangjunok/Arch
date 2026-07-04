@@ -69,7 +69,7 @@ export function HeroSection() {
               <span className="block font-serif text-[clamp(2.55rem,5.2vw,6rem)] leading-[0.98]">
                 Where global builders
               </span>
-              <span className="block font-poster text-[clamp(4rem,10.2vw,10.5rem)] uppercase leading-[0.78] tracking-[0.06em]">
+              <span className="block font-poster text-[clamp(3rem,9vw,9rem)] uppercase leading-[0.78] tracking-[0.06em]">
                 Cross
               </span>
               <span className="grid max-w-2xl grid-cols-[auto_minmax(3rem,1fr)] items-center gap-4">
