@@ -75,6 +75,23 @@ body {
     100% 100%;
 }
 
+.hero-reference-image {
+  background-image: url('/reference/hero.png');
+  background-position: 58% center;
+  background-size: cover;
+  filter: saturate(0.98) contrast(1.02);
+  transform-origin: center;
+  animation: hero-image-settle 1400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-copy {
+  animation: card-rise 780ms ease both;
+}
+
+.hero-detail-strip {
+  animation: poster-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+}
+
 .poster-window {
   height: min(44vw, 520px);
   min-height: 340px;
@@ -1199,6 +1216,17 @@ body {
   }
 }
 
+@keyframes hero-image-settle {
+  from {
+    opacity: 0.78;
+    transform: scale(1.035);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes slow-drift {
   from {
     transform: scale(1.02) translateY(0);
@@ -1209,6 +1237,10 @@ body {
 }
 
 @media (max-width: 1023px) {
+  .hero-reference-image {
+    background-position: 55% center;
+  }
+
   .bridge-arch {
     width: 42vw;
     border-width: 18px;
@@ -1247,6 +1279,10 @@ body {
 }
 
 @media (max-width: 640px) {
+  .hero-reference-image {
+    background-position: 56% center;
+  }
+
   .paper-texture {
     background-size:
       auto,
