@@ -1,10 +1,13 @@
-import { cityNodes, labBlocks } from "../_data/home-data";
+import { cityNodes, labBlocks } from '../_data/home-data'
 
 function SiteHeader() {
   return (
     <header className="relative z-30 flex items-start justify-between px-5 py-5 sm:px-8 lg:px-12">
-      <a className="font-poster text-3xl uppercase tracking-[0.16em] text-ink sm:text-5xl" href="#">
-        AI<span className="text-sun">.</span>X
+      <a
+        className="font-poster text-3xl tracking-[0.16em] text-ink sm:text-5xl"
+        href="#"
+      >
+        Arch<span className="text-sun">.</span>ai
       </a>
       <nav className="hidden gap-8 font-mono text-[11px] font-bold uppercase tracking-[0.32em] text-ink sm:flex">
         <a href="#journey">Journey</a>
@@ -19,7 +22,7 @@ function SiteHeader() {
         2026
       </div>
     </header>
-  );
+  )
 }
 
 function RouteMap() {
@@ -31,7 +34,7 @@ function RouteMap() {
         </span>
       ))}
     </div>
-  );
+  )
 }
 
 function PosterScene() {
@@ -40,7 +43,7 @@ function PosterScene() {
       <div
         className="poster-scene"
         role="img"
-        aria-label="AI.X Assembly bridge and Shanghai innovation ecosystem illustration"
+        aria-label="Arch.ai bridge and Shanghai innovation ecosystem illustration"
       >
         <div className="poster-sun" />
         <div className="paper-shard shard-left" />
@@ -71,12 +74,12 @@ function PosterScene() {
           <span />
         </div> */}
         <div className="poster-caption">
-          <span>AI.X Assembly</span>
+          <span className="brand-case">Arch.ai</span>
           <strong>Access to innovation</strong>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export function HeroSection() {
@@ -107,7 +110,8 @@ export function HeroSection() {
             </span>
           </h1>
           <p className="mt-8 max-w-xl text-lg leading-8 text-ink-soft sm:text-xl">
-            走进上海复兴岛，进入中国顶尖 AI、机器人与智能硬件企业的内部场域。这里不是观光行程，而是一座把创始人、投资人、机构和一线研发资源接起来的桥。
+            走进上海复兴岛，进入中国顶尖
+            AI、机器人与智能硬件企业的内部场域。这里不是观光行程，而是一座把创始人、投资人、机构和一线研发资源接起来的桥。
           </p>
         </div>
 
@@ -117,8 +121,6 @@ export function HeroSection() {
           <PosterScene />
         </div>
       </div>
-
- 
     </section>
-  );
+  )
 }

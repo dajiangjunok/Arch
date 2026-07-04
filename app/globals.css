@@ -29,6 +29,10 @@ body {
   color: var(--ink);
 }
 
+.brand-case {
+  text-transform: none;
+}
+
 .paper-texture {
   background-color: var(--paper);
   background-image:
@@ -793,21 +797,32 @@ body {
   text-transform: uppercase;
 }
 
+.collage-panel {
+  display: grid;
+  grid-template-rows: minmax(460px, 1fr) auto;
+  border-left: 1px solid rgba(242, 235, 220, 0.2);
+  isolation: isolate;
+}
+
 .access-collage {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  display: grid;
+  min-height: 0;
   overflow: hidden;
+  padding: clamp(1.25rem, 3vw, 2.35rem);
   background:
     radial-gradient(
-      circle at 74% 20%,
-      rgba(236, 169, 11, 0.14),
-      transparent 13rem
+      circle at 78% 18%,
+      rgba(236, 169, 11, 0.18),
+      transparent 14rem
     ),
-    linear-gradient(180deg, var(--paper), #ede4d2);
+    linear-gradient(180deg, var(--paper), #ede4d2 66%, #dccba8);
+  isolation: isolate;
 }
 
 .collage-map {
   position: absolute;
+  z-index: 0;
   background:
     repeating-linear-gradient(
       14deg,
@@ -824,29 +839,31 @@ body {
 }
 
 .map-one {
-  right: -9%;
-  top: 0;
-  width: 54%;
-  height: 45%;
+  right: -8%;
+  top: -4%;
+  width: 56%;
+  height: 42%;
   clip-path: polygon(22% 0, 100% 0, 94% 100%, 0 72%);
 }
 
 .map-two {
-  left: -10%;
-  bottom: -4%;
-  width: 58%;
-  height: 44%;
+  left: -12%;
+  bottom: 6%;
+  width: 52%;
+  height: 36%;
   clip-path: polygon(0 12%, 82% 0, 100% 72%, 20% 100%, 0 86%);
-  opacity: 0.82;
+  opacity: 0.68;
 }
 
 .collage-bridge {
   position: absolute;
-  left: 11%;
-  right: 4%;
-  top: 38%;
-  height: 38%;
-  z-index: 4;
+  left: 8%;
+  right: -10%;
+  top: 28%;
+  height: 34%;
+  z-index: 2;
+  color: var(--bridge);
+  opacity: 0.92;
 }
 
 .bridge-road {
@@ -855,9 +872,9 @@ body {
   right: 0;
   bottom: 32%;
   height: 0.75rem;
-  background: var(--paper);
+  background: currentColor;
   transform: rotate(-2deg);
-  box-shadow: 0 0 0 1px rgba(8, 39, 71, 0.18);
+  box-shadow: 0 10px 0 rgba(8, 39, 71, 0.12);
 }
 
 .suspension-tower {
@@ -866,10 +883,10 @@ body {
   z-index: 2;
   width: 0.8rem;
   height: 74%;
-  background: var(--paper);
+  background: currentColor;
   box-shadow:
-    -1.3rem 1.3rem 0 -0.38rem var(--paper),
-    1.3rem 1.3rem 0 -0.38rem var(--paper);
+    -1.3rem 1.3rem 0 -0.38rem currentColor,
+    1.3rem 1.3rem 0 -0.38rem currentColor;
 }
 
 .tower-left {
@@ -887,7 +904,7 @@ body {
   right: 4%;
   bottom: 38%;
   height: 64%;
-  border: 0.6rem solid var(--paper);
+  border: 0.6rem solid currentColor;
   border-bottom: 0;
   border-radius: 50% 50% 0 0;
 }
@@ -900,19 +917,54 @@ body {
   opacity: 0.85;
 }
 
+.collage-topline {
+  position: relative;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: minmax(8.5rem, 13rem) minmax(9rem, 13rem);
+  gap: clamp(0.75rem, 2vw, 1rem);
+  align-items: start;
+  justify-content: space-between;
+  width: min(100%, 31rem);
+  margin-left: auto;
+}
+
+.access-ticket-grid {
+  position: relative;
+  z-index: 7;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(8.5rem, 10.75rem));
+  align-self: end;
+  justify-content: start;
+  gap: clamp(0.8rem, 2vw, 1.1rem);
+  width: min(100%, 23rem);
+  margin-top: clamp(4rem, 16vw, 8.5rem);
+}
+
 .travel-ticket {
-  position: absolute;
+  --ticket-angle: 0deg;
+  --ticket-y: 0rem;
+  position: relative;
   z-index: 7;
   display: grid;
   gap: 0.25rem;
-  width: 10rem;
-  min-height: 6.2rem;
+  width: 100%;
+  min-height: 6.45rem;
   border: 1px dashed rgba(8, 39, 71, 0.32);
   padding: 0.75rem 0.85rem;
   color: var(--ink);
   font-family: var(--font-mono, monospace);
   text-transform: uppercase;
   box-shadow: 0 18px 36px rgba(8, 39, 71, 0.16);
+  transform: translateY(var(--ticket-y)) rotate(var(--ticket-angle));
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.travel-ticket:hover {
+  transform: translateY(calc(var(--ticket-y) - 3px)) rotate(var(--ticket-angle));
+  box-shadow: 0 24px 46px rgba(8, 39, 71, 0.18);
 }
 
 .travel-ticket p,
@@ -945,36 +997,28 @@ body {
 }
 
 .ticket-0 {
-  left: 5%;
-  bottom: 26%;
-  transform: rotate(-9deg);
+  --ticket-angle: -4deg;
 }
 
 .ticket-1 {
-  left: 8%;
-  bottom: 8%;
-  transform: rotate(7deg);
+  --ticket-angle: 2deg;
+  --ticket-y: 0.75rem;
 }
 
 .ticket-2 {
-  right: 7%;
-  bottom: 20%;
-  transform: rotate(9deg);
+  --ticket-angle: 3deg;
+  --ticket-y: -0.2rem;
 }
 
 .ticket-3 {
-  left: 34%;
-  bottom: 2%;
-  transform: rotate(-4deg);
+  --ticket-angle: -2deg;
+  --ticket-y: 0.55rem;
 }
 
 .arrival-stamp {
-  position: absolute;
-  left: 33%;
-  bottom: 22%;
-  z-index: 8;
+  position: relative;
   display: grid;
-  width: 13rem;
+  width: 100%;
   gap: 0.3rem;
   border: 3px double var(--bridge);
   padding: 0.9rem;
@@ -982,7 +1026,9 @@ body {
   font-family: var(--font-mono, monospace);
   text-align: center;
   text-transform: uppercase;
-  transform: rotate(-2deg);
+  transform: rotate(-1.5deg);
+  background: rgba(242, 235, 220, 0.78);
+  backdrop-filter: blur(2px);
 }
 
 .arrival-stamp span,
@@ -998,17 +1044,14 @@ body {
 }
 
 .yellow-note {
-  position: absolute;
-  right: 8%;
-  top: 22%;
-  z-index: 8;
-  width: 13rem;
+  position: relative;
+  width: 100%;
   background: var(--sun);
   padding: 1.2rem;
   color: var(--ink);
   font-family: var(--font-mono, monospace);
   text-transform: uppercase;
-  transform: rotate(-3deg);
+  transform: rotate(2deg);
   box-shadow: 0 20px 40px rgba(8, 39, 71, 0.16);
 }
 
@@ -1065,6 +1108,15 @@ body {
 
 .skyline-cut span:nth-child(5) {
   height: 60%;
+}
+
+.collage-caption {
+  position: relative;
+  z-index: 8;
+  border-top: 1px solid rgba(242, 235, 220, 0.25);
+  background: rgba(8, 39, 71, 0.96);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  color: var(--paper);
 }
 
 @keyframes poster-rise {
@@ -1192,15 +1244,6 @@ body {
     left: 3%;
     right: -8%;
   }
-
-  .ticket-2 {
-    right: 2%;
-  }
-
-  .yellow-note {
-    right: 5%;
-    top: 16%;
-  }
 }
 
 @media (max-width: 640px) {
@@ -1283,7 +1326,12 @@ body {
   }
 
   .collage-panel {
-    min-height: 700px;
+    grid-template-rows: minmax(500px, 1fr) auto;
+    min-height: 0;
+  }
+
+  .access-collage {
+    padding: 1rem;
   }
 
   .collage-bridge {
@@ -1292,8 +1340,20 @@ body {
     top: 35%;
   }
 
+  .collage-topline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    width: 100%;
+  }
+
+  .access-ticket-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    width: 100%;
+    margin-top: 5.5rem;
+  }
+
   .travel-ticket {
-    width: 8.2rem;
     min-height: 5.2rem;
     padding: 0.6rem;
   }
@@ -1302,37 +1362,34 @@ body {
     font-size: 2.25rem;
   }
 
-  .ticket-0 {
-    left: 4%;
-    bottom: 35%;
-  }
-
   .ticket-1 {
-    left: 7%;
-    bottom: 16%;
+    --ticket-y: 0.35rem;
   }
 
   .ticket-2 {
-    right: 4%;
-    bottom: 31%;
+    --ticket-y: 0rem;
   }
 
   .ticket-3 {
-    left: 38%;
-    bottom: 9%;
+    --ticket-y: 0.35rem;
   }
 
   .arrival-stamp {
-    left: 26%;
-    bottom: 19%;
-    width: 11rem;
+    padding: 0.72rem 0.5rem;
   }
 
   .yellow-note {
-    right: 7%;
-    top: 8%;
-    width: 10.5rem;
     padding: 0.9rem;
+  }
+
+  .yellow-note span {
+    margin-bottom: 0.75rem;
+    font-size: 0.54rem;
+    letter-spacing: 0.12em;
+  }
+
+  .yellow-note strong {
+    font-size: 0.98rem;
   }
 
   .skyline-cut {

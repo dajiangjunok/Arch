@@ -3,7 +3,7 @@ import { accessTickets } from "../_data/home-data";
 function AccessCollage() {
   return (
     <div className="collage-panel relative min-h-[620px] overflow-hidden bg-ink">
-      <div className="access-collage" role="img" aria-label="Layered AI.X Assembly access passes and bridge collage">
+      <div className="access-collage" role="img" aria-label="Layered Arch.ai access passes and bridge collage">
         <div className="collage-map map-one" />
         <div className="collage-map map-two" />
         <div className="collage-bridge">
@@ -13,26 +13,30 @@ function AccessCollage() {
           <span className="suspension-cable cable-sub" />
           <span className="bridge-road" />
         </div>
-        {accessTickets.map((ticket, index) => (
-          <article key={ticket.code} className={`travel-ticket ticket-${index} ticket-${ticket.tone}`}>
-            <p>AI.X Assembly</p>
-            <strong>{ticket.code}</strong>
-            <span>{ticket.city}</span>
-            <small>{ticket.detail}</small>
-          </article>
-        ))}
-        <div className="arrival-stamp">
-          <span>Arrived</span>
-          <strong>01 Nov 2026</strong>
-          <small>Shanghai China</small>
+        <div className="collage-topline">
+          <div className="arrival-stamp">
+            <span>Arrived</span>
+            <strong>01 Nov 2026</strong>
+            <small>Shanghai China</small>
+          </div>
+          <div className="yellow-note">
+            <span>Access to innovation</span>
+            <strong>
+              连接世界
+              <br />
+              共建未来
+            </strong>
+          </div>
         </div>
-        <div className="yellow-note">
-          <span>Access to innovation</span>
-          <strong>
-            连接世界
-            <br />
-            共建未来
-          </strong>
+        <div className="access-ticket-grid">
+          {accessTickets.map((ticket, index) => (
+            <article key={ticket.code} className={`travel-ticket ticket-${index} ticket-${ticket.tone}`}>
+              <p className="brand-case">Arch.ai</p>
+              <strong>{ticket.code}</strong>
+              <span>{ticket.city}</span>
+              <small>{ticket.detail}</small>
+            </article>
+          ))}
         </div>
         <div className="skyline-cut">
           <span />
@@ -42,7 +46,7 @@ function AccessCollage() {
           <span />
         </div>
       </div>
-      <div className="absolute bottom-8 left-8 right-8 border border-paper/40 bg-paper/90 p-5 text-ink shadow-ticket backdrop-blur">
+      <div className="collage-caption">
         <p className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-sun">Fuxing Island, Shanghai</p>
         <p className="mt-3 font-serif text-3xl leading-tight">Closed-door access, curated peers, direct introductions.</p>
       </div>
