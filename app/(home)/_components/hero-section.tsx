@@ -49,13 +49,13 @@ function PosterScene() {
         <div className="poster-dots dots-b" />
         <div className="poster-route-line route-a" />
         <div className="poster-route-line route-b" />
-        <div className="hero-bridge">
+        {/* <div className="hero-bridge">
           <span className="hero-arch arch-a" />
           <span className="hero-arch arch-b" />
           <span className="hero-arch arch-c" />
           <span className="bridge-pier pier-a" />
           <span className="bridge-pier pier-b" />
-        </div>
+        </div> */}
         <div className="hero-water" />
         <div className="hero-skyline" aria-hidden>
           {labBlocks.map((block, index) => (
@@ -64,12 +64,12 @@ function PosterScene() {
             </span>
           ))}
         </div>
-        <div className="poster-walkers" aria-hidden>
+        {/* <div className="poster-walkers" aria-hidden>
           <span />
           <span />
           <span />
           <span />
-        </div>
+        </div> */}
         <div className="poster-caption">
           <span>AI.X Assembly</span>
           <strong>Access to innovation</strong>
@@ -103,10 +103,23 @@ export function HeroSection() {
           <p className="mb-6 font-mono text-xs font-bold uppercase tracking-[0.42em] text-ink-soft">
             A three-week China innovation immersion
           </p>
-          <h1 className="font-serif text-[clamp(2.7rem,6.8vw,7.4rem)] leading-[0.9] tracking-normal text-ink">
-            Where the World Meets China&apos;s Innovation Ecosystem
+          <h1 className="max-w-[46rem] text-ink">
+            <span className="block font-serif text-[clamp(2.35rem,4.9vw,5.45rem)] leading-[1.02] tracking-normal">
+              Where the World
+            </span>
+            <span className="my-4 grid grid-cols-[auto_minmax(3rem,1fr)] items-center gap-4 sm:my-5">
+              <span className="inline-flex border-y-2 border-ink bg-sun px-3 py-2 font-mono text-[clamp(0.72rem,1vw,0.88rem)] font-bold uppercase leading-none tracking-[0.26em] text-ink">
+                Meets China&apos;s
+              </span>
+              <span aria-hidden className="h-[2px] bg-ink" />
+            </span>
+            <span className="block font-poster text-[clamp(3.1rem,7.2vw,7.2rem)] uppercase leading-[0.84] tracking-[0.05em]">
+              Innovation
+            </span>
+            <span className="block pl-[clamp(0rem,5vw,4rem)] font-poster text-[clamp(2.9rem,6.4vw,6.4rem)] uppercase leading-[0.88] tracking-[0.05em]">
+              Ecosystem
+            </span>
           </h1>
-          <div className="mt-8 h-1 w-16 bg-sun" />
           <p className="mt-8 max-w-xl text-lg leading-8 text-ink-soft sm:text-xl">
             走进上海复兴岛，进入中国顶尖 AI、机器人与智能硬件企业的内部场域。这里不是观光行程，而是一座把创始人、投资人、机构和一线研发资源接起来的桥。
           </p>
