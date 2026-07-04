@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 const journey = [
   {
     verb: "Build",
@@ -75,6 +73,35 @@ const weeks = [
 
 const cityNodes = ["SFO", "LON", "AMS", "DXB", "SIN", "TOK", "SHA"];
 
+const labBlocks = ["LAB", "AI", "ROBOT", "R&D"];
+
+const accessTickets = [
+  {
+    code: "SFO",
+    city: "San Francisco",
+    detail: "Founder access",
+    tone: "blue",
+  },
+  {
+    code: "LHR",
+    city: "London",
+    detail: "Capital network",
+    tone: "navy",
+  },
+  {
+    code: "SIN",
+    city: "Singapore",
+    detail: "Market bridge",
+    tone: "blue",
+  },
+  {
+    code: "NRT",
+    city: "Tokyo",
+    detail: "Hardware route",
+    tone: "paper",
+  },
+];
+
 export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden bg-paper text-ink">
@@ -121,14 +148,44 @@ export default function Home() {
               ))}
             </div>
             <div className="poster-window absolute inset-x-0 bottom-0 z-20 overflow-hidden border border-line bg-cloud shadow-ticket">
-              <Image
-                src="/reference/img1.png"
-                alt="AI.X Assembly reference bridge panorama"
-                width={1942}
-                height={809}
-                priority
-                className="h-full min-h-[360px] w-full object-cover object-center opacity-95"
-              />
+              <div
+                className="poster-scene"
+                role="img"
+                aria-label="AI.X Assembly bridge and Shanghai innovation ecosystem illustration"
+              >
+                <div className="poster-sun" />
+                <div className="paper-shard shard-left" />
+                <div className="paper-shard shard-right" />
+                <div className="poster-dots dots-a" />
+                <div className="poster-dots dots-b" />
+                <div className="poster-route-line route-a" />
+                <div className="poster-route-line route-b" />
+                <div className="hero-bridge">
+                  <span className="hero-arch arch-a" />
+                  <span className="hero-arch arch-b" />
+                  <span className="hero-arch arch-c" />
+                  <span className="bridge-pier pier-a" />
+                  <span className="bridge-pier pier-b" />
+                </div>
+                <div className="hero-water" />
+                <div className="hero-skyline" aria-hidden>
+                  {labBlocks.map((block, index) => (
+                    <span key={block} className={`lab-block lab-block-${index}`}>
+                      {block}
+                    </span>
+                  ))}
+                </div>
+                <div className="poster-walkers" aria-hidden>
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                </div>
+                <div className="poster-caption">
+                  <span>AI.X Assembly</span>
+                  <strong>Access to innovation</strong>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -184,14 +241,25 @@ export default function Home() {
       </section>
 
       <section className="relative border-b border-line bg-ink py-16 text-paper sm:py-24">
-        <div className="absolute inset-0 opacity-25">
-          <Image
-            src="/reference/img2.png"
-            alt=""
-            width={1983}
-            height={793}
-            className="h-full w-full object-cover"
-          />
+        <div className="island-system absolute inset-0" aria-hidden>
+          <div className="river-field river-west" />
+          <div className="river-field river-east" />
+          <div className="island-outline" />
+          <div className="island-sun" />
+          <div className="island-bridge" />
+          <div className="island-routes">
+            {cityNodes.map((node, index) => (
+              <span key={node} className={`island-node island-node-${index}`}>
+                {node}
+              </span>
+            ))}
+          </div>
+          <div className="island-key">
+            <span>Connect</span>
+            <span>Collaborate</span>
+            <span>Co-create</span>
+            <span>Transform</span>
+          </div>
         </div>
         <div className="relative mx-auto grid max-w-[1500px] gap-10 px-5 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-12">
           <div>
@@ -267,15 +335,47 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <div className="collage-panel relative min-h-[620px] bg-ink">
-          <Image
-            src="/reference/img5.jpg"
-            alt="AI.X Assembly collage poster"
-            width={1440}
-            height={2034}
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute bottom-8 left-8 right-8 border border-paper/40 bg-paper/88 p-5 text-ink shadow-ticket backdrop-blur">
+        <div className="collage-panel relative min-h-[620px] overflow-hidden bg-ink">
+          <div
+            className="access-collage"
+            role="img"
+            aria-label="Layered AI.X Assembly access passes and bridge collage"
+          >
+            <div className="collage-map map-one" />
+            <div className="collage-map map-two" />
+            <div className="collage-bridge">
+              <span className="suspension-tower tower-left" />
+              <span className="suspension-tower tower-right" />
+              <span className="suspension-cable cable-main" />
+              <span className="suspension-cable cable-sub" />
+              <span className="bridge-road" />
+            </div>
+            {accessTickets.map((ticket, index) => (
+              <article key={ticket.code} className={`travel-ticket ticket-${index} ticket-${ticket.tone}`}>
+                <p>AI.X Assembly</p>
+                <strong>{ticket.code}</strong>
+                <span>{ticket.city}</span>
+                <small>{ticket.detail}</small>
+              </article>
+            ))}
+            <div className="arrival-stamp">
+              <span>Arrived</span>
+              <strong>01 Nov 2026</strong>
+              <small>Shanghai China</small>
+            </div>
+            <div className="yellow-note">
+              <span>Access to innovation</span>
+              <strong>连接世界<br />共建未来</strong>
+            </div>
+            <div className="skyline-cut">
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+          <div className="absolute bottom-8 left-8 right-8 border border-paper/40 bg-paper/90 p-5 text-ink shadow-ticket backdrop-blur">
             <p className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-sun">Fuxing Island, Shanghai</p>
             <p className="mt-3 font-serif text-3xl leading-tight">Closed-door access, curated peers, direct introductions.</p>
           </div>
