@@ -1,0 +1,60 @@
+import { getTicketLabel } from "./tickets";
+import type { ApplicationStatus, OrderStatus, TicketId } from "./types";
+
+export function formatDate(value: string | null) {
+  if (!value) {
+    return "-";
+  }
+
+  return new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+export function formatMoney(amount: number | null, currency: string) {
+  if (!amount) {
+    return "Not configured";
+  }
+
+  return new Intl.NumberFormat("en", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amount / 100);
+}
+
+export function applicationStatusLabel(status: ApplicationStatus) {
+  const labels: Record<ApplicationStatus, string> = {
+    pending_review: "Pending review",
+    approved: "Approved",
+    rejected: "Rejected",
+    more_info_required: "More info required",
+    payment_sent: "Payment sent",
+    paid: "Paid",
+    confirmed: "Confirmed",
+    canceled: "Canceled",
+  };
+
+  return labels[status];
+}
+
+export function orderStatusLabel(status: OrderStatus) {
+  const labels: Record<OrderStatus, string> = {
+    pending: "Pending",
+    checkout_created: "Checkout created",
+    paid: "Paid",
+    payment_failed: "Payment failed",
+    canceled: "Canceled",
+    refunded: "Refunded",
+    expired: "Expired",
+  };
+
+  return labels[status];
+}
+
+export function ticketLabel(ticketId: TicketId) {
+  return getTicketLabel(ticketId);
+}

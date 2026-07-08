@@ -1,0 +1,181 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { AdminShell, Notice, StatusPill } from "../../_components";
+import { createCheckoutLinkAction, updateApplicationStatusAction } from "../../actions";
+import { requireAdmin } from "@/lib/admin-auth";
+import {
+  applicationStatusLabel,
+  formatDate,
+  formatMoney,
+  orderStatusLabel,
+  ticketLabel,
+} from "@/lib/format";
+import { getApplication, getOrdersForApplication } from "@/lib/store";
+import type { ApplicationStatus } from "@/lib/types";
+
+const statuses: ApplicationStatus[] = [
+  "pending_review",
+  "approved",
+  "more_info_required",
+  "rejected",
+  "payment_sent",
+  "paid",
+  "confirmed",
+  "canceled",
+];
+
+export default async function ApplicationDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ notice?: string; error?: string }>;
+}) {
+  await requireAdmin();
+  const { id } = await params;
+  const query = await searchParams;
+  const application = await getApplication(id);
+
+  if (!application) {
+    notFound();
+  }
+
+  const orders = await getOrdersForApplication(application.id);
+
+  return (
+    <AdminShell title="Applicant">
+      <Notice notice={query.notice} error={query.error} />
+      <div className="mt-6">
+        <Link
+          href="/admin/applications"
+          className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] underline decoration-sun decoration-2 underline-offset-4"
+        >
+          Back to applications
+        </Link>
+      </div>
+
+      <section className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.58fr]">
+        <article className="border border-line bg-paper p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.24em] text-sun">
+                {application.applicantType}
+              </p>
+              <h2 className="mt-3 font-poster text-5xl uppercase leading-none tracking-[0.08em]">
+                {application.name}
+              </h2>
+              <p className="mt-3 text-ink-soft">{application.email}</p>
+            </div>
+            <StatusPill>{applicationStatusLabel(application.status)}</StatusPill>
+          </div>
+
+          <dl className="mt-8 grid gap-px overflow-hidden border border-line bg-line/70 sm:grid-cols-2">
+            <Info label="Company" value={application.company} />
+            <Info label="Title" value={application.title} />
+            <Info label="Location" value={`${application.city}, ${application.country}`} />
+            <Info label="Program" value={ticketLabel(application.selectedTicket)} />
+            <Info label="Submitted" value={formatDate(application.createdAt)} />
+            <Info label="Updated" value={formatDate(application.updatedAt)} />
+          </dl>
+
+          {application.message ? (
+            <div className="mt-6 border border-line bg-cloud p-5">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">Message</p>
+              <p className="mt-3 whitespace-pre-wrap text-sm leading-7">{application.message}</p>
+            </div>
+          ) : null}
+        </article>
+
+        <aside className="grid content-start gap-6">
+          <form action={updateApplicationStatusAction} className="border border-line bg-paper p-5">
+            <input type="hidden" name="applicationId" value={application.id} />
+            <label className="grid gap-2">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">
+                Review status
+              </span>
+              <select
+                name="status"
+                defaultValue={application.status}
+                className="min-h-12 border border-line bg-cloud px-4 text-sm outline-none focus:border-ink focus:ring-4 focus:ring-sun/25"
+              >
+                {statuses.map((status) => (
+                  <option key={status} value={status}>
+                    {applicationStatusLabel(status)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button className="mt-4 w-full min-h-12 bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.22em] text-paper hover:bg-sun hover:text-ink">
+              Save status
+            </button>
+          </form>
+
+          <form action={createCheckoutLinkAction} className="border border-line bg-paper p-5">
+            <input type="hidden" name="applicationId" value={application.id} />
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">
+              Stripe payment
+            </p>
+            <p className="mt-3 text-sm leading-6 text-ink-soft">
+              Creates a server-side Stripe Checkout Session for this applicant and stores the payment link on the
+              order.
+            </p>
+            <button className="mt-4 w-full min-h-12 bg-sun px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.22em] text-ink hover:bg-ink hover:text-paper">
+              Create payment link
+            </button>
+          </form>
+        </aside>
+      </section>
+
+      <section className="mt-8 border border-line bg-paper">
+        <div className="border-b border-line p-5">
+          <h2 className="font-poster text-4xl uppercase tracking-[0.08em]">Orders</h2>
+        </div>
+        {orders.length === 0 ? (
+          <p className="p-6 text-sm text-ink-soft">No payment link has been created for this applicant.</p>
+        ) : (
+          <div className="grid gap-px bg-line/70">
+            {orders.map((order) => (
+              <article key={order.id} className="grid gap-4 bg-paper p-5 lg:grid-cols-[1fr_auto]">
+                <div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <StatusPill>{orderStatusLabel(order.status)}</StatusPill>
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-soft">
+                      {formatMoney(order.amount, order.currency)}
+                    </span>
+                  </div>
+                  <p className="mt-3 break-all font-mono text-xs text-ink-soft">Order {order.id}</p>
+                  <p className="mt-2 break-all font-mono text-xs text-ink-soft">
+                    Stripe Session {order.stripeCheckoutSessionId || "-"}
+                  </p>
+                  {order.checkoutUrl ? (
+                    <a
+                      href={order.checkoutUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-4 inline-flex break-all font-mono text-[11px] font-bold uppercase tracking-[0.16em] underline decoration-sun decoration-2 underline-offset-4"
+                    >
+                      Open Checkout link
+                    </a>
+                  ) : null}
+                </div>
+                <div className="text-sm leading-6 text-ink-soft lg:text-right">
+                  <p>Created {formatDate(order.createdAt)}</p>
+                  <p>Expires {formatDate(order.paymentLinkExpiresAt)}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+    </AdminShell>
+  );
+}
+
+function Info({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-cloud p-4">
+      <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">{label}</dt>
+      <dd className="mt-2 text-sm leading-6">{value}</dd>
+    </div>
+  );
+}
