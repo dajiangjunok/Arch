@@ -76,7 +76,7 @@ body {
 }
 
 .hero-reference-image {
-  background-image: url('/reference/hero.png');
+  background-image: url('/hero.png');
   background-position: 58% center;
   background-size: cover;
   filter: saturate(0.98) contrast(1.02);
