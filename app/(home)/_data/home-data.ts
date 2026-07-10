@@ -1,103 +1,133 @@
-export const journey = [
+export const mailto =
+  "mailto:business@globalpropeller.com?subject=The%20Arch.%20%E2%80%94%20Invitation%20Request";
+
+export const applyPath = "/apply";
+
+export const pillars = ["Connect", "Collaborate", "Co-create", "Transform"];
+
+export const programGates = [
   {
-    verb: "Build",
-    text: "Everything begins with an idea.",
-    detail: "Founder-quality conversations before the first meeting.",
+    week: "Week 1",
+    number: "01",
+    title: "The AI Application Frontier",
+    dates: "Nov 1 - 8",
+    tone: "navy",
+    points: ["AI consumer products", "Model ecosystem", "Agent co-building workshop"],
   },
   {
-    verb: "Connect",
-    text: "Ideas grow through people.",
-    detail: "Screened founders, investors, operators and lab leads.",
+    week: "Week 2",
+    number: "02",
+    title: "Embodied AI & Robotics",
+    dates: "Nov 9 - 15",
+    tone: "marigold",
+    points: ["Robot labs & industrial demos", "Shenzhen hardware & supply chain trip", "Founder and operator salons"],
   },
   {
-    verb: "Discover",
-    text: "Perspective changes everything.",
-    detail: "Inside China's AI, robotics and intelligent hardware frontier.",
+    week: "Week 3",
+    number: "03",
+    title: "Smart Wearables, Bio-hacking & Global Summit",
+    dates: "Nov 16 - 21",
+    tone: "navy",
+    points: ["Smart glasses & wearables", "Bio-hacking & longevity", "Global Demo Day + investor matchmaking"],
+  },
+];
+
+export const collection = [
+  {
+    company: "SenseTime",
+    subject: "SenseCore / Applied AI",
+    meta: "Nov 3 · Zhangjiang",
+    art: "sun",
   },
   {
-    verb: "Immerse",
-    text: "Step in. Learn. Create together.",
-    detail: "Closed-door lab visits, dinners and working sessions.",
+    company: "ByteDance",
+    subject: "Coze / Volcano Engine",
+    meta: "Nov 4 · Yangpu",
+    art: "circle",
   },
   {
-    verb: "Grow",
-    text: "Great companies are not built alone.",
-    detail: "Supply chain, talent, capital and market access.",
+    company: "Ant Group",
+    subject: "Embodied AI / Health",
+    meta: "Nov 5 · Shanghai",
+    art: "arch",
   },
   {
-    verb: "Join",
-    text: "Cross the bridge. Build what's next.",
-    detail: "Three themed weeks on Shanghai's Fuxing Island.",
+    company: "Alibaba",
+    subject: "LLMs / Cloud / T-Head",
+    meta: "Nov 6 · Xuhui",
+    art: "blocks",
   },
+  {
+    company: "AGIBOT",
+    subject: "Zhiyuan Robotics",
+    meta: "Nov 9 · Zhangjiang",
+    art: "tower",
+  },
+  {
+    company: "Rokid",
+    subject: "AR Glasses / Spatial Computing",
+    meta: "Nov 18 · Week 3",
+    art: "lens",
+  },
+];
+
+export const thesisTags = [
+  ["SFO", "Founder access"],
+  ["LHR", "Capital network"],
+  ["SIN", "Market bridge"],
+  ["NRT", "Hardware route"],
 ];
 
 export const audiences = [
   {
     title: "Founders",
-    copy: "Find supply chains, talent and technical partners with people who can move the work forward.",
-  },
-  {
-    title: "Investors",
-    copy: "See the companies, labs and operators shaping China's applied AI and robotics markets.",
-  },
-  {
-    title: "Institutions",
-    copy: "Turn close-range observation into strategy, research agendas and long-term partnerships.",
-  },
-  {
-    title: "China partners",
-    copy: "Meet high-signal overseas visitors without sending your team on another outbound roadshow.",
-  },
-];
-
-export const weeks = [
-  {
-    label: "Week 1",
-    dates: "Nov 1 - Nov 8",
-    title: "AI Application Frontier",
-    points: ["AI consumer products", "Model ecosystem", "Agent co-building workshop"],
-  },
-  {
-    label: "Week 2",
-    dates: "Nov 8 - Nov 15",
-    title: "Robotics & Embodied Intelligence",
-    points: ["Robot labs", "Industrial demos", "Founder and operator salons"],
-  },
-  {
-    label: "Week 3",
-    dates: "Nov 15 - Nov 21",
-    title: "Hardware, Supply Chain & Scale",
-    points: ["Smart hardware", "Manufacturing access", "Go-global partnerships"],
-  },
-];
-
-export const cityNodes = ["SFO", "LON", "AMS", "DXB", "SIN", "TOK", "SHA"];
-
-export const labBlocks = ["LAB", "AI", "ROBOT", "R&D"];
-
-export const accessTickets = [
-  {
-    code: "SFO",
-    city: "San Francisco",
-    detail: "Founder access",
-    tone: "blue",
-  },
-  {
-    code: "LHR",
-    city: "London",
-    detail: "Capital network",
+    detail: "Supply chains · Talent · Execution",
     tone: "navy",
   },
   {
-    code: "SIN",
-    city: "Singapore",
-    detail: "Market bridge",
-    tone: "blue",
+    title: "Investors",
+    detail: "Deal flow · Diligence · Co-invest",
+    tone: "marigold",
   },
   {
-    code: "NRT",
-    city: "Tokyo",
-    detail: "Hardware route",
-    tone: "paper",
+    title: "Speakers & KOLs",
+    detail: "Platform · Audience · Signal",
+    tone: "navy-alt",
+  },
+  {
+    title: "Institutions",
+    detail: "Policy · Research · Partnerships",
+    tone: "ivory",
+  },
+];
+
+export const admissionPasses = [
+  {
+    code: "ADM · 001",
+    name: "Single Week Pass",
+    duration: "One Week",
+    note: "Choose Week 1, 2, or 3",
+    tone: "ivory",
+    rotate: "-rotate-1",
+    inclusions: ["Local transportation", "Daily meals", "Travel insurance", "Full week program access"],
+  },
+  {
+    code: "ADM · 002",
+    name: "Multi-Week Pass",
+    duration: "Two Weeks",
+    note: "Any two of three weeks",
+    tone: "marigold",
+    rotate: "rotate-1",
+    inclusions: ["Local transportation", "Daily meals", "Travel insurance", "Two-week program access"],
+  },
+  {
+    code: "ADM · 003",
+    name: "Full Residency",
+    duration: "Three Weeks",
+    note: "Nov 1 - 21, complete immersion",
+    tone: "navy",
+    rotate: "-rotate-[0.7deg]",
+    badge: "Best Value",
+    inclusions: ["Local transportation", "Daily meals", "Travel insurance", "Full program access"],
   },
 ];

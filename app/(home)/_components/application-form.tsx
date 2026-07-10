@@ -56,14 +56,14 @@ export function ApplicationForm() {
       </div>
 
       <label className="grid gap-2">
-        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
           Applicant type
         </span>
         <select
           name="applicantType"
           required
           defaultValue="founder"
-          className="min-h-12 border border-line bg-paper px-4 font-sans text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-sun/25"
+          className="min-h-12 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
         >
           {applicantTypes.map((type) => (
             <option key={type.value} value={type.value}>
@@ -74,14 +74,14 @@ export function ApplicationForm() {
       </label>
 
       <label className="grid gap-2">
-        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
           Program option
         </span>
         <select
           name="selectedTicket"
           required
           defaultValue="full_program"
-          className="min-h-12 border border-line bg-paper px-4 font-sans text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-sun/25"
+          className="min-h-12 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
         >
           {ticketOptions.map((ticket) => (
             <option key={ticket.id} value={ticket.id}>
@@ -92,11 +92,11 @@ export function ApplicationForm() {
       </label>
 
       <label className="grid gap-2">
-        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">Message</span>
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">Message</span>
         <textarea
           name="message"
           rows={4}
-          className="resize-none border border-line bg-paper px-4 py-3 font-sans text-sm leading-6 text-ink outline-none focus:border-ink focus:ring-4 focus:ring-sun/25"
+          className="resize-none rounded-none border border-ink/20 bg-ivory px-4 py-3 font-mono text-sm leading-6 text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
           placeholder="Share what you hope to explore in Shanghai."
         />
       </label>
@@ -104,16 +104,16 @@ export function ApplicationForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-2 inline-flex min-h-12 items-center justify-center bg-ink px-6 py-4 font-mono text-xs font-bold uppercase tracking-[0.24em] text-paper transition hover:bg-sun hover:text-ink focus:outline-none focus:ring-4 focus:ring-sun/40 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-2 inline-flex min-h-12 items-center justify-center rounded-md bg-navy px-6 py-4 font-mono text-xs font-semibold uppercase tracking-[0.24em] text-ivory transition hover:bg-marigold hover:text-ink focus:outline-none focus:ring-4 focus:ring-marigold/40 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {status === "submitting" ? "Sending" : "Submit application"}
       </button>
 
       {message ? (
         <p
-          className={`border px-4 py-3 text-sm leading-6 ${
+          className={`border px-4 py-3 font-mono text-sm leading-6 ${
             status === "success"
-              ? "border-ink/20 bg-paper text-ink"
+              ? "border-ink/20 bg-ivory text-ink"
               : "border-red-700/30 bg-red-50 text-red-900"
           }`}
         >
@@ -137,12 +137,12 @@ function Field({
 }) {
   return (
     <label className="grid gap-2">
-      <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">{label}</span>
+      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">{label}</span>
       <input
         name={name}
         type={type}
         required={required}
-        className="min-h-12 border border-line bg-paper px-4 font-sans text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-sun/25"
+        className="min-h-12 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
       />
     </label>
   );

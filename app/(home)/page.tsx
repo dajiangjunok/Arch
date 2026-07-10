@@ -1,19 +1,25 @@
-import { AccessSection } from "./_components/access-section";
-import { ApplySection } from "./_components/apply-section";
-import { FuxingIslandSection } from "./_components/fuxing-island-section";
+import { AdmissionSection } from "./_components/admission-section";
+import { AudienceSection } from "./_components/audience-section";
+import { BridgeProgress } from "./_components/bridge-progress";
+import { CollectionSection } from "./_components/collection-section";
+import { FooterSection } from "./_components/footer-section";
 import { HeroSection } from "./_components/hero-section";
-import { JourneySection } from "./_components/journey-section";
-import { WeeksSection } from "./_components/weeks-section";
+import { HomeEffects } from "./_components/home-effects";
+import { ManifestoSection } from "./_components/manifesto-section";
+import { ProgramGatesSection } from "./_components/program-gates-section";
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-hidden bg-paper text-ink">
+    <main className="min-h-screen overflow-hidden bg-ivory text-ink">
       <HeroSection />
-      <JourneySection />
-      <FuxingIslandSection />
-      <WeeksSection />
-      <AccessSection />
-      <ApplySection />
+      <ProgramGatesSection />
+      <CollectionSection />
+      <ManifestoSection />
+      <AudienceSection />
+      <AdmissionSection />
+      <FooterSection />
+      <BridgeProgress />
+      <HomeEffects />
     </main>
   );
 }
