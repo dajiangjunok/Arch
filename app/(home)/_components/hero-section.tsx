@@ -24,7 +24,7 @@ function HeroIllustration() {
   ] as const;
 
   return (
-    <div className="pointer-events-none absolute right-0 top-28 z-0 w-full max-w-[860px] rotate-1 lg:-right-10 lg:top-16 lg:w-[64%]">
+    <div className="pointer-events-none absolute right-0 top-28 z-0 w-full max-w-[860px] rotate-1 lg:-right-10 lg:top-22 lg:w-[64%]">
       <svg
         viewBox="0 0 940 720"
         role="img"
@@ -118,7 +118,7 @@ function HeroIllustration() {
 export function HeroSection() {
   return (
     <section id="top" className="hero relative mx-auto min-h-[100svh] max-w-[1440px] overflow-hidden px-6 pb-28 pt-10 sm:px-10 lg:px-20">
-      <header className="relative z-20 flex items-start justify-between pt-12 sm:pt-14">
+      <header className="relative z-20 flex items-start justify-between pt-12 sm:pt-12">
         <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-ink/60">Fuxing Island · Shanghai</p>
         <nav aria-label="Program pillars" className="hidden sm:block">
           <ul className="grid min-w-56 justify-items-stretch gap-0.5">
