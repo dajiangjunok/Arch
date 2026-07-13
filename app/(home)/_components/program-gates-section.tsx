@@ -45,7 +45,7 @@ export function ProgramGatesSection() {
         eyebrow="Program Structure"
         title="Three Gates Into China Tech"
         exhibit="02 / 07"
-        copy="~60 residents on-site, rotating weekly · ~100 participants total · Join one week or the full immersion."
+        copy="20-30 residents on-site each week · ~60 participants total."
       />
 
       <div className="grid gap-12 md:grid-cols-3 md:gap-8 lg:gap-12">

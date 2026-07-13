@@ -22,9 +22,9 @@ export function ManifestoSection() {
           </h2>
 
           <p className="reveal mt-10 max-w-xl text-sm leading-8 text-ink/75">
-            Closed-door labs, R&D leads, founders, and local ecosystem partners - access that is nearly impossible to arrange
-            independently. Participants leave with real relationships, actionable partnerships, and a structural understanding
-            of how China&apos;s innovation ecosystem works.
+            A tour walks you past the glass and hands you a stack of photos. We take the glass away and put you across the
+            table from the people building this technology. What crosses this bridge is what counts: contracts, hires,
+            partnerships. Whatever crosses, we publish.
           </p>
 
           <ul className="reveal mt-12 flex flex-wrap items-center justify-center gap-4">

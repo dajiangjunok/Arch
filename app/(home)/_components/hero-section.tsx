@@ -121,11 +121,20 @@ export function HeroSection() {
       <header className="relative z-20 flex items-start justify-between">
         <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-ink/60">Fuxing Island · Shanghai</p>
         <nav aria-label="Program pillars" className="hidden sm:block">
-          <ul className="grid justify-items-end gap-1.5">
+          <ul className="grid min-w-56 justify-items-stretch gap-0.5">
             {pillars.map((pillar, index) => (
-              <li key={pillar} className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.3em] text-navy">
-                <span className="text-ink/40">{String(index + 1).padStart(2, "0")}</span>
-                {pillar}
+              <li key={pillar.label}>
+                <a
+                  href={pillar.href}
+                  className="group relative flex min-h-8 items-center justify-end gap-3 overflow-hidden px-2 font-mono text-[11px] uppercase tracking-[0.3em] text-navy transition-transform duration-200 ease-out hover:-translate-x-1 focus-visible:-translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marigold focus-visible:ring-offset-2 motion-reduce:transform-none"
+                >
+                  <span className="relative text-ink/40 transition-colors group-hover:text-navy/60 group-focus-visible:text-navy/60">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="relative transition-transform duration-200 group-hover:-translate-x-0.5 group-focus-visible:-translate-x-0.5 motion-reduce:transform-none">
+                    {pillar.label}
+                  </span>
+                </a>
               </li>
             ))}
           </ul>
@@ -141,8 +150,8 @@ export function HeroSection() {
         <p className="mt-4 font-mono text-xs uppercase tracking-[0.3em] text-ink/70">2026 Nov.1-21 · AI.X Assembly</p>
       </div>
 
-      <h2 className="relative z-20 mt-12 max-w-[18ch] font-serif text-[clamp(2.6rem,5.4vw,4.2rem)] font-semibold leading-[1.02] tracking-normal text-navy sm:mt-20">
-        Where the World Meets China&apos;s Innovation Ecosystem
+      <h2 className="relative z-20 mt-12 max-w-[18ch] font-serif text-[clamp(2.6rem,5.4vw,4.2rem)] font-semibold leading-[1.02] tracking-normal text-navy sm:mt-10">
+        The bridge where the world crosses into China.
       </h2>
 
       <div className="relative z-20 mt-10">

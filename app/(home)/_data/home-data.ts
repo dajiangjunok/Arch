@@ -3,32 +3,39 @@ export const mailto =
 
 export const applyPath = "/apply";
 
-export const pillars = ["Connect", "Collaborate", "Co-create", "Transform"];
+export const pillars = [
+  { label: "PROGRAM", href: "#weeks" },
+  { label: "COMPANIES", href: "#collection" },
+  { label: "WHY US", href: "#thesis" },
+  { label: "WHO IT'S FOR", href: "#audiences" },
+  { label: "PRICING", href: "#admission" },
+  { label: "APPLY", href: applyPath },
+];
 
 export const programGates = [
   {
     week: "Week 1",
     number: "01",
     title: "The AI Application Frontier",
-    dates: "Nov 1 - 8",
+    dates: "Shanghai + Beijing",
     tone: "navy",
-    points: ["AI consumer products", "Model ecosystem", "Agent co-building workshop"],
+    points: ["AI consumer products", "Model ecosystem", "Closed-door founder sessions"],
   },
   {
     week: "Week 2",
     number: "02",
     title: "Embodied AI & Robotics",
-    dates: "Nov 9 - 15",
+    dates: "Shanghai + Shenzhen",
     tone: "marigold",
-    points: ["Robot labs & industrial demos", "Shenzhen hardware & supply chain trip", "Founder and operator salons"],
+    points: ["Robot labs & industrial demos", "Shenzhen hardware & supply chain trip", "Founder & operator meetups"],
   },
   {
     week: "Week 3",
     number: "03",
-    title: "Smart Wearables, Bio-hacking & Global Summit",
-    dates: "Nov 16 - 21",
+    title: "Smart Wearables & Spatial Computing",
+    dates: "Shanghai",
     tone: "navy",
-    points: ["Smart glasses & wearables", "Bio-hacking & longevity", "Global Demo Day + investor matchmaking"],
+    points: ["Smart glasses & wearables", "Health & longevity tech", "Closing showcase & networking"],
   },
 ];
 
@@ -90,7 +97,7 @@ export const audiences = [
     tone: "marigold",
   },
   {
-    title: "Speakers & KOLs",
+    title: "Business Executive",
     detail: "Platform · Audience · Signal",
     tone: "navy-alt",
   },
