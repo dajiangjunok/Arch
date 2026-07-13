@@ -25,6 +25,7 @@ export type TicketId = "full_program" | "week_1" | "week_2" | "week_3" | "deposi
 
 export type Application = {
   id: string;
+  userId: string | null;
   name: string;
   email: string;
   company: string;
@@ -41,6 +42,7 @@ export type Application = {
 
 export type Order = {
   id: string;
+  userId: string | null;
   applicationId: string;
   selectedTicket: TicketId;
   amount: number | null;
