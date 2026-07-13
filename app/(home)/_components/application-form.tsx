@@ -13,7 +13,7 @@ const applicantTypes = [
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
-export function ApplicationForm() {
+export function ApplicationForm({ email }: { email: string }) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
 
@@ -31,24 +31,42 @@ export function ApplicationForm() {
       },
       body: JSON.stringify(payload),
     });
-    const result = (await response.json()) as { error?: string };
+    const result = (await response.json()) as { error?: string; checkoutUrl?: string };
 
     if (!response.ok) {
+      if (response.status === 401) {
+        window.location.assign("/login?next=%2Fapply");
+        return;
+      }
+
       setStatus("error");
       setMessage(result.error || "Unable to submit the application.");
       return;
     }
 
-    event.currentTarget.reset();
+    if (!result.checkoutUrl) {
+      setStatus("error");
+      setMessage("Application saved, but checkout could not be opened. Visit your account to continue.");
+      return;
+    }
+
     setStatus("success");
-    setMessage("Application received. Our team will review it and send payment instructions if approved.");
+    setMessage("Application saved. Opening secure Stripe Checkout...");
+    window.location.assign(result.checkoutUrl);
   }
 
   return (
     <form onSubmit={submitApplication} className="grid gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Name" name="name" required />
-        <Field label="Email" name="email" required type="email" />
+        <label className="grid gap-2">
+          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">Account email</span>
+          <input
+            value={email}
+            readOnly
+            className="min-h-12 border border-ink/20 bg-ink/5 px-4 font-mono text-sm text-ink/70 outline-none"
+          />
+        </label>
         <Field label="Company" name="company" required />
         <Field label="Title" name="title" required />
         <Field label="Country" name="country" required />
@@ -106,7 +124,7 @@ export function ApplicationForm() {
         disabled={status === "submitting"}
         className="mt-2 inline-flex min-h-12 items-center justify-center rounded-md bg-navy px-6 py-4 font-mono text-xs font-semibold uppercase tracking-[0.24em] text-ivory transition hover:bg-marigold hover:text-ink focus:outline-none focus:ring-4 focus:ring-marigold/40 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {status === "submitting" ? "Sending" : "Submit application"}
+        {status === "submitting" ? "Preparing checkout" : "Apply and continue to payment"}
       </button>
 
       {message ? (

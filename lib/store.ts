@@ -169,6 +169,17 @@ export async function listApplications() {
   return (data as ApplicationRow[]).map(mapApplication);
 }
 
+export async function listApplicationsForUser(userId: string) {
+  const { data, error } = await createSupabaseAdminClient()
+    .from("applications")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data as ApplicationRow[]).map(mapApplication);
+}
+
 export async function getApplication(id: string) {
   const { data, error } = await createSupabaseAdminClient()
     .from("applications")
@@ -196,6 +207,17 @@ export async function listOrders() {
   const { data, error } = await createSupabaseAdminClient()
     .from("orders")
     .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data as OrderRow[]).map(mapOrder);
+}
+
+export async function listOrdersForUser(userId: string) {
+  const { data, error } = await createSupabaseAdminClient()
+    .from("orders")
+    .select("*")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -319,6 +341,19 @@ export async function listPaymentsForOrder(orderId: string) {
     .from("payments")
     .select("*")
     .eq("order_id", orderId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data as PaymentRow[]).map(mapPayment);
+}
+
+export async function listPaymentsForOrders(orderIds: string[]) {
+  if (orderIds.length === 0) return [];
+
+  const { data, error } = await createSupabaseAdminClient()
+    .from("payments")
+    .select("*")
+    .in("order_id", orderIds)
     .order("created_at", { ascending: false });
 
   if (error) throw error;

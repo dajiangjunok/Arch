@@ -35,6 +35,7 @@ export async function createStripeCheckoutSession(application: Application, orde
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
+    customer_creation: "always",
     customer_email: application.email,
     client_reference_id: order.id,
     success_url: `${getSiteUrl()}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -43,6 +44,14 @@ export async function createStripeCheckoutSession(application: Application, orde
       applicationId: application.id,
       orderId: order.id,
       selectedTicket: order.selectedTicket,
+      userId: application.userId || "",
+    },
+    payment_intent_data: {
+      metadata: {
+        applicationId: application.id,
+        orderId: order.id,
+        userId: application.userId || "",
+      },
     },
     line_items: [
       stripePriceId

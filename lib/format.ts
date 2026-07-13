@@ -1,5 +1,5 @@
 import { getTicketLabel } from "./tickets";
-import type { ApplicationStatus, OrderStatus, TicketId } from "./types";
+import type { ApplicationStatus, OrderStatus, PaymentStatus, TicketId } from "./types";
 
 export function formatDate(value: string | null) {
   if (!value) {
@@ -50,6 +50,17 @@ export function orderStatusLabel(status: OrderStatus) {
     canceled: "Canceled",
     refunded: "Refunded",
     expired: "Expired",
+  };
+
+  return labels[status];
+}
+
+export function paymentStatusLabel(status: PaymentStatus) {
+  const labels: Record<PaymentStatus, string> = {
+    processing: "Processing",
+    succeeded: "Succeeded",
+    failed: "Failed",
+    refunded: "Refunded",
   };
 
   return labels[status];

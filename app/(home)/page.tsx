@@ -1,4 +1,5 @@
 import { AdmissionSection } from "./_components/admission-section";
+import { AccountDock } from "./_components/account-dock";
 import { AudienceSection } from "./_components/audience-section";
 import { BridgeProgress } from "./_components/bridge-progress";
 import { CollectionSection } from "./_components/collection-section";
@@ -10,16 +11,19 @@ import { ProgramGatesSection } from "./_components/program-gates-section";
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-hidden bg-ivory text-ink">
-      <HeroSection />
-      <ProgramGatesSection />
-      <CollectionSection />
-      <ManifestoSection />
-      <AudienceSection />
-      <AdmissionSection />
-      <FooterSection />
-      <BridgeProgress />
-      <HomeEffects />
-    </main>
+    <>
+      <AccountDock />
+      <main className="min-h-screen overflow-hidden bg-ivory text-ink">
+        <HeroSection />
+        <ProgramGatesSection />
+        <CollectionSection />
+        <ManifestoSection />
+        <AudienceSection />
+        <AdmissionSection />
+        <FooterSection />
+        <BridgeProgress />
+        <HomeEffects />
+      </main>
+    </>
   );
 }

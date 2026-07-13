@@ -20,9 +20,14 @@ export function FooterSection() {
             innovation ecosystem.
           </p>
           <p className="font-mono text-xs uppercase tracking-[0.28em] text-ivory/60">Nov.1 - Nov.21, 2026 · Fuxing Island, Shanghai</p>
-          <a className="btn-marigold magnetic reveal" href={applyPath}>
-            Apply to Participate
-          </a>
+          <div className="flex flex-wrap items-center gap-6">
+            <a className="btn-marigold magnetic reveal" href={applyPath}>
+              Apply to Participate
+            </a>
+            <a href="/account" className="font-mono text-[11px] uppercase tracking-[0.2em] text-ivory underline decoration-marigold decoration-2 underline-offset-4">
+              My account
+            </a>
+          </div>
         </div>
 
         <div className="mt-24 flex items-end justify-between gap-6 border-t border-ivory/20 pt-8">
