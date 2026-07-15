@@ -25,7 +25,7 @@ function HeroIllustration() {
   ] as const;
 
   return (
-    <div className="pointer-events-none absolute right-0 top-28 z-0 w-full max-w-[860px] rotate-1 lg:-right-10 lg:top-22 lg:w-[64%]">
+    <div className="pointer-events-none relative left-1/2 z-0 mt-5 w-[108vw] max-w-[32rem] -translate-x-1/2 md:absolute md:left-auto md:right-0 md:top-28 md:mt-0 md:w-[70%] md:max-w-[860px] md:translate-x-0 md:rotate-1 lg:-right-10 lg:top-22 lg:w-[64%]">
       <svg
         viewBox="0 0 940 720"
         role="img"
@@ -118,10 +118,15 @@ function HeroIllustration() {
 
 export function HeroSection() {
   return (
-    <section id="top" className="hero relative mx-auto min-h-[100svh] max-w-[1440px] overflow-hidden px-6 pb-28 pt-10 sm:px-10 lg:px-20">
-      <header className="relative z-20 flex items-start justify-between pt-12 sm:pt-12">
-        <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-ink/60">Fuxing Island · Shanghai</p>
-        <nav aria-label="Program pillars" className="hidden sm:block">
+    <section
+      id="top"
+      className="hero relative mx-auto min-h-[100svh] max-w-[1440px] overflow-hidden px-5 pb-10 pt-6 sm:px-8 md:px-10 md:pb-28 md:pt-10 lg:px-20"
+    >
+      <header className="relative z-20 flex items-start justify-between md:pt-12">
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink/60 sm:text-[11px] sm:tracking-[0.35em]">
+          Fuxing Island · Shanghai
+        </p>
+        <nav aria-label="Program pillars" className="hidden md:block">
           <ul className="grid min-w-56 justify-items-stretch gap-0.5">
             {pillars.map((pillar, index) => (
               <li key={pillar.label}>
@@ -142,29 +147,31 @@ export function HeroSection() {
         </nav>
       </header>
 
-      <HeroIllustration />
-
-      <div className="relative z-20 top-[-4rem]">
+      <div className="relative z-20 mt-8 md:top-[-4rem] md:mt-0">
         <BrandLockup priority size="hero" />
       </div>
 
-      <h2 className="relative z-20 mt-12 max-w-[18ch] font-serif text-[clamp(2.6rem,5.4vw,4.2rem)] font-semibold leading-[1.02] tracking-normal text-navy sm:mt-10">
+      <h2 className="relative z-20 mt-9 max-w-[14ch] font-serif text-[2.35rem] font-semibold leading-[0.98] tracking-normal text-navy sm:text-[2.8rem] md:mt-10 md:max-w-[18ch] md:text-[3.2rem] md:leading-[1.02] lg:text-[4.2rem]">
         The bridge where the world crosses into China.
       </h2>
 
-      <div className="relative z-20 mt-10">
-        <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-ink">A Three-Week China Innovation Immersion</p>
+      <div className="relative z-20 mt-7 md:mt-10">
+        <p className="max-w-[30rem] font-mono text-[10px] uppercase leading-5 tracking-[0.2em] text-ink sm:text-[11px] sm:tracking-[0.28em]">
+          A Three-Week China Innovation Immersion
+        </p>
         <span className="mt-2 block h-[3px] w-24 bg-marigold" />
       </div>
 
-      <div className="relative z-20 mt-12">
-        <a className="btn-navy magnetic" href={applyPath}>
+      <div className="relative z-20 mt-7 md:mt-12">
+        <a className="btn-navy magnetic w-full px-5 sm:w-auto sm:px-8" href={applyPath}>
           Apply to Participate
         </a>
       </div>
 
-      <div className="absolute bottom-16 left-6 right-6 z-20 flex items-end justify-between font-mono text-[11px] uppercase tracking-[0.28em] text-ink sm:left-10 sm:right-10 lg:left-20 lg:right-20">
-        <p>
+      <HeroIllustration />
+
+      <div className="relative z-20 mt-2 flex items-end justify-between border-t border-ink/15 pt-4 font-mono text-[10px] uppercase leading-5 tracking-[0.18em] text-ink md:absolute md:bottom-16 md:left-10 md:right-10 md:mt-0 md:border-t-0 md:pt-0 md:text-[11px] md:tracking-[0.28em] lg:left-20 lg:right-20">
+        <p className="max-w-[28rem]">
           Nov.1 - Nov.21, 2026 <span className="text-ink/40">/</span> Shanghai, China
         </p>
         <p className="hidden tracking-[0.35em] text-ink/40 md:block">Exhibit No. 01 / 07</p>
