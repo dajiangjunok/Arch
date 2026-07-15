@@ -1,3 +1,4 @@
+import { BrandLockup } from "../../_components/brand-lockup";
 import { applyPath, mailto, pillars } from "../_data/home-data";
 
 function HeroIllustration() {
@@ -143,11 +144,8 @@ export function HeroSection() {
 
       <HeroIllustration />
 
-      <div className="relative z-20 mt-12">
-        <h1 className="font-serif text-[clamp(3.4rem,6vw,4.6rem)] font-black leading-[0.95] tracking-normal text-navy">
-          The Arch.
-        </h1>
-        <p className="mt-4 font-mono text-xs uppercase tracking-[0.3em] text-ink/70">2026 Nov.1-21 · AI.X Assembly</p>
+      <div className="relative z-20 top-[-4rem]">
+        <BrandLockup priority size="hero" />
       </div>
 
       <h2 className="relative z-20 mt-12 max-w-[18ch] font-serif text-[clamp(2.6rem,5.4vw,4.2rem)] font-semibold leading-[1.02] tracking-normal text-navy sm:mt-10">
