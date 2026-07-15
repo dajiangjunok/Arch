@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "The Arch. | Shanghai Innovation Immersion",
   description:
     "A three-week China innovation immersion on Fuxing Island, Shanghai. Cross the bridge into China's AI, robotics and hardware ecosystem.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
