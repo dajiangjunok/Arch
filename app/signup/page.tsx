@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { AuthField, AuthMessage, AuthShell } from "../auth/_components";
 import { signUpAction } from "../auth/actions";
+import { SubmitButton } from "../auth/submit-button";
 import { TurnstileField } from "../auth/turnstile-field";
 import { getTurnstileSiteKey } from "@/lib/turnstile";
 
@@ -27,9 +28,12 @@ export default async function SignUpPage({
         <AuthField label="Password" name="password" type="password" autoComplete="new-password" />
         <TurnstileField siteKey={turnstileSiteKey} action="signup" />
         <p className="text-xs leading-5 text-ink-soft">Use at least 8 characters. You may need to confirm your email before signing in.</p>
-        <button className="min-h-12 rounded-md bg-marigold px-6 py-4 font-mono text-xs font-semibold uppercase tracking-[0.22em] text-navy transition hover:bg-navy hover:text-ivory focus:outline-none focus:ring-4 focus:ring-navy/20">
+        <SubmitButton
+          pendingLabel="Creating account..."
+          className="min-h-12 rounded-md bg-marigold px-6 py-4 font-mono text-xs font-semibold uppercase tracking-[0.22em] text-navy transition hover:bg-navy hover:text-ivory focus:outline-none focus:ring-4 focus:ring-navy/20"
+        >
           Create account
-        </button>
+        </SubmitButton>
       </form>
       <p className="mt-6 text-sm text-ink/70">
         Already registered?{" "}
