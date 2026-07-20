@@ -48,6 +48,7 @@ export function AdmissionSection() {
             </div>
             <div className="px-7 pt-6">
               <h3 className="font-serif text-3xl font-semibold leading-tight">{pass.name}</h3>
+              {/* <p className="mt-4 font-serif text-3xl font-semibold leading-none">{pass.price}</p> */}
               <p className="mt-3 font-mono text-xs uppercase tracking-[0.15em]">{pass.duration}</p>
               <p className="mt-1 text-sm leading-6 opacity-65">{pass.note}</p>
             </div>
@@ -70,7 +71,7 @@ export function AdmissionSection() {
             <div className="mt-8 px-7 pb-7">
               <div className="flex items-center justify-between border-t border-current/20 pt-5">
                 <Barcode />
-                <a className={`reserve font-mono text-xs font-semibold uppercase tracking-[0.2em] ${pass.tone === "navy" ? "text-marigold" : "text-navy"}`} href="/apply">
+                <a className={`reserve font-mono text-xs font-semibold uppercase tracking-[0.2em] ${pass.tone === "navy" ? "text-marigold" : "text-navy"}`} href={`/apply?pass=${pass.ticketId}`}>
                   Apply <span className="arr" aria-hidden="true">→</span>
                 </a>
               </div>

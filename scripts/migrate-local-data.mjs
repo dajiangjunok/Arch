@@ -34,6 +34,21 @@ if (!url || !key) {
 const data = JSON.parse(await fs.readFile(path.resolve(".data/arch-data.json"), "utf8"));
 const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 
+function normalizeTicketId(ticketId) {
+  const legacyTickets = {
+    full_program: "full_residency",
+    week_1: "single_week_pass",
+    week_2: "multi_week_pass",
+    week_3: "full_residency",
+  };
+
+  if (ticketId === "deposit") {
+    throw new Error("Legacy seat deposit records must be assigned to a current pass before migration.");
+  }
+
+  return legacyTickets[ticketId] || ticketId;
+}
+
 const batches = [
   ["applications", (data.applications || []).map((item) => ({
     id: item.id,
@@ -45,7 +60,7 @@ const batches = [
     country: item.country,
     city: item.city,
     applicant_type: item.applicantType,
-    selected_ticket: item.selectedTicket,
+    selected_ticket: normalizeTicketId(item.selectedTicket),
     message: item.message,
     status: item.status,
     created_at: item.createdAt,
@@ -55,7 +70,7 @@ const batches = [
     id: item.id,
     user_id: item.userId || null,
     application_id: item.applicationId,
-    selected_ticket: item.selectedTicket,
+    selected_ticket: normalizeTicketId(item.selectedTicket),
     amount: item.amount,
     currency: item.currency,
     status: item.status,

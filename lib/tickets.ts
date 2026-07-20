@@ -3,6 +3,7 @@ import type { TicketId } from "./types";
 type TicketConfig = {
   id: TicketId;
   label: string;
+  priceLabel: string;
   description: string;
   amountEnv: string;
   priceEnv: string;
@@ -10,39 +11,28 @@ type TicketConfig = {
 
 export const ticketOptions: TicketConfig[] = [
   {
-    id: "full_program",
-    label: "Full program",
-    description: "Nov 1 - Nov 21, full three-week immersion",
-    amountEnv: "ARCH_TICKET_AMOUNT_FULL_PROGRAM",
-    priceEnv: "STRIPE_PRICE_FULL_PROGRAM",
+    id: "single_week_pass",
+    label: "Single Week Pass",
+    priceLabel: "$2,000 USD",
+    description: "One week, choose Week 1, 2, or 3",
+    amountEnv: "ARCH_TICKET_AMOUNT_SINGLE_WEEK_PASS",
+    priceEnv: "STRIPE_PRICE_SINGLE_WEEK_PASS",
   },
   {
-    id: "week_1",
-    label: "Week 1",
-    description: "AI Application Frontier, Nov 1 - Nov 8",
-    amountEnv: "ARCH_TICKET_AMOUNT_WEEK_1",
-    priceEnv: "STRIPE_PRICE_WEEK_1",
+    id: "multi_week_pass",
+    label: "Multi-Week Pass",
+    priceLabel: "$3,000 USD",
+    description: "Two weeks, choose any two of three weeks",
+    amountEnv: "ARCH_TICKET_AMOUNT_MULTI_WEEK_PASS",
+    priceEnv: "STRIPE_PRICE_MULTI_WEEK_PASS",
   },
   {
-    id: "week_2",
-    label: "Week 2",
-    description: "Robotics & Embodied Intelligence, Nov 8 - Nov 15",
-    amountEnv: "ARCH_TICKET_AMOUNT_WEEK_2",
-    priceEnv: "STRIPE_PRICE_WEEK_2",
-  },
-  {
-    id: "week_3",
-    label: "Week 3",
-    description: "Hardware, Supply Chain & Scale, Nov 15 - Nov 21",
-    amountEnv: "ARCH_TICKET_AMOUNT_WEEK_3",
-    priceEnv: "STRIPE_PRICE_WEEK_3",
-  },
-  {
-    id: "deposit",
-    label: "Seat deposit",
-    description: "Deposit to reserve an approved seat",
-    amountEnv: "ARCH_TICKET_AMOUNT_DEPOSIT",
-    priceEnv: "STRIPE_PRICE_DEPOSIT",
+    id: "full_residency",
+    label: "Full Residency",
+    priceLabel: "$5,000 USD",
+    description: "Three weeks, Nov 1 - 21, complete immersion",
+    amountEnv: "ARCH_TICKET_AMOUNT_FULL_RESIDENCY",
+    priceEnv: "STRIPE_PRICE_FULL_RESIDENCY",
   },
 ];
 

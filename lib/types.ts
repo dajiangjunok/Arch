@@ -21,7 +21,7 @@ export type OrderStatus =
 
 export type PaymentStatus = "processing" | "succeeded" | "failed" | "refunded";
 
-export type TicketId = "full_program" | "week_1" | "week_2" | "week_3" | "deposit";
+export type TicketId = "single_week_pass" | "multi_week_pass" | "full_residency";
 
 export type Application = {
   id: string;

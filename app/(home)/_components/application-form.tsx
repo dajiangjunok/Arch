@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ticketOptions } from "@/lib/tickets";
+import type { TicketId } from "@/lib/types";
 
 const applicantTypes = [
   { value: "founder", label: "Founder" },
@@ -13,7 +14,7 @@ const applicantTypes = [
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
-export function ApplicationForm({ email }: { email: string }) {
+export function ApplicationForm({ email, defaultTicket = "single_week_pass" }: { email: string; defaultTicket?: TicketId }) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
 
@@ -98,12 +99,12 @@ export function ApplicationForm({ email }: { email: string }) {
         <select
           name="selectedTicket"
           required
-          defaultValue="full_program"
+          defaultValue={defaultTicket}
           className="min-h-12 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
         >
           {ticketOptions.map((ticket) => (
             <option key={ticket.id} value={ticket.id}>
-              {ticket.label} - {ticket.description}
+              {ticket.label} - {ticket.priceLabel} - {ticket.description}
             </option>
           ))}
         </select>

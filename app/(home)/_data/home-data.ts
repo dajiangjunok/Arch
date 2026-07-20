@@ -111,7 +111,9 @@ export const audiences = [
 export const admissionPasses = [
   {
     code: "ADM · 001",
+    ticketId: "single_week_pass",
     name: "Single Week Pass",
+    price: "$2,000 USD",
     duration: "One Week",
     note: "Choose Week 1, 2, or 3",
     tone: "ivory",
@@ -120,7 +122,9 @@ export const admissionPasses = [
   },
   {
     code: "ADM · 002",
+    ticketId: "multi_week_pass",
     name: "Multi-Week Pass",
+    price: "$3,000 USD",
     duration: "Two Weeks",
     note: "Any two of three weeks",
     tone: "marigold",
@@ -129,7 +133,9 @@ export const admissionPasses = [
   },
   {
     code: "ADM · 003",
+    ticketId: "full_residency",
     name: "Full Residency",
+    price: "$5,000 USD",
     duration: "Three Weeks",
     note: "Nov 1 - 21, complete immersion",
     tone: "navy",
