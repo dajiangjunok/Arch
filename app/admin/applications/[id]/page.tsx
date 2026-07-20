@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminShell, Notice, StatusPill } from "../../_components";
-import { createCheckoutLinkAction, updateApplicationStatusAction } from "../../actions";
+import { updateApplicationStatusAction } from "../../actions";
 import { requireAdmin } from "@/lib/admin-auth";
 import {
   applicationStatusLabel,
@@ -109,20 +109,6 @@ export default async function ApplicationDetailPage({
               Save status
             </button>
           </form>
-
-          <form action={createCheckoutLinkAction} className="border border-line bg-paper p-5">
-            <input type="hidden" name="applicationId" value={application.id} />
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">
-              Stripe payment
-            </p>
-            <p className="mt-3 text-sm leading-6 text-ink-soft">
-              Creates a server-side Stripe Checkout Session for this applicant and stores the payment link on the
-              order.
-            </p>
-            <button className="mt-4 w-full min-h-12 bg-sun px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.22em] text-ink hover:bg-ink hover:text-paper">
-              Create payment link
-            </button>
-          </form>
         </aside>
       </section>
 
@@ -131,7 +117,7 @@ export default async function ApplicationDetailPage({
           <h2 className="font-poster text-4xl uppercase tracking-[0.08em]">Orders</h2>
         </div>
         {orders.length === 0 ? (
-          <p className="p-6 text-sm text-ink-soft">No payment link has been created for this applicant.</p>
+          <p className="p-6 text-sm text-ink-soft">No orders found for this applicant.</p>
         ) : (
           <div className="grid gap-px bg-line/70">
             {orders.map((order) => (

@@ -7,14 +7,7 @@ import {
   setAdminSession,
   validateAdminCredentials,
 } from "@/lib/admin-auth";
-import { createStripeCheckoutSession } from "@/lib/stripe";
-import {
-  createOrderForApplication,
-  getApplication,
-  recordAdminAuditLog,
-  updateApplicationStatus,
-  updateOrder,
-} from "@/lib/store";
+import { recordAdminAuditLog, updateApplicationStatus } from "@/lib/store";
 import type { ApplicationStatus } from "@/lib/types";
 
 const editableStatuses: ApplicationStatus[] = [
@@ -68,45 +61,4 @@ export async function updateApplicationStatusAction(formData: FormData) {
   });
 
   redirectWithMessage(`/admin/applications/${applicationId}`, "notice", "Application status updated.");
-}
-
-export async function createCheckoutLinkAction(formData: FormData) {
-  const session = await requireAdmin();
-  const applicationId = String(formData.get("applicationId") || "");
-  const application = await getApplication(applicationId);
-
-  if (!application) {
-    redirectWithMessage("/admin/applications", "error", "Application not found.");
-  }
-
-  try {
-    const order = await createOrderForApplication(application);
-    const checkoutSession = await createStripeCheckoutSession(application, order);
-
-    await updateOrder(order.id, {
-      amount: checkoutSession.amount_total || order.amount,
-      currency: checkoutSession.currency || order.currency,
-      status: "checkout_created",
-      checkoutUrl: checkoutSession.url,
-      stripeCheckoutSessionId: checkoutSession.id,
-      paymentLinkExpiresAt: checkoutSession.expires_at
-        ? new Date(checkoutSession.expires_at * 1000).toISOString()
-        : null,
-    });
-    await updateApplicationStatus(application.id, "payment_sent");
-    await recordAdminAuditLog({
-      adminEmail: session.email,
-      action: "order.checkout_created",
-      targetType: "application",
-      targetId: application.id,
-      metadata: {
-        orderId: order.id,
-        checkoutSessionId: checkoutSession.id,
-      },
-    });
-  } catch (error) {
-    redirectWithMessage(`/admin/applications/${applicationId}`, "error", (error as Error).message);
-  }
-
-  redirectWithMessage(`/admin/applications/${applicationId}`, "notice", "Stripe Checkout link created.");
 }
