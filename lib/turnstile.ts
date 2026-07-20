@@ -5,14 +5,31 @@ import { headers } from "next/headers";
 const developmentSiteKey = "1x00000000000000000000AA";
 const developmentSecretKey = "1x0000000000000000000000000000000AA";
 
+function getFirstConfiguredEnv(...names: string[]) {
+  for (const name of names) {
+    const value = process.env[name]?.trim();
+    if (value) return value;
+  }
+
+  return null;
+}
+
 export function getTurnstileSiteKey() {
-  return process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+  return getFirstConfiguredEnv(
+    "TURNSTILE_SITE_KEY",
+    "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+    "CLOUDFLARE_TURNSTILE_SITE_KEY",
+    "NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY",
+  ) ||
     (process.env.NODE_ENV !== "production" ? developmentSiteKey : null);
 }
 
 export async function verifyTurnstile(formData: FormData, expectedAction: string) {
   const token = String(formData.get("cf-turnstile-response") || "");
-  const secretKey = process.env.TURNSTILE_SECRET_KEY ||
+  const secretKey = getFirstConfiguredEnv(
+    "TURNSTILE_SECRET_KEY",
+    "CLOUDFLARE_TURNSTILE_SECRET_KEY",
+  ) ||
     (process.env.NODE_ENV !== "production" ? developmentSecretKey : null);
 
   if (!secretKey) {
