@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { logoutAction } from "@/app/auth/actions";
-import { restartCheckoutAction } from "./actions";
 import { requireUser } from "@/lib/auth";
 import {
   applicationStatusLabel,
@@ -83,7 +82,6 @@ export default async function AccountPage({
                   order.status === "checkout_created" &&
                   (!order.paymentLinkExpiresAt || new Date(order.paymentLinkExpiresAt) > new Date()),
                 );
-                const canRestart = !payment && !canResume && order.status !== "paid" && order.status !== "refunded";
 
                 return (
                   <article key={order.id} className="grid gap-6 bg-card p-5 sm:p-6 lg:grid-cols-[1fr_0.72fr_auto] lg:items-center">
@@ -115,13 +113,6 @@ export default async function AccountPage({
                         <a href={order.checkoutUrl || "#"} className="inline-flex min-h-11 items-center rounded-md bg-navy px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-marigold hover:text-ink">
                           Continue payment
                         </a>
-                      ) : canRestart ? (
-                        <form action={restartCheckoutAction}>
-                          <input type="hidden" name="orderId" value={order.id} />
-                          <button className="inline-flex min-h-11 items-center rounded-md bg-navy px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-marigold hover:text-ink">
-                            Restart checkout
-                          </button>
-                        </form>
                       ) : (
                         <span className="inline-flex border border-ink/20 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/55">{orderStatusLabel(order.status)}</span>
                       )}
@@ -173,7 +164,7 @@ function EmptyState() {
   return (
     <div className="border border-dashed border-ink/30 bg-card px-6 py-10">
       <p className="font-serif text-2xl font-semibold text-navy">No payment activity yet.</p>
-      <p className="mt-3 max-w-xl text-sm leading-7 text-ink-soft">Submit an application to choose your program and continue directly to Stripe Checkout.</p>
+      <p className="mt-3 max-w-xl text-sm leading-7 text-ink-soft">Payment links appear here after your application has been reviewed and approved.</p>
       <Link href="/apply" className="mt-6 inline-flex rounded-md bg-navy px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory">Start application</Link>
     </div>
   );

@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { createStripeCheckoutSession } from "@/lib/stripe";
 import { ticketOptions } from "@/lib/tickets";
-import { createApplication, createOrderForApplication, updateApplicationStatus, updateOrder } from "@/lib/store";
+import { createApplication } from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { ApplicantType, Order, TicketId } from "@/lib/types";
+import type { ApplicantType, TicketId } from "@/lib/types";
 
 const applicantTypes: ApplicantType[] = ["founder", "investor", "institution", "partner", "other"];
 
@@ -51,8 +50,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please select a valid program option." }, { status: 400 });
   }
 
-  let order: Order | null = null;
-
   try {
     const application = await createApplication({
       userId: user.id,
@@ -66,37 +63,15 @@ export async function POST(request: Request) {
       selectedTicket,
       message,
     });
-    order = await createOrderForApplication(application);
-    const checkoutSession = await createStripeCheckoutSession(application, order);
-
-    if (!checkoutSession.url) {
-      throw new Error("Stripe did not return a checkout URL.");
-    }
-
-    await updateOrder(order.id, {
-      amount: checkoutSession.amount_total || order.amount,
-      currency: checkoutSession.currency || order.currency,
-      status: "checkout_created",
-      checkoutUrl: checkoutSession.url,
-      stripeCheckoutSessionId: checkoutSession.id,
-      paymentLinkExpiresAt: checkoutSession.expires_at
-        ? new Date(checkoutSession.expires_at * 1000).toISOString()
-        : null,
-    });
-    await updateApplicationStatus(application.id, "payment_sent");
 
     return NextResponse.json(
-      { applicationId: application.id, orderId: order.id, checkoutUrl: checkoutSession.url },
+      { applicationId: application.id, status: application.status },
       { status: 201 },
     );
   } catch (error) {
-    if (order) {
-      await updateOrder(order.id, { status: "payment_failed" }).catch(() => undefined);
-    }
-
-    console.error("Unable to create application checkout", error);
+    console.error("Unable to create application", error);
     return NextResponse.json(
-      { error: "We could not start secure checkout. Your application was saved; please try again from your account." },
+      { error: "We could not submit your application. Please try again." },
       { status: 500 },
     );
   }

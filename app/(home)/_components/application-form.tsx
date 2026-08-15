@@ -32,7 +32,7 @@ export function ApplicationForm({ email, defaultTicket = "single_week_pass" }: {
       },
       body: JSON.stringify(payload),
     });
-    const result = (await response.json()) as { error?: string; checkoutUrl?: string };
+    const result = (await response.json()) as { error?: string; applicationId?: string };
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -45,15 +45,8 @@ export function ApplicationForm({ email, defaultTicket = "single_week_pass" }: {
       return;
     }
 
-    if (!result.checkoutUrl) {
-      setStatus("error");
-      setMessage("Application saved, but checkout could not be opened. Visit your account to continue.");
-      return;
-    }
-
     setStatus("success");
-    setMessage("Application saved. Opening secure Stripe Checkout...");
-    window.location.assign(result.checkoutUrl);
+    setMessage("Application submitted for review. Your payment link will appear in your account after approval.");
   }
 
   return (
@@ -122,10 +115,10 @@ export function ApplicationForm({ email, defaultTicket = "single_week_pass" }: {
 
       <button
         type="submit"
-        disabled={status === "submitting"}
+        disabled={status === "submitting" || status === "success"}
         className="mt-2 inline-flex min-h-12 items-center justify-center rounded-md bg-navy px-6 py-4 font-mono text-xs font-semibold uppercase tracking-[0.24em] text-ivory transition hover:bg-marigold hover:text-ink focus:outline-none focus:ring-4 focus:ring-marigold/40 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {status === "submitting" ? "Preparing checkout" : "Apply and continue to payment"}
+        {status === "submitting" ? "Submitting application" : status === "success" ? "Application submitted" : "Submit for review"}
       </button>
 
       {message ? (

@@ -7,18 +7,29 @@ import {
   setAdminSession,
   validateAdminCredentials,
 } from "@/lib/admin-auth";
-import { recordAdminAuditLog, updateApplicationStatus } from "@/lib/store";
+import { createStripeCheckoutSession } from "@/lib/stripe";
+import {
+  createOrderForApplication,
+  getApplication,
+  getOrdersForApplication,
+  recordAdminAuditLog,
+  updateApplicationStatus,
+  updateOrder,
+} from "@/lib/store";
 import type { ApplicationStatus } from "@/lib/types";
 
 const editableStatuses: ApplicationStatus[] = [
   "pending_review",
-  "approved",
   "rejected",
   "more_info_required",
-  "payment_sent",
-  "paid",
-  "confirmed",
   "canceled",
+];
+
+const approvableStatuses: ApplicationStatus[] = [
+  "pending_review",
+  "more_info_required",
+  "approved",
+  "payment_sent",
 ];
 
 function redirectWithMessage(path: string, key: "notice" | "error", message: string): never {
@@ -51,14 +62,127 @@ export async function updateApplicationStatusAction(formData: FormData) {
     redirectWithMessage("/admin/applications", "error", "Invalid status update.");
   }
 
+  const application = await getApplication(applicationId);
+
+  if (!application || !editableStatuses.includes(application.status)) {
+    redirectWithMessage(
+      application ? `/admin/applications/${applicationId}` : "/admin/applications",
+      "error",
+      "The review status can no longer be changed for this application.",
+    );
+  }
+
   await updateApplicationStatus(applicationId, status);
   await recordAdminAuditLog({
     adminEmail: session.email,
     action: "application.status_updated",
     targetType: "application",
     targetId: applicationId,
-    metadata: { status },
+    metadata: { previousStatus: application.status, status },
   });
 
   redirectWithMessage(`/admin/applications/${applicationId}`, "notice", "Application status updated.");
+}
+
+export async function approveApplicationAction(formData: FormData) {
+  const session = await requireAdmin();
+  const applicationId = String(formData.get("applicationId") || "");
+  const application = applicationId ? await getApplication(applicationId) : null;
+
+  if (!application || !approvableStatuses.includes(application.status)) {
+    redirectWithMessage(
+      applicationId ? `/admin/applications/${applicationId}` : "/admin/applications",
+      "error",
+      "This application cannot be approved for payment.",
+    );
+  }
+
+  const orders = await getOrdersForApplication(application.id);
+  const paidOrder = orders.find((order) => order.status === "paid" || order.status === "refunded");
+
+  if (paidOrder) {
+    redirectWithMessage(
+      `/admin/applications/${application.id}`,
+      "error",
+      "This application already has a completed payment.",
+    );
+  }
+
+  const activeOrder = orders.find(
+    (order) =>
+      order.status === "checkout_created" &&
+      order.checkoutUrl &&
+      (!order.paymentLinkExpiresAt || new Date(order.paymentLinkExpiresAt) > new Date()),
+  );
+
+  if (activeOrder) {
+    if (application.status !== "payment_sent") {
+      await updateApplicationStatus(application.id, "payment_sent");
+    }
+    redirectWithMessage(
+      `/admin/applications/${application.id}`,
+      "notice",
+      "An active payment link already exists.",
+    );
+  }
+
+  let order = orders.find((item) => item.status !== "paid" && item.status !== "refunded") || null;
+
+  if (application.status !== "approved" && application.status !== "payment_sent") {
+    await updateApplicationStatus(application.id, "approved");
+    await recordAdminAuditLog({
+      adminEmail: session.email,
+      action: "application.approved",
+      targetType: "application",
+      targetId: application.id,
+      metadata: { previousStatus: application.status },
+    });
+  }
+
+  try {
+    if (!order) {
+      order = await createOrderForApplication(application);
+    }
+
+    const checkoutSession = await createStripeCheckoutSession(application, order);
+
+    if (!checkoutSession.url) {
+      throw new Error("Stripe did not return a checkout URL.");
+    }
+
+    await updateOrder(order.id, {
+      amount: checkoutSession.amount_total || order.amount,
+      currency: checkoutSession.currency || order.currency,
+      status: "checkout_created",
+      checkoutUrl: checkoutSession.url,
+      stripeCheckoutSessionId: checkoutSession.id,
+      paymentLinkExpiresAt: checkoutSession.expires_at
+        ? new Date(checkoutSession.expires_at * 1000).toISOString()
+        : null,
+    });
+    await updateApplicationStatus(application.id, "payment_sent");
+    await recordAdminAuditLog({
+      adminEmail: session.email,
+      action: "application.payment_link_created",
+      targetType: "application",
+      targetId: application.id,
+      metadata: { orderId: order.id, stripeCheckoutSessionId: checkoutSession.id },
+    });
+  } catch (error) {
+    if (order) {
+      await updateOrder(order.id, { status: "payment_failed" }).catch(() => undefined);
+    }
+    console.error("Unable to create approved application checkout", error);
+    redirectWithMessage(
+      `/admin/applications/${application.id}`,
+      "error",
+      "The application was approved, but Stripe could not create a payment link. Please try again.",
+    );
+  }
+
+  redirectWithMessage(
+    `/admin/applications/${application.id}`,
+    "notice",
+    "Application approved and payment link created.",
+  );
 }

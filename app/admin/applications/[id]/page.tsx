@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminShell, Notice, StatusPill } from "../../_components";
-import { updateApplicationStatusAction } from "../../actions";
+import { approveApplicationAction, updateApplicationStatusAction } from "../../actions";
 import { requireAdmin } from "@/lib/admin-auth";
 import {
   applicationStatusLabel,
@@ -15,12 +15,8 @@ import type { ApplicationStatus } from "@/lib/types";
 
 const statuses: ApplicationStatus[] = [
   "pending_review",
-  "approved",
   "more_info_required",
   "rejected",
-  "payment_sent",
-  "paid",
-  "confirmed",
   "canceled",
 ];
 
@@ -41,6 +37,20 @@ export default async function ApplicationDetailPage({
   }
 
   const orders = await getOrdersForApplication(application.id);
+  const hasCompletedOrder = orders.some((order) => order.status === "paid" || order.status === "refunded");
+  const activeOrder = orders.find(
+    (order) =>
+      order.status === "checkout_created" &&
+      order.checkoutUrl &&
+      (!order.paymentLinkExpiresAt || new Date(order.paymentLinkExpiresAt) > new Date()),
+  );
+  const canApprove =
+    !hasCompletedOrder &&
+    !activeOrder &&
+    (["pending_review", "more_info_required", "approved", "payment_sent"] as ApplicationStatus[]).includes(
+      application.status,
+    );
+  const canChangeReviewStatus = statuses.includes(application.status);
 
   return (
     <AdminShell title="Applicant">
@@ -87,28 +97,50 @@ export default async function ApplicationDetailPage({
         </article>
 
         <aside className="grid content-start gap-6">
-          <form action={updateApplicationStatusAction} className="border border-line bg-paper p-5">
-            <input type="hidden" name="applicationId" value={application.id} />
-            <label className="grid gap-2">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">
-                Review status
-              </span>
-              <select
-                name="status"
-                defaultValue={application.status}
-                className="min-h-12 border border-line bg-cloud px-4 text-sm outline-none focus:border-ink focus:ring-4 focus:ring-sun/25"
-              >
-                {statuses.map((status) => (
-                  <option key={status} value={status}>
-                    {applicationStatusLabel(status)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button className="mt-4 w-full min-h-12 bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.22em] text-paper hover:bg-sun hover:text-ink">
-              Save status
-            </button>
-          </form>
+          {canApprove ? (
+            <form action={approveApplicationAction} className="border border-ink bg-sun p-5 text-ink">
+              <input type="hidden" name="applicationId" value={application.id} />
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">Payment access</p>
+              <p className="mt-3 text-sm leading-6">
+                Approval creates a Stripe Checkout link for the selected ticket and makes it available in the applicant&apos;s account.
+              </p>
+              <button className="mt-5 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-paper hover:bg-paper hover:text-ink">
+                {application.status === "approved" || application.status === "payment_sent"
+                  ? "Generate new payment link"
+                  : "Approve and create payment link"}
+              </button>
+            </form>
+          ) : activeOrder ? (
+            <div className="border border-line bg-paper p-5">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">Payment access</p>
+              <p className="mt-3 text-sm leading-6">An active payment link is available to the applicant.</p>
+            </div>
+          ) : null}
+
+          {canChangeReviewStatus ? (
+            <form action={updateApplicationStatusAction} className="border border-line bg-paper p-5">
+              <input type="hidden" name="applicationId" value={application.id} />
+              <label className="grid gap-2">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">
+                  Review status
+                </span>
+                <select
+                  name="status"
+                  defaultValue={application.status}
+                  className="min-h-12 border border-line bg-cloud px-4 text-sm outline-none focus:border-ink focus:ring-4 focus:ring-sun/25"
+                >
+                  {statuses.map((status) => (
+                    <option key={status} value={status}>
+                      {applicationStatusLabel(status)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button className="mt-4 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.22em] text-paper hover:bg-sun hover:text-ink">
+                Save review status
+              </button>
+            </form>
+          ) : null}
         </aside>
       </section>
 

@@ -36,8 +36,8 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
             </h1>
             <span className="title-rule" />
             <p className="mt-8 max-w-xl text-sm leading-8 text-ink/72">
-              Tell us who you are, choose the pass that fits your schedule, then continue directly to secure Stripe Checkout.
-              Your application and payment will stay linked to your account.
+              Tell us who you are and choose the pass that fits your schedule. Our team will review your application
+              before a secure Stripe payment link is added to your account.
             </p>
 
             <div className="torn-soft shadow-ink mt-10 bg-marigold p-7 text-ink">
