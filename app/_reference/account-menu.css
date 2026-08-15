@@ -1,0 +1,289 @@
+.arch-reference .nav-links {
+  align-items: center;
+}
+
+.arch-reference .reference-header {
+  z-index: 90;
+}
+
+.arch-reference nav.top {
+  z-index: 1;
+}
+
+.arch-reference .desktop-auth {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: -0.35rem;
+}
+
+.arch-reference .signin-link {
+  display: inline-flex;
+  min-height: 2.35rem;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid rgba(27, 58, 107, 0.18);
+  border-radius: 999px;
+  background: #fffdf7;
+  padding: 0.55rem 0.8rem 0.55rem 1rem;
+  color: var(--navy);
+  box-shadow: 2px 2px 0 var(--harbor-soft);
+  opacity: 1 !important;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.arch-reference .signin-link:hover,
+.arch-reference .signin-link:focus-visible {
+  border-color: var(--marigold);
+  box-shadow: 3px 3px 0 var(--marigold-soft);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.arch-reference .signin-arrow {
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--marigold);
+  color: var(--navy);
+  font-size: 0.65rem;
+}
+
+.arch-reference .account-menu {
+  position: relative;
+  color: var(--navy);
+  font-family: "IBM Plex Mono", monospace;
+  text-transform: none;
+}
+
+.arch-reference .account-trigger {
+  display: flex;
+  min-width: 10.5rem;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid rgba(27, 58, 107, 0.17);
+  border-radius: 999px;
+  background: var(--paper);
+  padding: 0.42rem 0.7rem 0.42rem 0.85rem;
+  box-shadow: 2px 2px 0 var(--harbor-soft);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  list-style: none;
+  text-align: left;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.arch-reference .account-trigger:hover,
+.arch-reference .account-trigger:focus-visible,
+.arch-reference .account-menu.is-open .account-trigger {
+  border-color: var(--marigold);
+  box-shadow: 3px 3px 0 var(--marigold-soft);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.arch-reference .account-copy,
+.arch-reference .account-identity-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.arch-reference .account-state {
+  color: var(--harbor);
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.arch-reference .account-name {
+  max-width: 7.5rem;
+  overflow: hidden;
+  color: var(--navy);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arch-reference .account-chevron {
+  margin-left: auto;
+  color: var(--harbor);
+  font-size: 0.65rem;
+  transition: transform 180ms ease;
+}
+
+.arch-reference .account-menu.is-open .account-chevron {
+  transform: rotate(180deg);
+}
+
+.arch-reference .account-popover {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  right: 0;
+  z-index: 80;
+  width: min(18rem, calc(100vw - 2rem));
+  overflow: hidden;
+  border: 1px solid rgba(27, 58, 107, 0.16);
+  border-radius: 1.2rem;
+  background: #fffdf7;
+  box-shadow:
+    0 18px 42px -22px rgba(27, 58, 107, 0.55),
+    4px 4px 0 var(--harbor-soft);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-0.4rem);
+  visibility: hidden;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    visibility 160ms ease;
+}
+
+.arch-reference .account-menu:hover .account-popover,
+.arch-reference .account-menu:focus-within .account-popover,
+.arch-reference .account-menu.is-open .account-popover {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.arch-reference .account-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem;
+  background: var(--marigold-wash);
+}
+
+.arch-reference .account-identity-copy strong {
+  overflow: hidden;
+  color: var(--navy);
+  font-family: Fraunces, serif;
+  font-size: 1rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arch-reference .account-identity-copy span {
+  margin-top: 0.15rem;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+.arch-reference .account-actions {
+  display: grid;
+  background: #fffdf7;
+  padding: 0.45rem;
+}
+
+.arch-reference .account-action {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-radius: 0.75rem;
+  background: transparent;
+  padding: 0.7rem 0.75rem;
+  color: var(--navy);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  opacity: 1 !important;
+  text-transform: uppercase;
+  transition:
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.arch-reference .account-action:hover,
+.arch-reference .account-action:focus-visible {
+  background: var(--harbor-wash);
+  outline: none;
+}
+
+.arch-reference .account-signout {
+  cursor: pointer;
+  text-align: left;
+}
+
+.arch-reference .account-signout:hover,
+.arch-reference .account-signout:focus-visible {
+  background: var(--navy);
+  color: var(--ivory);
+}
+
+@media (max-width: 1099px) and (min-width: 800px) {
+  .arch-reference .account-trigger {
+    min-width: 0;
+  }
+
+  .arch-reference .desktop-auth .account-state {
+    display: none;
+  }
+
+  .arch-reference .desktop-auth .account-name {
+    max-width: 5rem;
+  }
+}
+
+@media (max-width: 799px) {
+  .arch-reference .mobile-auth {
+    position: relative;
+    display: flex;
+    margin-left: auto;
+    color: var(--navy);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .arch-reference .mobile-auth .account-trigger {
+    min-width: 0;
+    max-width: 9.5rem;
+  }
+
+  .arch-reference .mobile-auth .account-state {
+    display: none;
+  }
+
+  .arch-reference .mobile-auth .account-name {
+    max-width: 5.5rem;
+  }
+
+  .arch-reference .account-popover {
+    position: fixed;
+    top: 4.5rem;
+    right: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arch-reference .signin-link,
+  .arch-reference .account-trigger,
+  .arch-reference .account-chevron,
+  .arch-reference .account-popover {
+    transition: none;
+  }
+}

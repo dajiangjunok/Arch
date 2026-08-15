@@ -1,0 +1,68 @@
+.arch-reference .logo-slot {
+  position: relative;
+  overflow: hidden;
+}
+
+.arch-reference .btn-dossier {
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.arch-reference .timeline-anchor {
+  position: absolute;
+  top: 0;
+}
+
+.arch-reference .section-intro {
+  position: relative;
+  z-index: 2;
+  max-width: 58ch;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.arch-reference .company-note {
+  position: relative;
+  z-index: 2;
+  margin-top: 1.25rem;
+  color: #faf6ea8c;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.arch-reference .thesis-blob {
+  top: -4rem;
+  left: 50%;
+  width: 26rem;
+  height: 26rem;
+  background: radial-gradient(circle, var(--marigold-soft) 0%, transparent 70%);
+  opacity: 0.4;
+  transform: translateX(-50%);
+}
+
+.arch-reference .thesis-eyebrow {
+  justify-content: center;
+}
+
+.arch-reference .thesis-title {
+  margin-top: 1rem;
+}
+
+.arch-reference .pricing-note {
+  position: relative;
+  z-index: 2;
+  max-width: 70ch;
+  margin-top: 2rem;
+  color: var(--muted);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  line-height: 1.7;
+  text-transform: uppercase;
+}
+
+.arch-reference .foot-links[data-secondary="true"] {
+  margin-top: 1.25rem;
+  padding-top: 0;
+  border-top: 0;
+}
