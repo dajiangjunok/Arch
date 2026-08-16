@@ -18,11 +18,13 @@ import {
   programStats,
   programWeeks,
 } from "./data/home-page";
+import { PropellerHero } from "./components/propeller-hero";
 
 export function HomePage() {
   return (
     <>
-      <section id="top" className="hero wrap">
+      <PropellerHero />
+      <section id="detail-hero" className="hero wrap">
         <div className="hero-grid" style={{ gridTemplateColumns: "1fr" }}>
           <HeroSurface
             background={
@@ -39,11 +41,9 @@ export function HomePage() {
               A Three-Week China Innovation Immersion · Nov 1–21
             </p>
             <h1 className="hero-h1">
-              The bridge where
+              A bridge is worth
               <br />
-              the world crosses
-              <br />
-              <em>into China.</em>
+              what <em>crosses</em> it.
             </h1>
             <div className="hero-meta">
               <span className="meta-pill">Shanghai + Beijing + Shenzhen</span>

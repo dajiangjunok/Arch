@@ -15,6 +15,32 @@
   --marigold-wash:#f8e6b8;
   --harbor-wash:#dce9ea;
 }
+
+/* The homepage's opening travel poster. Kept separate from the reusable week hero. */
+.arch-reference.arch-home .ph-hero{position:relative;min-height:100svh;max-width:1440px;margin:0 auto;padding:2.5rem clamp(24px,5vw,80px) 7.5rem;overflow:hidden;background:var(--ivory);}
+.arch-reference.arch-home .ph-hero-illo{pointer-events:none;position:absolute;right:-2.5rem;bottom:-2rem;top:auto;z-index:0;width:78%;max-width:860px;opacity:.5;}
+@media (min-width:640px){.arch-reference.arch-home .ph-hero-illo{top:64px;bottom:auto;right:-40px;width:64%;opacity:1;}}
+.arch-reference.arch-home .ph-hero-illo-inner{transform:rotate(1deg);}
+.arch-reference.arch-home .ph-hero-illo svg{display:block;width:100%;height:auto;}
+.arch-reference.arch-home .ph-px-sun,.arch-reference.arch-home .ph-px-bridge{will-change:transform;}
+.arch-reference.arch-home .ph-flight{stroke-dasharray:700;stroke-dashoffset:700;}
+.arch-reference.arch-home [data-ph-hero] .ph-flight{animation:ph-drawline 1.6s ease forwards;}
+.arch-reference.arch-home [data-ph-hero] .ph-flight:nth-child(1){animation-delay:.1s}.arch-reference.arch-home [data-ph-hero] .ph-flight:nth-child(2){animation-delay:.22s}.arch-reference.arch-home [data-ph-hero] .ph-flight:nth-child(3){animation-delay:.34s}.arch-reference.arch-home [data-ph-hero] .ph-flight:nth-child(4){animation-delay:.46s}.arch-reference.arch-home [data-ph-hero] .ph-flight:nth-child(5){animation-delay:.58s}.arch-reference.arch-home [data-ph-hero] .ph-flight:nth-child(6){animation-delay:.7s}.arch-reference.arch-home [data-ph-hero] .ph-flight:nth-child(7){animation-delay:.82s}.arch-reference.arch-home [data-ph-hero] .ph-flight:nth-child(8){animation-delay:.94s}
+@keyframes ph-drawline{to{stroke-dashoffset:0;}}
+@media (prefers-reduced-motion:reduce){.arch-reference.arch-home .ph-flight{stroke-dashoffset:0;animation:none;}}
+.arch-reference.arch-home .ph-wordmark{position:relative;z-index:20;margin-top:3rem;display:flex;align-items:center;gap:1.1rem;}
+.arch-reference.arch-home .ph-wordmark-icon{width:3.1rem;height:3.5rem;flex:none;}.arch-reference.arch-home .ph-wordmark-icon img{width:100%;height:100%;object-fit:contain;}
+.arch-reference.arch-home .ph-wordmark-divider{width:1px;align-self:stretch;background:#22201826;}
+.arch-reference.arch-home .ph-wordmark h1{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:1.6rem;letter-spacing:.28em;color:var(--navy);}
+.arch-reference.arch-home .ph-wordmark-rule{display:block;width:2.75rem;height:2px;background:var(--marigold);margin:.5rem 0;}.arch-reference.arch-home .ph-wordmark p{font-family:Fraunces,serif;font-style:italic;font-size:.95rem;color:var(--ink);}
+.arch-reference.arch-home .ph-hero-headline{position:relative;z-index:20;margin-top:clamp(48px,7vh,80px);max-width:18ch;font-family:Fraunces,serif;font-weight:600;font-size:clamp(2.6rem,5.4vw,4.2rem);line-height:1.05;letter-spacing:-.01em;color:var(--navy);}
+.arch-reference.arch-home .ph-hero-headline em{font-style:italic;color:var(--marigold);}
+.arch-reference.arch-home .ph-hero-label{position:relative;z-index:20;margin-top:2.5rem;}.arch-reference.arch-home .ph-hero-label p{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink);}.arch-reference.arch-home .ph-hero-label span{display:block;height:3px;width:96px;background:var(--marigold);margin-top:.5rem;}
+.arch-reference.arch-home .ph-hero-cta{position:relative;z-index:20;margin-top:3rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:center;}
+.arch-reference.arch-home .ph-btn-navy{display:inline-block;background:var(--navy);color:var(--ivory);padding:16px 36px;border-radius:6px;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.24em;text-transform:uppercase;transition:box-shadow .15s ease,transform .15s ease;}.arch-reference.arch-home .ph-btn-navy:hover{box-shadow:8px 8px 0 0 var(--marigold);transform:translate(-2px,-2px);}
+.arch-reference.arch-home .ph-btn-line{display:inline-block;padding:16px 4px;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--navy);border-bottom:1px solid var(--navy);opacity:.7;transition:opacity .15s;}.arch-reference.arch-home .ph-btn-line:hover{opacity:1;}
+.arch-reference.arch-home .ph-hero-bottom{position:absolute;left:clamp(24px,5vw,80px);right:clamp(24px,5vw,80px);bottom:2.25rem;z-index:20;display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);}.arch-reference.arch-home .ph-hero-bottom .ph-slash{color:#22201866;}.arch-reference.arch-home .ph-hero-bottom .ph-exno{color:#22201866;letter-spacing:.28em;}
+@media (max-width:640px){.arch-reference.arch-home .ph-hero{padding-top:1.5rem;min-height:760px;}.arch-reference.arch-home .ph-wordmark{margin-top:2.5rem;}.arch-reference.arch-home .ph-hero-headline{margin-top:3.5rem;}.arch-reference.arch-home .ph-hero-bottom{bottom:1.25rem;}}
 .arch-reference.arch-home *{box-sizing:border-box}
 .arch-reference.arch-home{scroll-behavior:smooth}
 .arch-reference.arch-home{
@@ -53,6 +79,9 @@
 .arch-reference.arch-home .nav-links a{opacity:.55;transition:opacity .15s}
 .arch-reference.arch-home .nav-links a.active{opacity:1;border-bottom:1px solid var(--marigold);}
 .arch-reference.arch-home .nav-links a:hover{opacity:1}
+.arch-reference.arch-home .home-location{color:#22201899;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;font-weight:400;letter-spacing:.35em;line-height:1.4;text-transform:uppercase;white-space:nowrap;}
+@media (max-width:520px){.arch-reference.arch-home .home-location{max-width:12rem;font-size:9px;letter-spacing:.22em;white-space:normal;}}
+.arch-reference.arch-home .reference-header{max-width:1440px;padding-left:clamp(24px,5vw,80px);padding-right:clamp(24px,5vw,80px);}
 
 .arch-reference.arch-home .tick-corner{position:relative;}
 .arch-reference.arch-home .tick-corner::before,.arch-reference.arch-home .tick-corner::after{content:"";position:absolute;width:14px;height:14px;opacity:.35;}

@@ -39,17 +39,21 @@ export async function ReferenceHeader({ page }: { page: ReferencePageId }) {
   return (
     <div className="wrap reference-header">
       <nav className="top" aria-label="Main navigation">
-        <Link className="brand" href="/">
-          <Image
-            src="/logo.png"
-            alt=""
-            width={28}
-            height={34}
-            className="brand-mark"
-            priority
-          />
-          The Arch.
-        </Link>
+        {page === "home" ? (
+          <span className="home-location">Fuxing Island · Shanghai</span>
+        ) : (
+          <Link className="brand" href="/">
+            <Image
+              src="/logo.png"
+              alt=""
+              width={28}
+              height={34}
+              className="brand-mark"
+              priority
+            />
+            The Arch.
+          </Link>
+        )}
         <div className="nav-links">
           {links.map((link) => (
             <Link
