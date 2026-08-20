@@ -45,12 +45,18 @@ export async function createStripeCheckoutSession(application: Application, orde
       orderId: order.id,
       selectedTicket: order.selectedTicket,
       userId: application.userId || "",
+      referralId: application.referralId || "",
+      referralCode: application.referralCode || "",
+      distributorId: application.distributorId || "",
     },
     payment_intent_data: {
       metadata: {
         applicationId: application.id,
         orderId: order.id,
         userId: application.userId || "",
+        referralId: application.referralId || "",
+        referralCode: application.referralCode || "",
+        distributorId: application.distributorId || "",
       },
     },
     line_items: [

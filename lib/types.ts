@@ -21,6 +21,11 @@ export type OrderStatus =
 
 export type PaymentStatus = "processing" | "succeeded" | "failed" | "refunded";
 
+export type DistributorStatus = "active" | "inactive";
+export type ReferralCodeType = "referral" | "admission";
+export type ReferralCodeStatus = "active" | "inactive";
+export type CommissionStatus = "pending" | "approved" | "paid" | "reversed";
+
 export type TicketId = "single_week_pass" | "multi_week_pass" | "full_residency";
 
 export type Application = {
@@ -36,6 +41,9 @@ export type Application = {
   selectedTicket: TicketId;
   message: string;
   status: ApplicationStatus;
+  referralId: string | null;
+  referralCode: string | null;
+  distributorId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -53,6 +61,9 @@ export type Order = {
   stripePaymentIntentId: string | null;
   stripeCustomerId: string | null;
   paymentLinkExpiresAt: string | null;
+  referralId: string | null;
+  referralCode: string | null;
+  distributorId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -88,10 +99,70 @@ export type AdminAuditLog = {
   createdAt: string;
 };
 
+export type Distributor = {
+  id: string;
+  userId: string | null;
+  name: string;
+  email: string | null;
+  status: DistributorStatus;
+  parentDistributorId: string | null;
+  commissionRate: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ReferralCode = {
+  id: string;
+  code: string;
+  distributorId: string;
+  codeType: ReferralCodeType;
+  autoApprove: boolean;
+  stripePromotionCodeId: string | null;
+  maxUses: number | null;
+  usedCount: number;
+  expiresAt: string | null;
+  status: ReferralCodeStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Referral = {
+  id: string;
+  codeId: string;
+  distributorId: string;
+  userId: string | null;
+  applicationId: string;
+  codeSnapshot: string;
+  attributionMethod: string;
+  createdAt: string;
+  lockedAt: string;
+};
+
+export type Commission = {
+  id: string;
+  orderId: string;
+  referralId: string;
+  beneficiaryDistributorId: string;
+  level: number;
+  rate: number;
+  basisAmount: number;
+  commissionAmount: number;
+  currency: string;
+  status: CommissionStatus;
+  paidAt: string | null;
+  reversedAt: string | null;
+  reversalReason: string | null;
+  createdAt: string;
+};
+
 export type AppData = {
   applications: Application[];
   orders: Order[];
   payments: Payment[];
   stripeEvents: StripeEventRecord[];
   adminAuditLogs: AdminAuditLog[];
+  distributors: Distributor[];
+  referralCodes: ReferralCode[];
+  referrals: Referral[];
+  commissions: Commission[];
 };

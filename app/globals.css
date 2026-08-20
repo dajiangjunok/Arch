@@ -111,6 +111,22 @@ textarea {
     box-shadow: 6px 6px 0 0 var(--ink);
   }
 
+  .label {
+    @apply font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-soft;
+  }
+
+  .field {
+    @apply min-h-11 w-full border border-line bg-ivory px-3 py-2 text-sm text-ink outline-none transition focus:border-ink focus:ring-4 focus:ring-sun/25;
+  }
+
+  .button-primary {
+    @apply inline-flex min-h-11 items-center justify-center border border-ink bg-ink px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-paper transition hover:bg-sun hover:text-ink focus:outline-none focus:ring-4 focus:ring-sun/30;
+  }
+
+  .muted {
+    @apply text-sm leading-6 text-ink-soft;
+  }
+
   .torn-soft {
     clip-path: polygon(
       0% 2%,

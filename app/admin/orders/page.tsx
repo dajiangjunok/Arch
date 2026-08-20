@@ -28,6 +28,7 @@ export default async function OrdersPage() {
                   <th className="px-4 py-4">Program</th>
                   <th className="px-4 py-4">Amount</th>
                   <th className="px-4 py-4">Status</th>
+                  <th className="px-4 py-4">Referral</th>
                   <th className="px-4 py-4">Session</th>
                   <th className="px-4 py-4">Created</th>
                 </tr>
@@ -50,6 +51,7 @@ export default async function OrdersPage() {
                     <td className="px-4 py-4">{ticketLabel(order.selectedTicket)}</td>
                     <td className="px-4 py-4">{formatMoney(order.amount, order.currency)}</td>
                     <td className="px-4 py-4">{orderStatusLabel(order.status)}</td>
+                    <td className="px-4 py-4 font-mono text-xs text-ink-soft">{order.referralCode || "-"}</td>
                     <td className="px-4 py-4 break-all font-mono text-xs text-ink-soft">
                       {order.stripeCheckoutSessionId || "-"}
                     </td>

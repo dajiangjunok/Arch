@@ -4,6 +4,7 @@ import { getStripe } from "@/lib/stripe";
 import {
   hasProcessedStripeEvent,
   markOrderPaid,
+  markOrderRefundedByPaymentIntent,
   markOrderStatusBySession,
   recordStripeEvent,
 } from "@/lib/store";
@@ -66,6 +67,14 @@ export async function POST(request: Request) {
     case "checkout.session.async_payment_failed": {
       const session = event.data.object as Stripe.Checkout.Session;
       await markOrderStatusBySession(session.id, "payment_failed");
+      break;
+    }
+    case "charge.refunded": {
+      const charge = event.data.object as Stripe.Charge;
+      const paymentIntentId = getStringId(charge.payment_intent);
+      if (paymentIntentId) {
+        await markOrderRefundedByPaymentIntent(paymentIntentId);
+      }
       break;
     }
     default:

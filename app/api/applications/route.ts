@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server";
 import { ticketOptions } from "@/lib/tickets";
-import { createApplication } from "@/lib/store";
+import {
+  attachReferralToApplication,
+  createApplication,
+  createOrderForApplication,
+  deleteApplication,
+  getApplication,
+  updateApplicationStatus,
+  updateOrder,
+} from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { ApplicantType, TicketId } from "@/lib/types";
+import { cookies } from "next/headers";
+import { createStripeCheckoutSession } from "@/lib/stripe";
 
 const applicantTypes: ApplicantType[] = ["founder", "investor", "institution", "partner", "other"];
 
@@ -34,6 +44,10 @@ export async function POST(request: Request) {
   const country = readString(body.country);
   const city = readString(body.city);
   const message = readString(body.message);
+  const cookieStore = await cookies();
+  const cookieReferralCode = cookieStore.get("arch_referral_code")?.value || "";
+  const hasSubmittedReferralCode = Object.prototype.hasOwnProperty.call(body, "referralCode");
+  const referralCode = hasSubmittedReferralCode ? readString(body.referralCode) : cookieReferralCode;
   const applicantType = readString(body.applicantType) as ApplicantType;
   const selectedTicket = readString(body.selectedTicket) as TicketId;
   const validTicketIds = ticketOptions.map((ticket) => ticket.id);
@@ -64,10 +78,58 @@ export async function POST(request: Request) {
       message,
     });
 
-    return NextResponse.json(
+    const referral = referralCode
+      ? await attachReferralToApplication({
+          applicationId: application.id,
+          userId: user.id,
+          code: referralCode,
+        })
+      : null;
+
+    if (referralCode && !referral) {
+      await deleteApplication(application.id);
+      return NextResponse.json({ error: "This invite code is invalid or expired." }, { status: 400 });
+    }
+
+    if (referral?.autoApprove) {
+      const approvedApplication = await getApplication(application.id);
+      if (!approvedApplication) throw new Error("Application could not be reloaded.");
+
+      const order = await createOrderForApplication(approvedApplication);
+      try {
+        const checkoutSession = await createStripeCheckoutSession(approvedApplication, order);
+        if (!checkoutSession.url) throw new Error("Stripe did not return a checkout URL.");
+
+        await updateOrder(order.id, {
+          amount: checkoutSession.amount_total || order.amount,
+          currency: checkoutSession.currency || order.currency,
+          status: "checkout_created",
+          checkoutUrl: checkoutSession.url,
+          stripeCheckoutSessionId: checkoutSession.id,
+          paymentLinkExpiresAt: checkoutSession.expires_at
+            ? new Date(checkoutSession.expires_at * 1000).toISOString()
+            : null,
+        });
+        await updateApplicationStatus(approvedApplication.id, "payment_sent");
+
+        const response = NextResponse.json(
+          { applicationId: approvedApplication.id, status: "payment_sent", checkoutUrl: checkoutSession.url },
+          { status: 201 },
+        );
+        response.cookies.delete("arch_referral_code");
+        return response;
+      } catch (error) {
+        await updateOrder(order.id, { status: "payment_failed" }).catch(() => undefined);
+        throw error;
+      }
+    }
+
+    const response = NextResponse.json(
       { applicationId: application.id, status: application.status },
       { status: 201 },
     );
+    response.cookies.delete("arch_referral_code");
+    return response;
   } catch (error) {
     console.error("Unable to create application", error);
     return NextResponse.json(

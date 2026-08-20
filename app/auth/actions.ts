@@ -7,7 +7,7 @@ import { verifyTurnstile } from "@/lib/turnstile";
 
 function safeNext(value: FormDataEntryValue | null) {
   const path = typeof value === "string" ? value : "";
-  return path === "/apply" || path === "/account" ? path : "/account";
+  return path === "/apply" || path === "/account" || path === "/partner" ? path : "/account";
 }
 
 function redirectWithMessage(

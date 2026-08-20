@@ -84,6 +84,8 @@ export default async function ApplicationDetailPage({
             <Info label="Title" value={application.title} />
             <Info label="Location" value={`${application.city}, ${application.country}`} />
             <Info label="Program" value={ticketLabel(application.selectedTicket)} />
+            <Info label="Referral code" value={application.referralCode || "None"} />
+            <Info label="Distributor" value={application.distributorId || "None"} />
             <Info label="Submitted" value={formatDate(application.createdAt)} />
             <Info label="Updated" value={formatDate(application.updatedAt)} />
           </dl>
@@ -164,6 +166,9 @@ export default async function ApplicationDetailPage({
                   <p className="mt-3 break-all font-mono text-xs text-ink-soft">Order {order.id}</p>
                   <p className="mt-2 break-all font-mono text-xs text-ink-soft">
                     Stripe Session {order.stripeCheckoutSessionId || "-"}
+                  </p>
+                  <p className="mt-2 font-mono text-xs text-ink-soft">
+                    Referral {order.referralCode || "-"}
                   </p>
                   {order.checkoutUrl ? (
                     <a

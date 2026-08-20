@@ -13,7 +13,7 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string; notice?: string; next?: string; unconfirmed?: string }>;
 }) {
   const params = await searchParams;
-  const next = params.next === "/apply" || params.next === "/account" ? params.next : "/account";
+  const next = params.next === "/apply" || params.next === "/account" || params.next === "/partner" ? params.next : "/account";
   const user = await getCurrentUser();
   const turnstileSiteKey = getTurnstileSiteKey();
 

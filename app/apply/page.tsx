@@ -3,6 +3,7 @@ import { ApplicationForm } from "@/app/(home)/_components/application-form";
 import { requireUser } from "@/lib/auth";
 import { ticketOptions } from "@/lib/tickets";
 import type { TicketId } from "@/lib/types";
+import { cookies } from "next/headers";
 
 export default async function ApplyPage({ searchParams }: { searchParams: Promise<{ pass?: string }> }) {
   const user = await requireUser("/apply");
@@ -10,6 +11,7 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
   const defaultTicket = ticketOptions.some((ticket) => ticket.id === pass)
     ? (pass as TicketId)
     : "single_week_pass";
+  const referralCode = (await cookies()).get("arch_referral_code")?.value || "";
 
   return (
     <main className="min-h-screen bg-ivory px-6 py-10 text-ink sm:px-10 lg:px-20">
@@ -53,7 +55,7 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
           <div className="shadow-ink border border-ink bg-card p-6 sm:p-8">
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-ink">The Arch. admission desk</p>
             <div className="mt-7">
-              <ApplicationForm email={user.email || ""} defaultTicket={defaultTicket} />
+              <ApplicationForm email={user.email || ""} defaultTicket={defaultTicket} referralCode={referralCode} />
             </div>
           </div>
         </section>

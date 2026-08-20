@@ -14,9 +14,18 @@ const applicantTypes = [
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
-export function ApplicationForm({ email, defaultTicket = "single_week_pass" }: { email: string; defaultTicket?: TicketId }) {
+export function ApplicationForm({
+  email,
+  defaultTicket = "single_week_pass",
+  referralCode = "",
+}: {
+  email: string;
+  defaultTicket?: TicketId;
+  referralCode?: string;
+}) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
+  const [inviteCode, setInviteCode] = useState(referralCode);
 
   async function submitApplication(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,7 +41,7 @@ export function ApplicationForm({ email, defaultTicket = "single_week_pass" }: {
       },
       body: JSON.stringify(payload),
     });
-    const result = (await response.json()) as { error?: string; applicationId?: string };
+    const result = (await response.json()) as { error?: string; applicationId?: string; checkoutUrl?: string | null };
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -45,8 +54,17 @@ export function ApplicationForm({ email, defaultTicket = "single_week_pass" }: {
       return;
     }
 
+    if (result.checkoutUrl) {
+      window.location.assign(result.checkoutUrl);
+      return;
+    }
+
     setStatus("success");
-    setMessage("Application submitted for review. Your payment link will appear in your account after approval.");
+    setMessage(
+      inviteCode.trim()
+        ? `Application submitted with invite code ${inviteCode.trim().toUpperCase()}. Your payment link will appear after review.`
+        : "Application submitted for review. Your payment link will appear in your account after approval.",
+    );
   }
 
   return (
@@ -66,6 +84,28 @@ export function ApplicationForm({ email, defaultTicket = "single_week_pass" }: {
         <Field label="Country" name="country" required />
         <Field label="City" name="city" required />
       </div>
+
+      <label className="grid gap-2 border border-ink/20 bg-marigold/10 p-4">
+        <span className="flex flex-wrap items-center justify-between gap-2">
+          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
+            Invite / referral code (optional)
+          </span>
+          {referralCode && inviteCode === referralCode ? (
+            <span className="border border-navy/20 bg-card px-2 py-1 font-mono text-[9px] uppercase tracking-[0.14em] text-navy">
+              From invite link
+            </span>
+          ) : null}
+        </span>
+        <input
+          name="referralCode"
+          value={inviteCode}
+          onChange={(event) => setInviteCode(event.target.value.toUpperCase())}
+          autoComplete="off"
+          maxLength={64}
+          placeholder="Enter code"
+          className="min-h-12 rounded-none border border-ink/25 bg-ivory px-4 font-mono text-sm uppercase text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+        />
+      </label>
 
       <label className="grid gap-2">
         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">

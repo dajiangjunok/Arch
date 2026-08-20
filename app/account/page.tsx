@@ -9,7 +9,7 @@ import {
   paymentStatusLabel,
   ticketLabel,
 } from "@/lib/format";
-import { listApplicationsForUser, listOrdersForUser, listPaymentsForOrders } from "@/lib/store";
+import { getDistributorForUser, listApplicationsForUser, listOrdersForUser, listPaymentsForOrders } from "@/lib/store";
 
 export default async function AccountPage({
   searchParams,
@@ -18,9 +18,10 @@ export default async function AccountPage({
 }) {
   const user = await requireUser("/account");
   const query = await searchParams;
-  const [applications, orders] = await Promise.all([
+  const [applications, orders, distributor] = await Promise.all([
     listApplicationsForUser(user.id),
     listOrdersForUser(user.id),
+    getDistributorForUser(user.id, user.email || null),
   ]);
   const payments = await listPaymentsForOrders(orders.map((order) => order.id));
   const applicationsById = new Map(applications.map((application) => [application.id, application]));
@@ -38,6 +39,11 @@ export default async function AccountPage({
             <Link href="/apply" className="rounded-md bg-marigold px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-navy transition hover:bg-navy hover:text-ivory">
               New application
             </Link>
+            {distributor?.status === "active" ? (
+              <Link href="/partner" className="rounded-md border border-navy px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-navy transition hover:bg-navy hover:text-ivory">
+                Partner desk
+              </Link>
+            ) : null}
             <form action={logoutAction}>
               <button className="rounded-md border border-ink/25 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.18em] transition hover:border-ink hover:bg-card">Sign out</button>
             </form>
