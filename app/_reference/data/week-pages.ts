@@ -5,24 +5,24 @@ export const weekPages = {
     id: "week1",
     weekNumber: 1,
     hero: {
-      eyebrow: "Shanghai + Beijing · Nov 1–7",
-      title: "AI & Model",
-      accent: "Frontiers",
-      meta: ["7 Days / 6 Nights", "Shanghai + Beijing", "Application Only"],
+      eyebrow: "Shanghai · Nov 1–7",
+      title: "AI Everywhere",
+      accent: "in Work & Life",
+      meta: ["7 Days / 6 Nights", "Shanghai, China", "Application Only"],
       stampImage: "/reference/5806e79f0804dc44.jpg",
       stampLabel: "Week One of Three",
       stampStats: [
         {
-          value: "7",
+          value: "6",
           label: "Days on the ground",
         },
         {
-          value: "8+",
-          label: "Labs & platforms",
+          value: "10+",
+          label: "Companies & labs",
         },
         {
           value: "5",
-          label: "Founder sessions",
+          label: "Guest speakers",
         },
       ],
       moments: [
@@ -33,21 +33,21 @@ export const weekPages = {
           rotation: "-2deg",
         },
         {
-          src: "/reference/009cfaa2bc6a5606.jpg",
+          src: "/reference/068b80dfaff35db1.jpg",
           alt: "Founder Talk",
           label: "Founder Talk",
           rotation: "1.5deg",
         },
         {
-          src: "/reference/4d80bc2e0686db90.jpg",
+          src: "/reference/21b7f0fb4ee0f403.jpg",
           alt: "Cohort Dinner",
           label: "Cohort Dinner",
           rotation: "-1deg",
         },
         {
           src: "/reference/85d6423258e051eb.jpg",
-          alt: "Beijing Session",
-          label: "Beijing Session",
+          alt: "Beijing Bound",
+          label: "Beijing Bound",
           rotation: "2deg",
         },
         {
@@ -82,8 +82,8 @@ export const weekPages = {
         },
         {
           number: "03",
-          title: "Closed-Door Founder Sessions",
-          body: "Private conversations on strategy, competition, and international expansion.",
+          title: "Investor & Founder Conversations",
+          body: "Off-the-record VC/PE roundtables on strategy, competition, and where foreign capital still has room to play.",
           insight:
             "Watch for: what founders say off the record that never makes it into a pitch deck.",
           image: "/reference/3e9e60004007ebc9.jpg",
@@ -108,61 +108,61 @@ export const weekPages = {
         n: "02",
         img: "/reference/27468c57b8287d23.jpg",
         date: "Nov 2 · Mon",
-        tag: "Landscape",
-        hl: "What makes an AI product something people use every day?",
-        title: "The AI Consumer Landscape",
-        body: "A landscape briefing on China's AI ecosystem, followed by a visit to an AI application or smart manufacturing company, closing with an evening of city conversation.",
-        badges: ["AI + Ecosystem"],
+        tag: "Smart Mfg",
+        hl: "Hei Hu Manufacturing's AI-powered factory floor, then an evening on Suzhou Creek.",
+        title: "AI on the Factory Floor",
+        body: "Welcome meeting and lightning intros, followed by a visit to Hei Hu Manufacturing to see how AI is digitizing the factory floor — real-time data across machines, lines, and supply chains. Closing with an evening walk along Suzhou Creek.",
+        badges: ["Hei Hu Manufacturing", "Changning"],
       },
       {
         n: "03",
         img: "/reference/97c2971888848ff2.jpg",
         date: "Nov 3 · Tue",
-        tag: "Applied AI",
-        hl: "SenseTime's SenseCore — from research lab to commercial scale.",
-        title: "Applied AI at SenseTime",
-        body: "SenseTime's large-scale AI infrastructure spans computer vision, generative AI, and enterprise deployment. The visit looks at how research capability becomes a deployable product across industries.",
-        badges: ["SenseTime", "Zhangjiang"],
+        tag: "Model Ecosystem",
+        hl: "Inside Moxu Space — where MiniMax, StepFun, and the next wave of AI-native startups build.",
+        title: "The Model Innovation District",
+        body: "A morning inside Xuhui's Moxu Space, the innovation zone housing MiniMax, StepFun, and a new wave of AI-native startups, followed by visits to Alibaba (large models, cloud, and the Mulerun platform) and Ant Group (AI-powered health screening). Evening cycling along the riverside.",
+        badges: ["MiniMax", "Alibaba", "Ant Group"],
       },
       {
         n: "04",
         img: "/reference/6c023b039a82749c.jpg",
         date: "Nov 4 · Wed",
-        tag: "ByteDance",
-        hl: "Coze and Volcano Engine — agent platforms with existing distribution.",
-        title: "Agents, Assistants & the Creator Economy",
-        body: "ByteDance's AI product and infrastructure teams on building agent platforms and model services for both consumers and developers — how a company with existing distribution designs AI products.",
-        badges: ["ByteDance", "Yangpu"],
+        tag: "Talent & Research",
+        hl: "Two research institutes, then a look at who's actually building — China's post-2005 AI talent.",
+        title: "Institutes, Talent & Roadshows",
+        body: "Visits to the Shanghai Institute for Innovation and HKUST's Shanghai center, followed by an afternoon at Sequoia China's Beiyang AI Town for project roadshows and matchmaking with PhD researchers and China's youngest AI builders.",
+        badges: ["Shanghai Institute for Innovation", "HKUST", "Sequoia China"],
       },
       {
         n: "05",
         img: "/reference/953204bb4ef6ae03.jpg",
         date: "Nov 5 · Thu",
-        tag: "Platforms",
-        hl: "Ant Group's embodied AI bets, then Alibaba's model and cloud stack.",
-        title: "Platforms, Payments & Cloud AI",
-        body: "Ant Group on incubating new AI product categories inside a platform company, and Alibaba on how model development, cloud infrastructure, and chip design connect across one organisation.",
-        badges: ["Ant Group", "Alibaba"],
+        tag: "Applied AI",
+        hl: "Ctrip's travel-fintech stack, then SenseTime's large-scale AI infrastructure.",
+        title: "Travel Tech to AI Infra",
+        body: "Ctrip on inbound travel and fintech products for international travelers, and SenseTime on the AI infrastructure behind its large-scale deployments, followed by Fudan University and the Shanghai Academy of AI for Science. Evening conversation on AI for science.",
+        badges: ["Ctrip", "SenseTime", "Fudan"],
       },
       {
         n: "06",
         img: "/reference/85d6423258e051eb.jpg",
         date: "Nov 6 · Fri",
-        tag: "Beijing",
-        hl: "Travel to Beijing for closed-door founder sessions.",
-        title: "Beijing Model Labs & Founder Sessions",
-        body: "The group travels to Beijing to meet foundation-model labs and early-stage founders, closing with an off-the-record session on strategy, competition, and international expansion.",
-        badges: ["Closed-Door", "Beijing"],
+        tag: "ByteDance",
+        hl: "Volcano Engine and the making of Seedance's short-drama content.",
+        title: "Volcano Engine & the Creator Economy",
+        body: "ByteDance's Volcano Engine team on building AI infrastructure and short-drama production tools like Seedance, followed by a VC/PE roundtable on where foreign capital still has room to play in China's AI startup scene. Closing with a farewell dinner.",
+        badges: ["ByteDance", "Volcano Engine", "VC/PE"],
       },
       {
         n: "07",
         img: "/reference/4d80bc2e0686db90.jpg",
         date: "Nov 7 · Sat",
         tag: "Closing",
-        hl: "Reflect, connect the dots, and travel on to Shanghai.",
+        hl: "A speaking slot at Google DevFest, or a head start to Beijing — your choice.",
         title: "Closing & Onward Travel",
-        body: "A flexible morning, closing reflections on the week, and departure with the group back to Shanghai ahead of Week 2.",
-        badges: ["Closing"],
+        body: "A flexible morning with two options: a breakout speaking slot at Google DevFest, or an early departure for Beijing ahead of Week 2.",
+        badges: ["Google DevFest", "Beijing"],
       },
     ],
     chipDayMap: {
@@ -208,12 +208,17 @@ export const weekPages = {
       },
     ],
     marquee: [
-      "Beijing Model Labs",
-      "Closed-Door Founders",
+      "Hei Hu Manufacturing",
+      "MiniMax",
+      "StepFun",
+      "Ctrip",
+      "Shanghai Institute for Innovation",
+      "HKUST",
+      "Sequoia China",
+      "Fudan University",
+      "Volcano Engine",
       "VC / PE Roundtable",
     ],
-    companyNote:
-      "Placeholder logos shown — swap in real company photos anytime.",
     gain: {
       title: ["Judgment, Not", "Just a Demo"],
       lead: [
@@ -259,43 +264,9 @@ export const weekPages = {
         "Global Distribution",
       ],
     },
-    guests: [
-      {
-        initials: "ZL",
-        name: "Zixuan Li",
-        roles: ["Head of Zhipu Z.ai"],
-        description:
-          "Leads Zhipu's Z.ai division, one of China's frontier large-model labs.",
-        rotation: "-3deg",
-      },
-      {
-        initials: "ZC",
-        name: "Zili Chen",
-        roles: ["Director", "Apache Software Foundation"],
-        description:
-          "Serves on the board of the Apache Software Foundation, steering global open-source infrastructure.",
-        rotation: "2deg",
-      },
-      {
-        initials: "XW",
-        name: "Xu Wang",
-        roles: ["Vice Chair", "Ant Group Open Source Technology Committee"],
-        description:
-          "Helps set open-source technology strategy across Ant Group.",
-        rotation: "-2deg",
-      },
-      {
-        initials: "MY",
-        name: "Michael Yuan",
-        roles: ["Founder", "WasmEdge"],
-        description:
-          "Founded WasmEdge, a leading WebAssembly runtime used across edge and AI infrastructure.",
-        rotation: "4deg",
-      },
-    ],
     logistics: [
       {
-        title: "Shanghai + Beijing Bases",
+        title: "Shanghai Bases",
         body: "Shared accommodation is included in both cities. Staying with the group is where the real connections happen — over meals, transport, and evenings.",
         image: {
           src: "/reference/342f3eb92ccf8840.jpg",
@@ -346,15 +317,15 @@ export const weekPages = {
     id: "week2",
     weekNumber: 2,
     hero: {
-      eyebrow: "Shanghai Program · Nov 8–14",
+      eyebrow: "Shanghai + Beijing · Nov 8–14",
       title: "Embodied AI",
       accent: "& Humanoid Robots",
-      meta: ["6 Days / 5 Nights", "Shanghai, China", "Application Only"],
+      meta: ["6 Days / 5 Nights", "Shanghai + Beijing", "Application Only"],
       stampImage: "/reference/567a5c65454c411c.jpg",
       stampLabel: "Week Two of Three",
       stampStats: [
         {
-          value: "7",
+          value: "5",
           label: "Days on the ground",
         },
         {
@@ -368,19 +339,19 @@ export const weekPages = {
       ],
       moments: [
         {
-          src: "/reference/97c2971888848ff2.jpg",
+          src: "/reference/48d4732c27e6c833.jpg",
           alt: "Lab Visit",
           label: "Lab Visit",
           rotation: "-2deg",
         },
         {
-          src: "/reference/009cfaa2bc6a5606.jpg",
+          src: "/reference/068b80dfaff35db1.jpg",
           alt: "Founder Talk",
           label: "Founder Talk",
           rotation: "1.5deg",
         },
         {
-          src: "/reference/4d80bc2e0686db90.jpg",
+          src: "/reference/21b7f0fb4ee0f403.jpg",
           alt: "Cohort Dinner",
           label: "Cohort Dinner",
           rotation: "-1deg",
@@ -556,8 +527,6 @@ export const weekPages = {
       },
     ],
     marquee: ["Fudan University", "Tongji University", "HIKROBOT"],
-    companyNote:
-      "Placeholder logos shown — swap in real company photos anytime.",
     gain: {
       title: ["Judgment, Not", "Just a Tour"],
       lead: [
@@ -603,32 +572,6 @@ export const weekPages = {
         "Smart Manufacturing",
       ],
     },
-    guests: [
-      {
-        initials: "JG",
-        name: "Jie Gu",
-        roles: ["Chairman & CEO", "Fourier Intelligence"],
-        description:
-          "Leads Fourier's move from rehabilitation robotics into humanoid platforms.",
-        rotation: "-3deg",
-      },
-      {
-        initials: "HF",
-        name: "Haoqiang Fan",
-        roles: ["Co-Founder", "DEXMAL"],
-        description:
-          "Co-founded DEXMAL, building embodied-native models across robot bodies.",
-        rotation: "2deg",
-      },
-      {
-        initials: "DL",
-        name: "David Li",
-        roles: ["Co-Founder", "Xinchejian, Shanghai"],
-        description:
-          "Co-founded Xinchejian, China's first makerspace, in Shanghai.",
-        rotation: "-2deg",
-      },
-    ],
     logistics: [
       {
         title: "Shanghai Base",
@@ -669,7 +612,7 @@ export const weekPages = {
       [
         {
           href: "/week1",
-          text: "← Week 1 — AI & Model Frontiers",
+          text: "← Week 1 — AI Everywhere in Work & Life",
         },
         {
           href: "/week3",
@@ -682,15 +625,15 @@ export const weekPages = {
     id: "week3",
     weekNumber: 3,
     hero: {
-      eyebrow: "Shenzhen + Shanghai · Nov 15–21",
+      eyebrow: "Shanghai + Shenzhen · Nov 15–21",
       title: "Smart Hardware",
       accent: "& Wearables",
-      meta: ["7 Days / 6 Nights", "Shenzhen + Shanghai", "Application Only"],
+      meta: ["7 Days / 6 Nights", "Shanghai + Shenzhen", "Application Only"],
       stampImage: "/reference/ee47a6f1ed4076c2.jpg",
       stampLabel: "Week Three of Three",
       stampStats: [
         {
-          value: "7",
+          value: "6",
           label: "Days on the ground",
         },
         {
@@ -894,8 +837,6 @@ export const weekPages = {
       },
     ],
     marquee: ["Vocci", "Z·Pilot", "Odyss Life", "Looki AI", "WAKUART"],
-    companyNote:
-      "Placeholder logos shown — swap in real company photos anytime.",
     gain: {
       title: ["Judgment, Not", "Just a Shopping List"],
       lead: [
@@ -941,27 +882,9 @@ export const weekPages = {
         "Global Expansion",
       ],
     },
-    guests: [
-      {
-        initials: "BZ",
-        name: "Bo Zhang",
-        roles: ["Founder", "SHARGE"],
-        description:
-          "Founded SHARGE, known for design-led charging hardware built for global crowdfunding.",
-        rotation: "-3deg",
-      },
-      {
-        initials: "QZ",
-        name: "Qingsen Zhang",
-        roles: ["Co-Founder & Chairman", "UGREEN"],
-        description:
-          "Co-founded UGREEN, scaling it into a 300M-user consumer electronics ecosystem.",
-        rotation: "2deg",
-      },
-    ],
     logistics: [
       {
-        title: "Shenzhen + Shanghai Bases",
+        title: "Shanghai + Shenzhen Bases",
         body: "Shared accommodation is included in both cities. Staying with the group is where the real connections happen — over meals, transport, and evenings.",
         image: {
           src: "/reference/342f3eb92ccf8840.jpg",

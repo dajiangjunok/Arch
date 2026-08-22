@@ -244,7 +244,7 @@ export function HomePage() {
         <div className="wrap">
           <SectionHeading
             eyebrow="Who It's For"
-            title={["Built For Four"]}
+            title={["Built For Three"]}
             index="03"
           />
           <div className="audience-grid">
@@ -262,11 +262,72 @@ export function HomePage() {
         </div>
       </RevealSection>
 
+      <RevealSection id="included" className="incl-sec">
+        <div className="wrap">
+          <SectionHeading
+            eyebrow="The Offer"
+            title={["Here's Exactly What", "You're Getting"]}
+          />
+          <div className="incl-grid">
+            <div className="incl-price-col incl-price-col-photo">
+              <ArchImage
+                src="/reference/45609c5450c39032.jpg"
+                alt="Fuxing Island, Shanghai"
+                sizes="(min-width: 860px) 42vw, 100vw"
+              />
+              <div className="incl-price-photo-overlay">
+                <span className="incl-price-photo-tag">
+                  Fuxing Island · Shanghai
+                </span>
+                <div className="incl-price-cta">
+                  <Link
+                    className="btn btn-fill"
+                    href="/apply?pass=single_week_pass"
+                  >
+                    Apply to Participate →
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div className="incl-list-col">
+              <p className="incl-list-heading">Included</p>
+              <ul className="incl-list">
+                <li>Full access to the week&apos;s company, factory &amp; lab visits</li>
+                <li>
+                  Closed-door founder &amp; investor sessions, plus B2B meetings
+                  with Chinese companies
+                </li>
+                <li>Accommodation for the week</li>
+                <li>
+                  Breakfast, lunch &amp; dinner, including the program&apos;s
+                  official dinners
+                </li>
+                <li>
+                  All transport within China for the week, including domestic
+                  flights between cities and airport pickups
+                </li>
+                <li>Professional interpretation</li>
+                <li>A team on the ground with you throughout</li>
+              </ul>
+              <p className="incl-list-heading">Not Included</p>
+              <ul className="not-incl-list">
+                <li>International flights</li>
+                <li>
+                  Visa: we can provide an invitation letter, but don&apos;t
+                  handle the application itself
+                </li>
+                <li>Insurance (happy to share a recommended list)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </RevealSection>
+
       <RevealSection id="pricing" className="price-sec">
         <div className="wrap">
           <SectionHeading
             eyebrow="Admission"
-            title={["Two Ways to", "Join"]}
+            title={["How to", "Join"]}
             index="04"
           />
           <PriceCards />
@@ -281,7 +342,9 @@ export function HomePage() {
         <div className="wrap">
           <p className="foot-tag">A bridge is worth what crosses it.</p>
           <div className="foot-links">
-            <Link href="/week1">Week 1 — AI &amp; Model Frontiers</Link>
+            <Link href="/week1">
+              Week 1 — AI Everywhere in Work &amp; Life
+            </Link>
             <a href="mailto:business@globalpropeller.com">
               business@globalpropeller.com
             </a>

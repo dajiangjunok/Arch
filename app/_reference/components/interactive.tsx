@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { CompanyData, GuestData, PillarData } from "../types";
-import { ArchImage, CameraIcon, PillarIcon, rotationStyle } from "./shared";
+import type { CompanyData, PillarData } from "../types";
+import { ArchImage, PillarIcon, rotationStyle } from "./shared";
 
 export function ScrollProgress() {
   const progressRef = useRef<HTMLDivElement>(null);
@@ -200,40 +200,6 @@ export function CompanyCard({
         </div>
         <div className="flip-face flip-back">
           <p>{company.description}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function GuestCard({ guest }: { guest: GuestData }) {
-  const { flipped, interaction } = useFlip();
-  return (
-    <div
-      className={`gflip${flipped ? " flipped" : ""}`}
-      style={rotationStyle(guest.rotation)}
-      {...interaction}
-    >
-      <div className="gflip-inner">
-        <div className="gflip-face">
-          <div className="guest-av">
-            {guest.initials}
-            <span className="cam-badge">
-              <CameraIcon />
-            </span>
-          </div>
-          <h5>{guest.name}</h5>
-          <p className="role">
-            {guest.roles.map((role, index) => (
-              <span key={role}>
-                {index > 0 ? <br /> : null}
-                {role}
-              </span>
-            ))}
-          </p>
-        </div>
-        <div className="gflip-face gflip-back">
-          <p>{guest.description}</p>
         </div>
       </div>
     </div>

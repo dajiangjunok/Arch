@@ -1,6 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import { Fragment, useState, type CSSProperties, type ReactNode } from "react";
 import type { ImageData, PillarIconName, TextSegment } from "../types";
 
 export type RotationStyle = CSSProperties & { "--r": string };
@@ -78,31 +80,12 @@ export function TextSegments({
 }: {
   segments: readonly TextSegment[];
 }) {
-  return segments.map((segment, index) =>
-    segment.emphasis ? (
-      <em key={index}>{segment.text}</em>
-    ) : (
-      <span key={index}>{segment.text}</span>
-    ),
-  );
-}
-
-export function CameraIcon() {
-  return (
-    <svg
-      className="cam-badge-icon"
-      width="9"
-      height="9"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      aria-hidden="true"
-    >
-      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z" />
-      <circle cx="12" cy="13" r="4" />
-    </svg>
-  );
+  return segments.map((segment, index) => (
+    <Fragment key={index}>
+      {index > 0 ? " " : null}
+      {segment.emphasis ? <em>{segment.text}</em> : <span>{segment.text}</span>}
+    </Fragment>
+  ));
 }
 
 export function CornerStamp() {
@@ -193,16 +176,19 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
     : "Choose Week 1, 2, or 3";
   const singleCta = weekNumber ? `Apply for Week ${weekNumber} →` : "Apply →";
 
+  const [passFlipped, setPassFlipped] = useState(false);
+  const singleDescription =
+    weekNumber === 2
+      ? "Six days inside the rooms most people only read about afterward."
+      : "Seven days inside the rooms most people only read about afterward.";
+
   return (
     <div className="price-grid">
       <div className="price-card single tick-corner">
         <CornerStamp />
         <p className="kicker">Single Week</p>
         <h3>{singleTitle}</h3>
-        <p className="card-hook">
-          If you&apos;ve only got one week — make it the one where you&apos;re
-          in the room, not watching from the back.
-        </p>
+        <p className="card-hook">{singleDescription}</p>
         <div className="for-row">
           <span className="for-label">For</span>
           <span className="for-tag">Founders</span>
@@ -213,9 +199,16 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
         <div className="incl-block">
           <p className="incl-heading">Included</p>
           <ul className="incl-mini">
-            <li>Company &amp; lab visits</li>
-            <li>Shared accommodation</li>
-            <li>Transport &amp; interpretation</li>
+            <li>Full access to the week&apos;s company, factory &amp; lab visits</li>
+            <li>
+              Closed-door founder &amp; investor sessions, plus B2B meetings
+            </li>
+            <li>Accommodation, with breakfast, lunch &amp; dinner covered</li>
+            <li>
+              All in-China transport, including domestic flights &amp;
+              interpretation
+            </li>
+            <li>A team with you throughout</li>
           </ul>
         </div>
         <div className="fee-stack">
@@ -238,38 +231,76 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
       </div>
       <div className="price-card fellow tick-corner">
         <CornerStamp />
-        <p className="kicker">Fellowship</p>
-        <h3>All Three Weeks</h3>
+        <p className="kicker">Limited · Fellowship Program</p>
+        <h3>Fellow Pass</h3>
         <p className="card-hook">
-          If you&apos;re staying to build, not just to visit — this is your
-          three weeks.
+          Most of the room pays their way, and that&apos;s what keeps The Arch
+          independent. Every cohort, The Arch holds a handful of seats for
+          builders who don&apos;t have funding yet, don&apos;t have a travel budget,
+          and have nothing to show the world but the thing they&apos;re actually
+          building. Apply below, and see the <Link href="/faq">FAQ</Link> for
+          how it works.
         </p>
         <div className="for-row">
           <span className="for-label">For</span>
           <span className="for-tag">Builders</span>
           <span className="for-tag">Makers</span>
+          <span className="for-tag">Pre-Funding</span>
         </div>
-        <div className="incl-block">
-          <p className="incl-heading">Included</p>
-          <ul className="incl-mini">
-            <li>Housing on Fuxing Island</li>
-            <li>Full access to all three weeks&apos; programming</li>
-            <li>Shared workspace on Fuxing Island to build</li>
-          </ul>
-          <div className="not-incl-block">
-            <p className="incl-heading">Not Included</p>
-            <ul className="not-incl-mini">
-              <li>Meals</li>
-            </ul>
+        <div
+          className={`builder-pass${passFlipped ? " flipped" : ""}`}
+          role="button"
+          tabIndex={0}
+          aria-pressed={passFlipped}
+          onClick={() => setPassFlipped((current) => !current)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              setPassFlipped((current) => !current);
+            }
+          }}
+        >
+          <div className="builder-pass-inner">
+            <div className="builder-pass-face builder-pass-front">
+              <div className="bp-mark" aria-hidden="true">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M12 2 14.5 9 22 9.5 16 14 18 21.5 12 17.5 6 21.5 8 14 2 9.5 9.5 9Z" />
+                </svg>
+              </div>
+              <p className="bp-badge">Fellow Pass</p>
+              <p className="bp-sub">Priority Seat · Apply to Reveal</p>
+              <p className="bp-hint">Tap ↻</p>
+            </div>
+            <div className="builder-pass-face builder-pass-back">
+              <div>
+                <p className="incl-heading">Included</p>
+                <ul className="incl-mini">
+                  <li>Housing on Fuxing Island</li>
+                  <li>Partial access to the week&apos;s company visits</li>
+                  <li>Shared workspace on Fuxing Island to build</li>
+                </ul>
+                <p className="incl-heading bp-not-included">Not Included</p>
+                <ul className="not-incl-mini">
+                  <li>Meals</li>
+                </ul>
+              </div>
+              <Link
+                className="bp-apply"
+                href="/apply?pass=full_residency"
+                onClick={(event) => event.stopPropagation()}
+              >
+                Apply for Fellowship →
+              </Link>
+            </div>
           </div>
         </div>
-        <div className="fee-row">
-          <span className="lbl">Fellowship Rate</span>
-          <span className="fee fee-sm">Upon Request</span>
-        </div>
-        <Link className="btn" href="/apply?pass=full_residency">
-          Apply for Fellowship →
-        </Link>
       </div>
     </div>
   );

@@ -22,15 +22,6 @@
   font-size: 0.9rem;
 }
 
-.arch-reference .company-note {
-  position: relative;
-  z-index: 2;
-  margin-top: 1.25rem;
-  color: #faf6ea8c;
-  font-size: 0.8rem;
-  font-style: italic;
-}
-
 .arch-reference .thesis-blob {
   top: -4rem;
   left: 50%;
@@ -70,4 +61,336 @@
 .arch-reference .nav-links {
   align-items: center;
   gap: clamp(0.8rem, 1.7vw, 1.75rem);
+}
+
+.arch-reference.arch-home .incl-sec {
+  position: relative;
+  padding: 6rem 0;
+  background: var(--ivory);
+}
+
+.arch-reference.arch-home .thesis-tag .label {
+  text-transform: none;
+}
+
+.arch-reference.arch-home .incl-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.arch-reference.arch-home .incl-price-col {
+  border-radius: 1.5rem;
+  background: var(--navy);
+  box-shadow: 0 20px 44px -26px rgba(27, 58, 107, 0.5);
+  color: var(--ivory);
+}
+
+.arch-reference.arch-home .incl-price-col-photo {
+  position: relative;
+  display: flex;
+  min-height: 320px;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.arch-reference.arch-home .incl-price-col-photo img {
+  object-fit: cover;
+}
+
+.arch-reference.arch-home .incl-price-photo-overlay {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 2rem;
+  background: linear-gradient(180deg, transparent, rgba(27, 58, 107, 0.85) 55%);
+}
+
+.arch-reference.arch-home .incl-price-photo-tag {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: #faf6eab3;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.arch-reference.arch-home .incl-price-cta {
+  margin-top: 0;
+}
+
+.arch-reference.arch-home .incl-list-col {
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  background: var(--paper);
+  box-shadow: 0 20px 44px -30px rgba(27, 58, 107, 0.28);
+}
+
+.arch-reference.arch-home .incl-list-heading {
+  margin-bottom: 1.1rem;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.arch-reference.arch-home .incl-list {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0 0 2rem;
+}
+
+.arch-reference.arch-home .incl-list li,
+.arch-reference.arch-home .not-incl-list li {
+  display: flex;
+  gap: 0.75rem;
+  list-style: none;
+}
+
+.arch-reference.arch-home .incl-list li {
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.arch-reference.arch-home .incl-list li::before,
+.arch-reference.arch-home .not-incl-list li::before {
+  display: inline-flex;
+  width: 1.3rem;
+  height: 1.3rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.arch-reference.arch-home .incl-list li::before {
+  background: var(--harbor-wash);
+  color: var(--navy);
+  content: "✓";
+  font-size: 0.75rem;
+}
+
+.arch-reference.arch-home .not-incl-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.arch-reference.arch-home .not-incl-list li {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.arch-reference.arch-home .not-incl-list li::before {
+  background: #22201812;
+  color: var(--muted);
+  content: "—";
+  font-size: 0.8rem;
+}
+
+.arch-reference .price-card.fellow .card-hook a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
+.arch-reference .builder-pass {
+  width: 100%;
+  margin-top: 1.75rem;
+  perspective: 1400px;
+}
+
+.arch-reference .builder-pass-inner {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.3, 0.9, 0.3, 1);
+}
+
+.arch-reference .builder-pass.flipped .builder-pass-inner {
+  transform: rotateY(180deg);
+}
+
+.arch-reference .builder-pass-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  border-radius: 1.5rem;
+  backface-visibility: hidden;
+}
+
+.arch-reference .builder-pass-front {
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed rgba(250, 246, 234, 0.4);
+  background: var(--navy);
+  color: var(--ivory);
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.arch-reference .builder-pass-front .bp-mark {
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+  border: 1.5px solid var(--marigold-soft);
+  border-radius: 50%;
+  color: var(--marigold-soft);
+}
+
+.arch-reference .builder-pass-front .bp-badge {
+  font-family: Fraunces, serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.arch-reference .builder-pass-front .bp-sub {
+  color: var(--marigold-soft);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  opacity: 0.9;
+  text-transform: uppercase;
+}
+
+.arch-reference .builder-pass-front .bp-hint {
+  margin-top: 0.9rem;
+  color: #faf6ea80;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.arch-reference .builder-pass-back {
+  justify-content: space-between;
+  border: 1px solid rgba(27, 58, 107, 0.15);
+  background: var(--paper);
+  color: var(--navy);
+  transform: rotateY(180deg);
+}
+
+.arch-reference .builder-pass-back .incl-heading {
+  margin-bottom: 0.6rem;
+  color: var(--muted);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.arch-reference .builder-pass-back .incl-mini {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.arch-reference .builder-pass-back .incl-mini li,
+.arch-reference .builder-pass-back .not-incl-mini li {
+  display: flex;
+  font-weight: 500;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.arch-reference .builder-pass-back .incl-mini li {
+  color: var(--navy);
+  font-size: 0.84rem;
+}
+
+.arch-reference .builder-pass-back .incl-mini li::before {
+  display: inline-flex;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--marigold-soft);
+  color: var(--navy);
+  content: "✓";
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.arch-reference .builder-pass-back .bp-not-included {
+  margin-top: 0.9rem;
+}
+
+.arch-reference .builder-pass-back .not-incl-mini {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0;
+}
+
+.arch-reference .builder-pass-back .not-incl-mini li {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.arch-reference .builder-pass-back .not-incl-mini li::before {
+  display: inline-flex;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--rust, #b45447);
+  content: "—";
+  font-weight: 700;
+}
+
+.arch-reference .builder-pass-back .bp-apply {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  padding: 0.85rem 1.3rem;
+  border-radius: 999px;
+  background: var(--navy);
+  color: var(--ivory);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.arch-reference .builder-pass-back .bp-apply:hover {
+  box-shadow: 0 10px 22px -8px rgba(27, 58, 107, 0.55);
+  transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+  .arch-reference.arch-home .audience-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 860px) {
+  .arch-reference.arch-home .incl-grid {
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .arch-reference .builder-pass-inner {
+    min-height: 380px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arch-reference .builder-pass-inner {
+    transition: none;
+  }
 }

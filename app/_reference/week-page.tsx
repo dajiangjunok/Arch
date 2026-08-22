@@ -14,7 +14,6 @@ import {
   CompanyCard,
   DossierLink,
   FooterLink,
-  GuestCard,
   HeroSurface,
   PillarCard,
   RevealSection,
@@ -43,7 +42,7 @@ export function WeekPage({ data }: { data: WeekPageData }) {
             <p className="hero-eyebrow">{data.hero.eyebrow}</p>
             <h1 className="hero-h1">
               {data.hero.title}
-              <br />
+              {data.weekNumber === 1 ? " " : <br />}
               <em>{data.hero.accent}</em>
             </h1>
             <div className="hero-meta">
@@ -160,7 +159,11 @@ export function WeekPage({ data }: { data: WeekPageData }) {
         </div>
         <div className="wrap">
           <SectionHeading
-            eyebrow="Seven-Day Itinerary"
+            eyebrow={
+              data.weekNumber === 2
+                ? "Six-Day Itinerary"
+                : "Seven-Day Itinerary"
+            }
             title={["Day by Day"]}
             index="02"
           >
@@ -181,9 +184,9 @@ export function WeekPage({ data }: { data: WeekPageData }) {
                   onClick={() => setSelectedDay(index)}
                 >
                   <span className="day-tag">{item.tag}</span>
-                  <span className="day-num">{item.n}</span>
-                  <span className="day-date">{item.date}</span>
-                  <span className="day-hl">{item.hl}</span>
+                  <div className="day-num">{item.n}</div>
+                  <div className="day-date">{item.date}</div>
+                  <div className="day-hl">{item.hl}</div>
                 </button>
               </div>
             ))}
@@ -278,9 +281,6 @@ export function WeekPage({ data }: { data: WeekPageData }) {
           <p className="marquee-hint">
             ↑ Hover to see the rest of the week&apos;s visits scroll by
           </p>
-          {data.companyNote ? (
-            <p className="company-note">{data.companyNote}</p>
-          ) : null}
         </div>
       </RevealSection>
 
@@ -331,35 +331,6 @@ export function WeekPage({ data }: { data: WeekPageData }) {
         </div>
       </RevealSection>
 
-      <RevealSection id="guests" className="guest-sec">
-        <div className="blob-field">
-          <div
-            className="blob blob-soft"
-            style={{
-              width: "20rem",
-              height: "20rem",
-              left: "-4rem",
-              bottom: "-6rem",
-              background:
-                "radial-gradient(circle,var(--marigold-soft) 0%,transparent 70%)",
-              opacity: 0.35,
-            }}
-          />
-        </div>
-        <div className="wrap">
-          <SectionHeading
-            eyebrow="Featured Guests · Click to Flip"
-            title={["Voices From", "the Week"]}
-            index="05"
-          />
-          <div className="guest-grid">
-            {data.guests.map((guest) => (
-              <GuestCard key={guest.name} guest={guest} />
-            ))}
-          </div>
-        </div>
-      </RevealSection>
-
       <RevealSection id="pricing" className="price-sec">
         <div className="blob-field">
           <div
@@ -378,8 +349,8 @@ export function WeekPage({ data }: { data: WeekPageData }) {
         <div className="wrap">
           <SectionHeading
             eyebrow="Pricing & Application"
-            title={["Two Ways to", `Join Week ${data.weekNumber}`]}
-            index="06"
+            title={["How to", `Join Week ${data.weekNumber}`]}
+            index="05"
           />
           <PriceCards weekNumber={data.weekNumber} />
         </div>
@@ -390,7 +361,7 @@ export function WeekPage({ data }: { data: WeekPageData }) {
           <SectionHeading
             eyebrow="Logistics"
             title={["Arrival to", "Departure"]}
-            index="07"
+            index="06"
           />
           <div className="logi-grid">
             {data.logistics.map((item) => (

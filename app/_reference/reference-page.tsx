@@ -19,7 +19,7 @@ export const referenceMetadata: Record<ReferencePageId, Metadata> = {
       "A three-week China innovation immersion across Shanghai, Beijing and Shenzhen.",
   },
   week1: {
-    title: "Week 1: AI & Model Frontiers | The Arch.",
+    title: "Week 1: AI Everywhere in Work & Life | The Arch.",
     description: "Seven days inside China's AI product and model ecosystem.",
   },
   week2: {

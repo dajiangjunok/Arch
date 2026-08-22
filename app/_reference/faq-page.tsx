@@ -38,7 +38,7 @@ const questions: readonly {
         <p>Every seat is reviewed individually — here&apos;s how it works:</p>
         <ol>
           <li>
-            Apply via the <strong>&quot;Apply to Participate&quot;</strong> button
+            Apply via the <strong>&quot;Apply to Participate&quot;</strong>{" "}button
             with a few lines on you, your work, and which week(s) you&apos;re
             applying for.
           </li>
@@ -53,7 +53,7 @@ const questions: readonly {
             confirm your seat.
           </li>
           <li>
-            Once confirmed — <strong>welcome to the cohort.</strong> We&apos;ll
+            Once confirmed — <strong>welcome to the cohort.</strong>{" "}We&apos;ll
             follow up with housing, itinerary, and pre-arrival details.
           </li>
         </ol>
@@ -94,7 +94,7 @@ const questions: readonly {
     answer: (
       <ul>
         <li>
-          <strong>Full access</strong> to the week&apos;s company, factory & lab
+          <strong>Full access</strong>{" "}to the week&apos;s company, factory & lab
           visits
         </li>
         <li>
@@ -198,7 +198,7 @@ const questions: readonly {
         The Fellowship is a small number of places The Arch sets aside each
         cohort for people who are heads-down on something real, before the
         funding has arrived. It works less like a discount and more like a
-        <strong> scholarship</strong> — earned by what you&apos;ve built and
+        <strong> scholarship</strong>{" "}— earned by what you&apos;ve built and
         where it&apos;s headed, not by what you can afford. We look for
         <strong> genuine conviction</strong>, even when the round hasn&apos;t
         closed and the runway is thin. If that&apos;s where you are, apply and

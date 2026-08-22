@@ -55,14 +55,6 @@ export type CompanyData = {
   initials?: string;
 };
 
-export type GuestData = {
-  initials: string;
-  name: string;
-  roles: readonly string[];
-  description: string;
-  rotation: string;
-};
-
 export type WeekPageData = {
   id: WeekPageId;
   weekNumber: number;
@@ -86,7 +78,6 @@ export type WeekPageData = {
   chipDayMap: Readonly<Record<string, number>>;
   companies: readonly CompanyData[];
   marquee: readonly string[];
-  companyNote?: string;
   gain: {
     title: readonly string[];
     lead: readonly TextSegment[];
@@ -94,7 +85,6 @@ export type WeekPageData = {
     items: readonly { title: string; body: string }[];
     chips: readonly string[];
   };
-  guests: readonly GuestData[];
   logistics: readonly {
     title: string;
     body: string;
