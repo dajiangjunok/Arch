@@ -24,3 +24,4 @@ pnpm-debug.log*
 # System files
 .DS_Store
 example/
+todo/
