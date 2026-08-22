@@ -48,9 +48,8 @@ export async function loginAction(formData: FormData) {
       redirectWithMessage(
         "/login",
         "error",
-        "Confirm your email address before signing in. Check your inbox or request a new confirmation email below.",
+        "Confirm your email address before signing in. Check your inbox for the activation email.",
         next,
-        { unconfirmed: "1" },
       );
     }
 
@@ -101,48 +100,7 @@ export async function signUpAction(formData: FormData) {
     "notice",
     "Account created. Check your inbox to confirm your email, then sign in.",
     next,
-    { unconfirmed: "1" },
   );
-}
-
-export async function resendConfirmationAction(formData: FormData) {
-  const email = String(formData.get("email") || "").trim().toLowerCase();
-  const next = safeNext(formData.get("next"));
-
-  if (!email) {
-    redirectWithMessage(
-      "/login",
-      "error",
-      "Enter the email address you used to create the account.",
-      next,
-      { unconfirmed: "1" },
-    );
-  }
-
-  const verification = await verifyTurnstile(formData, "resend_confirmation");
-
-  if (!verification.ok) {
-    redirectWithMessage("/login", "error", verification.message, next, { unconfirmed: "1" });
-  }
-
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.resend({
-    type: "signup",
-    email,
-    options: {
-      emailRedirectTo: `${getSiteUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
-    },
-  });
-
-  if (error) {
-    const message =
-      error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit"
-        ? "A confirmation email was sent recently. Wait a minute before trying again."
-        : "We could not resend the confirmation email. Check the address and try again.";
-    redirectWithMessage("/login", "error", message, next, { unconfirmed: "1" });
-  }
-
-  redirectWithMessage("/login", "notice", "A new confirmation email has been sent. Check your inbox and spam folder.", next);
 }
 
 export async function logoutAction() {
