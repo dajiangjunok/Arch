@@ -1,0 +1,958 @@
+.arch-reference.arch-faq,
+.arch-reference.arch-partners {
+  --navy: #1b3a6b;
+  --navy-soft: #2f4f85;
+  --marigold: #e8a317;
+  --marigold-soft: #f6cf7d;
+  --harbor: #7a9b9e;
+  --harbor-soft: #c7dadb;
+  --ivory: #faf6ea;
+  --paper: #fffdf7;
+  --ink: #221f18;
+  --muted: #8a8272;
+  --line: #22201814;
+  --marigold-wash: #f8e6b8;
+  --harbor-wash: #dce9ea;
+  background: var(--ivory);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.arch-reference.arch-faq *,
+.arch-reference.arch-partners * {
+  box-sizing: border-box;
+}
+
+.arch-reference.arch-faq .wrap,
+.arch-reference.arch-partners .wrap {
+  position: relative;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.arch-reference.arch-faq h1,
+.arch-reference.arch-faq h2,
+.arch-reference.arch-faq h3,
+.arch-reference.arch-partners h1,
+.arch-reference.arch-partners h2,
+.arch-reference.arch-partners h3 {
+  margin: 0;
+  font-family: Fraunces, serif;
+}
+
+.arch-reference.arch-faq button,
+.arch-reference.arch-partners button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.arch-reference.arch-faq .scroll-progress,
+.arch-reference.arch-partners .scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--marigold), var(--harbor));
+}
+
+.arch-reference.arch-faq .reveal,
+.arch-reference.arch-partners .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.arch-reference.arch-faq .reveal.in,
+.arch-reference.arch-partners .reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.arch-reference.arch-faq nav.top,
+.arch-reference.arch-partners nav.top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.85rem 0;
+}
+
+.arch-reference.arch-faq .brand,
+.arch-reference.arch-partners .brand {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--navy);
+  font-family: Fraunces, serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.arch-reference.arch-faq .brand-mark,
+.arch-reference.arch-partners .brand-mark {
+  width: 1.4rem;
+  height: auto;
+  object-fit: contain;
+}
+
+.arch-reference.arch-faq .nav-links,
+.arch-reference.arch-partners .nav-links {
+  display: none;
+  color: var(--navy);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.arch-reference.arch-faq .nav-links a,
+.arch-reference.arch-partners .nav-links a {
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+
+.arch-reference.arch-faq .nav-links a:hover,
+.arch-reference.arch-faq .nav-links a.active,
+.arch-reference.arch-partners .nav-links a:hover,
+.arch-reference.arch-partners .nav-links a.active {
+  opacity: 1;
+}
+
+.arch-reference.arch-faq .nav-links a.active,
+.arch-reference.arch-partners .nav-links a.active {
+  border-bottom: 1px solid var(--marigold);
+}
+
+.arch-reference.arch-faq .section,
+.arch-reference.arch-partners .section {
+  position: relative;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.arch-reference.arch-faq .sec-head,
+.arch-reference.arch-partners .sec-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2.75rem;
+}
+
+.arch-reference.arch-faq .sec-eyebrow,
+.arch-reference.arch-partners .sec-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.arch-reference.arch-faq .sec-eyebrow::before,
+.arch-reference.arch-partners .sec-eyebrow::before {
+  width: 1.5rem;
+  height: 1px;
+  background: var(--marigold);
+  content: "";
+}
+
+.arch-reference.arch-faq .sec-title,
+.arch-reference.arch-partners .sec-title {
+  margin-top: 0.6rem;
+  color: var(--navy);
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
+  font-weight: 600;
+  line-height: 1.08;
+}
+
+.arch-reference.arch-faq .btn,
+.arch-reference.arch-partners .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.95rem 1.7rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.arch-reference.arch-faq .btn:hover,
+.arch-reference.arch-partners .btn:hover {
+  transform: translateY(-2px);
+}
+
+.arch-reference.arch-faq .btn-fill,
+.arch-reference.arch-partners .btn-fill {
+  background: var(--marigold);
+  color: var(--navy);
+}
+
+.arch-reference.arch-faq .btn-fill:hover,
+.arch-reference.arch-partners .btn-fill:hover {
+  box-shadow: 0 8px 20px -6px rgba(232, 163, 23, 0.55);
+}
+
+.arch-reference.arch-faq footer,
+.arch-reference.arch-partners footer {
+  margin-top: 1px;
+  padding: 4rem 0 2.5rem;
+  border-radius: 2rem 2rem 0 0;
+  background: var(--navy);
+  color: var(--ivory);
+}
+
+.arch-reference.arch-faq .foot-tag,
+.arch-reference.arch-partners .foot-tag {
+  color: var(--marigold-soft);
+  font-family: Fraunces, serif;
+  font-size: 1.15rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.arch-reference.arch-faq .foot-links,
+.arch-reference.arch-partners .foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #faf6ea33;
+  color: #faf6eaa6;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.arch-reference.arch-faq .foot-links a:hover,
+.arch-reference.arch-partners .foot-links a:hover {
+  color: var(--marigold-soft);
+}
+
+/* FAQ */
+.arch-reference.arch-faq .faq-hero {
+  position: relative;
+  padding-top: 3rem;
+  padding-bottom: 1rem;
+}
+
+.arch-reference.arch-faq .faq-headline {
+  max-width: 18ch;
+  margin-top: 1.4rem;
+  color: var(--navy);
+  font-size: clamp(2.4rem, 5.6vw, 4.3rem);
+  font-weight: 600;
+  line-height: 1.08;
+}
+
+.arch-reference.arch-faq .faq-headline em {
+  color: var(--marigold);
+  font-style: italic;
+}
+
+.arch-reference.arch-faq .faq-sub {
+  max-width: 52ch;
+  margin-top: 1.5rem;
+  color: #4a4638;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.arch-reference.arch-faq .faq-layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+.arch-reference.arch-faq .faq-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.arch-reference.arch-faq .faq-cat {
+  padding: 0.6rem 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: left;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.arch-reference.arch-faq .faq-cat:hover {
+  color: var(--navy);
+}
+
+.arch-reference.arch-faq .faq-cat.active {
+  background: var(--navy);
+  color: var(--ivory);
+}
+
+.arch-reference.arch-faq .faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.arch-reference.arch-faq .faq-item {
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: var(--paper);
+  box-shadow:
+    inset 0 1px 0 var(--line),
+    0 16px 32px -26px rgba(27, 58, 107, 0.28);
+  transition: box-shadow 0.2s ease;
+}
+
+.arch-reference.arch-faq .faq-item.open {
+  box-shadow:
+    inset 0 1px 0 var(--line),
+    0 20px 40px -22px rgba(27, 58, 107, 0.4);
+}
+
+.arch-reference.arch-faq .faq-q {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1.35rem 1.6rem;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.arch-reference.arch-faq .faq-num {
+  width: 1.6rem;
+  flex: none;
+  color: var(--marigold);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.arch-reference.arch-faq .faq-q-text {
+  flex: 1;
+  color: var(--navy);
+  font-family: Fraunces, serif;
+  font-size: 1.08rem;
+  font-weight: 600;
+}
+
+.arch-reference.arch-faq .faq-icon {
+  position: relative;
+  display: flex;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--line);
+  border-radius: 50%;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.arch-reference.arch-faq .faq-icon::before,
+.arch-reference.arch-faq .faq-icon::after {
+  position: absolute;
+  background: var(--navy);
+  content: "";
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.arch-reference.arch-faq .faq-icon::before {
+  width: 9px;
+  height: 1.5px;
+}
+
+.arch-reference.arch-faq .faq-icon::after {
+  width: 1.5px;
+  height: 9px;
+}
+
+.arch-reference.arch-faq .faq-item.open .faq-icon {
+  border-color: var(--navy);
+  background: var(--navy);
+}
+
+.arch-reference.arch-faq .faq-item.open .faq-icon::before,
+.arch-reference.arch-faq .faq-item.open .faq-icon::after {
+  background: var(--ivory);
+}
+
+.arch-reference.arch-faq .faq-item.open .faq-icon::after {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+
+.arch-reference.arch-faq .faq-a-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+
+.arch-reference.arch-faq .faq-item.open .faq-a-wrap {
+  max-height: 760px;
+}
+
+.arch-reference.arch-faq .faq-a {
+  padding: 0 1.6rem 1.5rem 4.3rem;
+  color: #4a4638;
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+.arch-reference.arch-faq .faq-a strong {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.arch-reference.arch-faq .faq-a a {
+  text-decoration: underline;
+}
+
+.arch-reference.arch-faq .faq-a ul,
+.arch-reference.arch-faq .faq-a ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.3rem;
+}
+
+.arch-reference.arch-faq .faq-a li {
+  margin-bottom: 0.55rem;
+}
+
+/* Partners */
+.arch-reference.arch-partners .partner-hero {
+  position: relative;
+  padding-top: 3rem;
+  padding-bottom: 1rem;
+}
+
+.arch-reference.arch-partners .partner-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.arch-reference.arch-partners .partner-headline {
+  max-width: 15ch;
+  margin-top: 1.4rem;
+  color: var(--navy);
+  font-size: clamp(2.4rem, 5.6vw, 4.3rem);
+  font-weight: 600;
+  line-height: 1.08;
+}
+
+.arch-reference.arch-partners .partner-headline em {
+  color: var(--marigold);
+  font-style: italic;
+}
+
+.arch-reference.arch-partners .partner-sub {
+  max-width: 52ch;
+  margin-top: 1.5rem;
+  color: #4a4638;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.arch-reference.arch-partners .partner-cta {
+  margin-top: 2.25rem;
+}
+
+.arch-reference.arch-partners .bridge-stage-v {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  height: 440px;
+  margin: 0 auto;
+  touch-action: none;
+  user-select: none;
+}
+
+.arch-reference.arch-partners .bridge-svg-v {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.arch-reference.arch-partners .bridge-svg-v path {
+  fill: none;
+  stroke: var(--marigold);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 5 11;
+  transition: d 0.08s linear;
+}
+
+.arch-reference.arch-partners .bridge-node-v {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.arch-reference.arch-partners .bridge-node-top {
+  top: 0;
+  left: 8%;
+}
+
+.arch-reference.arch-partners .bridge-node-bottom {
+  right: 6%;
+  bottom: 0;
+  align-items: flex-end;
+}
+
+.arch-reference.arch-partners .bridge-node-dot {
+  width: 13px;
+  height: 13px;
+  border: 3px solid var(--marigold);
+  border-radius: 50%;
+  background: var(--navy);
+}
+
+.arch-reference.arch-partners .bridge-node-label {
+  color: var(--navy);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.arch-reference.arch-partners .bridge-hint-v {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: var(--muted);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  line-height: 1.7;
+  opacity: 0.65;
+  pointer-events: none;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.arch-reference.arch-partners .stage-tabs {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2.75rem;
+}
+
+.arch-reference.arch-partners .stage-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.85rem 1.4rem;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.arch-reference.arch-partners .stage-tab span {
+  color: var(--muted);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.arch-reference.arch-partners .stage-tab strong {
+  color: var(--navy);
+  font-family: Fraunces, serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.arch-reference.arch-partners .stage-tab.active {
+  border-color: var(--navy);
+  background: var(--navy);
+}
+
+.arch-reference.arch-partners .stage-tab.active span {
+  color: var(--marigold-soft);
+}
+
+.arch-reference.arch-partners .stage-tab.active strong {
+  color: var(--ivory);
+}
+
+.arch-reference.arch-partners .stage-panel.active {
+  display: block;
+  animation: info-fade-up 0.5s ease;
+}
+
+.arch-reference.arch-partners .stage-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 2.5rem;
+}
+
+.arch-reference.arch-partners .stage-tag {
+  display: inline-block;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: var(--marigold-wash);
+  color: var(--navy);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.arch-reference.arch-partners .stage-h3 {
+  margin-top: 0.6rem;
+  color: var(--navy);
+  font-size: clamp(1.6rem, 3.2vw, 2.15rem);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.arch-reference.arch-partners .stage-body {
+  margin-top: 1.15rem;
+  color: #4a4638;
+  font-size: 0.92rem;
+  line-height: 1.8;
+}
+
+.arch-reference.arch-partners .stage-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.arch-reference.arch-partners .stage-stat {
+  padding: 1.15rem 1.25rem;
+  border-radius: 1.1rem;
+  background: var(--paper);
+  box-shadow: inset 0 1px 0 var(--line);
+}
+
+.arch-reference.arch-partners .stage-stat b {
+  display: block;
+  color: var(--navy);
+  font-family: Fraunces, serif;
+  font-size: 1.5rem;
+}
+
+.arch-reference.arch-partners .stage-stat span {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.arch-reference.arch-partners .stage-cta {
+  margin-top: 2rem;
+}
+
+.arch-reference.arch-partners .stage-media {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  box-shadow: 0 20px 40px -24px rgba(27, 58, 107, 0.35);
+}
+
+.arch-reference.arch-partners .stage-media img {
+  object-fit: cover;
+}
+
+.arch-reference.arch-partners .tick-corner {
+  position: relative;
+}
+
+.arch-reference.arch-partners .tick-corner::before,
+.arch-reference.arch-partners .tick-corner::after {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  opacity: 0.35;
+  content: "";
+}
+
+.arch-reference.arch-partners .tick-corner::before {
+  top: 1.1rem;
+  left: 1.1rem;
+  border-top: 1.5px solid currentcolor;
+  border-left: 1.5px solid currentcolor;
+}
+
+.arch-reference.arch-partners .tick-corner::after {
+  right: 1.1rem;
+  bottom: 1.1rem;
+  border-right: 1.5px solid currentcolor;
+  border-bottom: 1.5px solid currentcolor;
+}
+
+.arch-reference.arch-partners .why-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.arch-reference.arch-partners .why-card {
+  padding: 2.25rem 2rem;
+  border-radius: 1.75rem;
+  background: var(--paper);
+  color: var(--navy);
+  box-shadow:
+    inset 0 1px 0 var(--line),
+    0 20px 40px -28px rgba(27, 58, 107, 0.28);
+}
+
+.arch-reference.arch-partners .why-num {
+  color: var(--marigold);
+  font-family: Fraunces, serif;
+  font-size: 1rem;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.arch-reference.arch-partners .why-card h3 {
+  margin-top: 0.85rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.arch-reference.arch-partners .why-card p {
+  margin-top: 0.85rem;
+  color: #4a4638;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.arch-reference.arch-partners .partner-wall-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.arch-reference.arch-partners .partner-logo {
+  position: relative;
+  aspect-ratio: 1.4 / 1;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  background: var(--paper);
+  box-shadow:
+    inset 0 1px 0 var(--line),
+    0 14px 26px -18px rgba(27, 58, 107, 0.22);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.arch-reference.arch-partners .partner-logo:hover {
+  box-shadow:
+    0 3px 0 -1px var(--marigold-soft),
+    0 18px 30px -16px rgba(27, 58, 107, 0.28);
+  transform: translateY(-4px);
+}
+
+.arch-reference.arch-partners .partner-logo img {
+  padding: 1.35rem;
+  object-fit: contain;
+}
+
+.arch-reference.arch-partners .partner-wall-note {
+  position: relative;
+  z-index: 2;
+  margin-top: 1.75rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.arch-reference.arch-partners .contact-section {
+  padding-bottom: 6.5rem;
+  text-align: center;
+}
+
+.arch-reference.arch-partners .contact-section .sec-eyebrow {
+  justify-content: center;
+}
+
+.arch-reference.arch-partners .contact-section .sec-title {
+  margin-top: 0.75rem;
+}
+
+.arch-reference.arch-partners .contact-sub {
+  max-width: 46ch;
+  margin: 1.25rem auto 0;
+  color: #4a4638;
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.arch-reference.arch-partners .contact-cta {
+  margin-top: 2.25rem;
+}
+
+@keyframes info-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .arch-reference.arch-faq .wrap,
+  .arch-reference.arch-partners .wrap {
+    padding-right: 3rem;
+    padding-left: 3rem;
+  }
+}
+
+@media (min-width: 800px) {
+  .arch-reference.arch-faq .nav-links,
+  .arch-reference.arch-partners .nav-links {
+    display: flex;
+  }
+
+  .arch-reference.arch-partners .why-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .arch-reference.arch-partners .partner-wall-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .arch-reference.arch-faq .faq-layout {
+    grid-template-columns: 220px 1fr;
+    gap: 3.5rem;
+  }
+
+  .arch-reference.arch-faq .faq-cats {
+    position: sticky;
+    top: 2rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .arch-reference.arch-faq .faq-cat {
+    width: 100%;
+    padding: 0.65rem 0.9rem;
+    border-radius: 0.9rem;
+  }
+
+  .arch-reference.arch-partners .partner-hero-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 2rem;
+  }
+
+  .arch-reference.arch-partners .stage-grid {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 3rem;
+  }
+
+  .arch-reference.arch-partners .partner-wall-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .arch-reference.arch-partners .bridge-stage-v {
+    max-width: 280px;
+    height: 260px;
+  }
+
+  .arch-reference.arch-partners .bridge-hint-v {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .arch-reference.arch-faq .faq-q {
+    gap: 0.75rem;
+    padding: 1.1rem;
+  }
+
+  .arch-reference.arch-faq .faq-a {
+    padding: 0 1.1rem 1.25rem 3.45rem;
+  }
+
+  .arch-reference.arch-partners .stage-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .arch-reference.arch-partners .stage-tab {
+    flex: 1 1 100%;
+  }
+
+  .arch-reference.arch-partners .stage-media {
+    min-height: 260px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arch-reference.arch-faq .reveal,
+  .arch-reference.arch-partners .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .arch-reference.arch-partners .bridge-svg-v path,
+  .arch-reference.arch-partners .stage-panel.active {
+    animation: none;
+    transition: none;
+  }
+}

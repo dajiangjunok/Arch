@@ -1,4 +1,4 @@
-export type ReferencePageId = "home" | WeekPageId;
+export type ReferencePageId = "home" | WeekPageId | "faq" | "partners";
 
 export type WeekPageId = "week1" | "week2" | "week3";
 

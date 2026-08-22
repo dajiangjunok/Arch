@@ -61,6 +61,22 @@
   text-transform: none;
 }
 
+.arch-reference .account-menu::after {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: min(18rem, calc(100vw - 2rem));
+  height: 0.7rem;
+  content: "";
+  pointer-events: none;
+}
+
+.arch-reference .account-menu:hover::after,
+.arch-reference .account-menu:focus-within::after,
+.arch-reference .account-menu.is-open::after {
+  pointer-events: auto;
+}
+
 .arch-reference .account-trigger {
   display: flex;
   min-width: 10.5rem;
