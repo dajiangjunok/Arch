@@ -13,7 +13,7 @@ export const ticketOptions: TicketConfig[] = [
   {
     id: "single_week_pass",
     label: "Single Week Pass",
-    priceLabel: "$2,000 USD",
+    priceLabel: "$9,799 USD",
     description: "One week, choose Week 1, 2, or 3",
     amountEnv: "ARCH_TICKET_AMOUNT_SINGLE_WEEK_PASS",
     priceEnv: "STRIPE_PRICE_SINGLE_WEEK_PASS",
@@ -21,7 +21,7 @@ export const ticketOptions: TicketConfig[] = [
   {
     id: "multi_week_pass",
     label: "Multi-Week Pass",
-    priceLabel: "$3,000 USD",
+    priceLabel: "$19,598 USD",
     description: "Two weeks, choose any two of three weeks",
     amountEnv: "ARCH_TICKET_AMOUNT_MULTI_WEEK_PASS",
     priceEnv: "STRIPE_PRICE_MULTI_WEEK_PASS",
@@ -29,7 +29,7 @@ export const ticketOptions: TicketConfig[] = [
   {
     id: "full_residency",
     label: "Full Residency",
-    priceLabel: "$5,000 USD",
+    priceLabel: "$29,397 USD",
     description: "Three weeks, Nov 1 - 21, complete immersion",
     amountEnv: "ARCH_TICKET_AMOUNT_FULL_RESIDENCY",
     priceEnv: "STRIPE_PRICE_FULL_RESIDENCY",

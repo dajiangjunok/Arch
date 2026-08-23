@@ -4,9 +4,10 @@ import { getStripe } from "@/lib/stripe";
 import {
   hasProcessedStripeEvent,
   markOrderPaid,
-  markOrderRefundedByPaymentIntent,
   markOrderStatusBySession,
   recordStripeEvent,
+  syncChargeRefundTotals,
+  syncStripeRefund,
 } from "@/lib/store";
 
 export const runtime = "nodejs";
@@ -17,6 +18,12 @@ function getStringId(value: string | { id: string } | null) {
   }
 
   return typeof value === "string" ? value : value.id;
+}
+
+function readUuid(value: string | undefined) {
+  return value && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+    ? value
+    : null;
 }
 
 export async function POST(request: Request) {
@@ -69,11 +76,32 @@ export async function POST(request: Request) {
       await markOrderStatusBySession(session.id, "payment_failed");
       break;
     }
+    case "refund.created":
+    case "refund.updated":
+    case "refund.failed":
+    case "charge.refund.updated": {
+      const refund = event.data.object as Stripe.Refund;
+      const paymentIntentId = getStringId(refund.payment_intent);
+      if (paymentIntentId) {
+        await syncStripeRefund({
+          refundRequestId: readUuid(refund.metadata?.refundRequestId),
+          stripeRefundId: refund.id,
+          paymentIntentId,
+          amount: refund.amount,
+          currency: refund.currency,
+          stripeStatus: refund.status || (event.type === "refund.failed" ? "failed" : "pending"),
+          failureReason: refund.failure_reason || null,
+          eventCreated: event.created,
+          rawPayload: event,
+        });
+      }
+      break;
+    }
     case "charge.refunded": {
       const charge = event.data.object as Stripe.Charge;
       const paymentIntentId = getStringId(charge.payment_intent);
       if (paymentIntentId) {
-        await markOrderRefundedByPaymentIntent(paymentIntentId);
+        await syncChargeRefundTotals(paymentIntentId, charge.amount_refunded);
       }
       break;
     }

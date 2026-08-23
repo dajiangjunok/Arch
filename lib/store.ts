@@ -17,6 +17,8 @@ import type {
   ReferralCode,
   ReferralCodeStatus,
   ReferralCodeType,
+  RefundRequest,
+  RefundRequestStatus,
   StripeEventRecord,
   TicketId,
 } from "./types";
@@ -47,6 +49,7 @@ type OrderRow = {
   application_id: string;
   selected_ticket: TicketId;
   amount: number | null;
+  refunded_amount: number;
   currency: string;
   status: OrderStatus;
   checkout_url: string | null;
@@ -67,11 +70,32 @@ type PaymentRow = {
   provider: "stripe";
   provider_payment_id: string | null;
   amount: number | null;
+  refunded_amount: number;
   currency: string;
   status: PaymentStatus;
   paid_at: string | null;
   raw_payload: unknown;
   created_at: string;
+};
+
+type RefundRequestRow = {
+  id: string;
+  order_id: string;
+  user_id: string | null;
+  requested_amount: number;
+  approved_amount: number | null;
+  currency: string;
+  reason: string;
+  admin_note: string | null;
+  status: RefundRequestStatus;
+  stripe_refund_id: string | null;
+  stripe_status: string | null;
+  failure_reason: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 type DistributorRow = {
@@ -122,6 +146,8 @@ type CommissionRow = {
   rate: number;
   basis_amount: number;
   commission_amount: number;
+  refunded_basis_amount: number;
+  refunded_commission_amount: number;
   currency: string;
   status: CommissionStatus;
   paid_at: string | null;
@@ -160,6 +186,7 @@ function mapOrder(row: OrderRow): Order {
     applicationId: row.application_id,
     selectedTicket: row.selected_ticket,
     amount: row.amount,
+    refundedAmount: row.refunded_amount,
     currency: row.currency,
     status: row.status,
     checkoutUrl: row.checkout_url,
@@ -230,6 +257,8 @@ function mapCommission(row: CommissionRow): Commission {
     rate: Number(row.rate),
     basisAmount: row.basis_amount,
     commissionAmount: row.commission_amount,
+    refundedBasisAmount: row.refunded_basis_amount,
+    refundedCommissionAmount: row.refunded_commission_amount,
     currency: row.currency,
     status: row.status,
     paidAt: row.paid_at,
@@ -246,11 +275,34 @@ function mapPayment(row: PaymentRow): Payment {
     provider: row.provider,
     providerPaymentId: row.provider_payment_id,
     amount: row.amount,
+    refundedAmount: row.refunded_amount,
     currency: row.currency,
     status: row.status,
     paidAt: row.paid_at,
     rawPayload: row.raw_payload,
     createdAt: row.created_at,
+  };
+}
+
+function mapRefundRequest(row: RefundRequestRow): RefundRequest {
+  return {
+    id: row.id,
+    orderId: row.order_id,
+    userId: row.user_id,
+    requestedAmount: row.requested_amount,
+    approvedAmount: row.approved_amount,
+    currency: row.currency,
+    reason: row.reason,
+    adminNote: row.admin_note,
+    status: row.status,
+    stripeRefundId: row.stripe_refund_id,
+    stripeStatus: row.stripe_status,
+    failureReason: row.failure_reason,
+    reviewedBy: row.reviewed_by,
+    reviewedAt: row.reviewed_at,
+    completedAt: row.completed_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -453,6 +505,7 @@ export async function updateOrder(id: string, patch: Partial<Omit<Order, "id" | 
     applicationId: "application_id",
     selectedTicket: "selected_ticket",
     amount: "amount",
+    refundedAmount: "refunded_amount",
     currency: "currency",
     status: "status",
     checkoutUrl: "checkout_url",
@@ -533,6 +586,191 @@ export async function listPaymentsForOrders(orderIds: string[]) {
 
   if (error) throw error;
   return (data as PaymentRow[]).map(mapPayment);
+}
+
+export async function createRefundRequest(input: {
+  orderId: string;
+  userId: string;
+  requestedAmount: number;
+  reason: string;
+}) {
+  const { data, error } = await createSupabaseAdminClient().rpc("create_refund_request", {
+    p_order_id: input.orderId,
+    p_user_id: input.userId,
+    p_requested_amount: input.requestedAmount,
+    p_reason: input.reason,
+  });
+
+  if (error) throw error;
+  const request = await getRefundRequest(data as string);
+  if (!request) throw new Error("Refund request could not be created.");
+  return request;
+}
+
+export async function getRefundRequest(id: string) {
+  const { data, error } = await createSupabaseAdminClient()
+    .from("refund_requests")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ? mapRefundRequest(data as RefundRequestRow) : null;
+}
+
+export async function listRefundRequests() {
+  const { data, error } = await createSupabaseAdminClient()
+    .from("refund_requests")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data as RefundRequestRow[]).map(mapRefundRequest);
+}
+
+export async function listRefundRequestsForUser(userId: string) {
+  const { data, error } = await createSupabaseAdminClient()
+    .from("refund_requests")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data as RefundRequestRow[]).map(mapRefundRequest);
+}
+
+export async function listRefundRequestsForOrders(orderIds: string[]) {
+  if (orderIds.length === 0) return [];
+
+  const { data, error } = await createSupabaseAdminClient()
+    .from("refund_requests")
+    .select("*")
+    .in("order_id", orderIds)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data as RefundRequestRow[]).map(mapRefundRequest);
+}
+
+export async function beginRefundRequest(input: {
+  refundRequestId: string;
+  adminEmail: string;
+  approvedAmount: number;
+  adminNote: string | null;
+}) {
+  const { data, error } = await createSupabaseAdminClient().rpc("begin_refund_request", {
+    p_refund_request_id: input.refundRequestId,
+    p_admin_email: input.adminEmail,
+    p_approved_amount: input.approvedAmount,
+    p_admin_note: input.adminNote,
+  });
+
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) throw new Error("Refund request could not be started.");
+
+  return {
+    refundRequestId: row.refund_request_id as string,
+    orderId: row.order_id as string,
+    paymentIntentId: row.payment_intent_id as string,
+    approvedAmount: row.approved_amount as number,
+    currency: row.currency as string,
+  };
+}
+
+export async function attachStripeRefundToRequest(input: {
+  refundRequestId: string;
+  stripeRefundId: string;
+  stripeStatus: string | null;
+}) {
+  const { data, error } = await createSupabaseAdminClient()
+    .from("refund_requests")
+    .update({
+      stripe_refund_id: input.stripeRefundId,
+      stripe_status: input.stripeStatus,
+      updated_at: now(),
+    })
+    .eq("id", input.refundRequestId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapRefundRequest(data as RefundRequestRow);
+}
+
+export async function resetRefundRequestAfterStripeError(refundRequestId: string, message: string) {
+  const { data, error } = await createSupabaseAdminClient()
+    .from("refund_requests")
+    .update({ status: "pending", failure_reason: message, updated_at: now() })
+    .eq("id", refundRequestId)
+    .eq("status", "processing")
+    .is("stripe_refund_id", null)
+    .select()
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ? mapRefundRequest(data as RefundRequestRow) : null;
+}
+
+export async function rejectRefundRequest(input: {
+  refundRequestId: string;
+  adminEmail: string;
+  adminNote: string;
+}) {
+  const { data, error } = await createSupabaseAdminClient()
+    .from("refund_requests")
+    .update({
+      status: "rejected",
+      admin_note: input.adminNote.trim(),
+      reviewed_by: input.adminEmail,
+      reviewed_at: now(),
+      completed_at: now(),
+      updated_at: now(),
+    })
+    .eq("id", input.refundRequestId)
+    .eq("status", "pending")
+    .select()
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ? mapRefundRequest(data as RefundRequestRow) : null;
+}
+
+export async function syncStripeRefund(input: {
+  refundRequestId: string | null;
+  stripeRefundId: string;
+  paymentIntentId: string;
+  amount: number;
+  currency: string;
+  stripeStatus: string;
+  failureReason: string | null;
+  eventCreated: number;
+  rawPayload: unknown;
+}) {
+  const { data, error } = await createSupabaseAdminClient().rpc("sync_stripe_refund", {
+    p_refund_request_id: input.refundRequestId,
+    p_stripe_refund_id: input.stripeRefundId,
+    p_payment_intent_id: input.paymentIntentId,
+    p_amount: input.amount,
+    p_currency: input.currency,
+    p_stripe_status: input.stripeStatus,
+    p_failure_reason: input.failureReason,
+    p_event_created: input.eventCreated,
+    p_raw_payload: input.rawPayload,
+  });
+
+  if (error) throw error;
+  return data as string | null;
+}
+
+export async function syncChargeRefundTotals(paymentIntentId: string, refundedAmount: number) {
+  const { data, error } = await createSupabaseAdminClient().rpc("sync_charge_refund_totals", {
+    p_payment_intent_id: paymentIntentId,
+    p_refunded_amount: refundedAmount,
+  });
+
+  if (error) throw error;
+  return data as string | null;
 }
 
 export async function hasProcessedStripeEvent(stripeEventId: string) {
@@ -644,41 +882,6 @@ export async function markOrderStatusBySession(sessionId: string, status: OrderS
 
   if (error) throw error;
   return data ? mapOrder(data as OrderRow) : null;
-}
-
-export async function markOrderRefundedByPaymentIntent(paymentIntentId: string) {
-  const { data, error } = await createSupabaseAdminClient()
-    .from("orders")
-    .update({ status: "refunded", updated_at: now() })
-    .eq("stripe_payment_intent_id", paymentIntentId)
-    .select()
-    .maybeSingle();
-
-  if (error) throw error;
-  if (!data) return null;
-
-  const { error: applicationError } = await createSupabaseAdminClient()
-    .from("applications")
-    .update({ status: "canceled", updated_at: now() })
-    .eq("id", (data as OrderRow).application_id);
-
-  if (applicationError) throw applicationError;
-
-  const { error: paymentError } = await createSupabaseAdminClient()
-    .from("payments")
-    .update({ status: "refunded" })
-    .eq("provider", "stripe")
-    .eq("provider_payment_id", paymentIntentId);
-
-  if (paymentError) throw paymentError;
-
-  const { error: commissionError } = await createSupabaseAdminClient().rpc("reverse_commissions_for_order", {
-    p_order_id: (data as OrderRow).id,
-    p_reason: "payment_refunded",
-  });
-
-  if (commissionError) throw commissionError;
-  return mapOrder(data as OrderRow);
 }
 
 export async function listDistributors() {

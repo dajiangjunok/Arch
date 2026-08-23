@@ -14,12 +14,21 @@ export type OrderStatus =
   | "pending"
   | "checkout_created"
   | "paid"
+  | "partially_refunded"
   | "payment_failed"
   | "canceled"
   | "refunded"
   | "expired";
 
-export type PaymentStatus = "processing" | "succeeded" | "failed" | "refunded";
+export type PaymentStatus = "processing" | "succeeded" | "partially_refunded" | "failed" | "refunded";
+
+export type RefundRequestStatus =
+  | "pending"
+  | "processing"
+  | "succeeded"
+  | "rejected"
+  | "failed"
+  | "canceled";
 
 export type DistributorStatus = "active" | "inactive";
 export type ReferralCodeType = "referral" | "admission";
@@ -54,6 +63,7 @@ export type Order = {
   applicationId: string;
   selectedTicket: TicketId;
   amount: number | null;
+  refundedAmount: number;
   currency: string;
   status: OrderStatus;
   checkoutUrl: string | null;
@@ -74,11 +84,32 @@ export type Payment = {
   provider: "stripe";
   providerPaymentId: string | null;
   amount: number | null;
+  refundedAmount: number;
   currency: string;
   status: PaymentStatus;
   paidAt: string | null;
   rawPayload: unknown;
   createdAt: string;
+};
+
+export type RefundRequest = {
+  id: string;
+  orderId: string;
+  userId: string | null;
+  requestedAmount: number;
+  approvedAmount: number | null;
+  currency: string;
+  reason: string;
+  adminNote: string | null;
+  status: RefundRequestStatus;
+  stripeRefundId: string | null;
+  stripeStatus: string | null;
+  failureReason: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type StripeEventRecord = {
@@ -147,6 +178,8 @@ export type Commission = {
   rate: number;
   basisAmount: number;
   commissionAmount: number;
+  refundedBasisAmount: number;
+  refundedCommissionAmount: number;
   currency: string;
   status: CommissionStatus;
   paidAt: string | null;
@@ -159,6 +192,7 @@ export type AppData = {
   applications: Application[];
   orders: Order[];
   payments: Payment[];
+  refundRequests: RefundRequest[];
   stripeEvents: StripeEventRecord[];
   adminAuditLogs: AdminAuditLog[];
   distributors: Distributor[];

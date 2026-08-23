@@ -39,10 +39,15 @@ export default async function PartnerPage() {
       return { referral, application, order: orders[0] || null };
     }),
   );
-  const paidCount = inviteeRows.filter((row) => row.order?.status === "paid").length;
+  const paidCount = inviteeRows.filter((row) =>
+    row.order && ["paid", "partially_refunded", "refunded"].includes(row.order.status),
+  ).length;
   const pendingCount = inviteeRows.filter((row) => row.application?.status === "pending_review").length;
   const unsettled = commissions.filter((commission) => commission.status === "pending" || commission.status === "approved");
-  const unsettledAmount = unsettled.reduce((total, commission) => total + commission.commissionAmount, 0);
+  const unsettledAmount = unsettled.reduce(
+    (total, commission) => total + commission.commissionAmount - commission.refundedCommissionAmount,
+    0,
+  );
   const currency = unsettled[0]?.currency || commissions[0]?.currency || "usd";
   const siteUrl = getSiteUrl();
 

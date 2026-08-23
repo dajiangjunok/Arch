@@ -81,3 +81,25 @@ export async function createStripeCheckoutSession(application: Application, orde
 
   return session;
 }
+
+export async function createStripeRefund(input: {
+  paymentIntentId: string;
+  amount: number;
+  orderId: string;
+  refundRequestId: string;
+}) {
+  return getStripe().refunds.create(
+    {
+      payment_intent: input.paymentIntentId,
+      amount: input.amount,
+      reason: "requested_by_customer",
+      metadata: {
+        orderId: input.orderId,
+        refundRequestId: input.refundRequestId,
+      },
+    },
+    {
+      idempotencyKey: `refund-request:${input.refundRequestId}`,
+    },
+  );
+}

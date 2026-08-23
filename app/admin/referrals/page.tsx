@@ -161,7 +161,14 @@ export default async function ReferralsAdminPage({
                   <tr key={commission.id} className="border-t border-line">
                     <td className="px-3 py-3">{distributorById.get(commission.beneficiaryDistributorId)?.name || "-"}</td>
                     <td className="px-3 py-3">L{commission.level} · {commission.rate}%</td>
-                    <td className="px-3 py-3 font-semibold">{formatMoney(commission.commissionAmount, commission.currency)}</td>
+                    <td className="px-3 py-3 font-semibold">
+                      {formatMoney(commission.commissionAmount - commission.refundedCommissionAmount, commission.currency)}
+                      {commission.refundedCommissionAmount > 0 ? (
+                        <span className="mt-1 block text-xs font-normal text-ink-soft">
+                          {formatMoney(commission.refundedCommissionAmount, commission.currency)} refunded
+                        </span>
+                      ) : null}
+                    </td>
                     <td className="px-3 py-3"><StatusPill>{commission.status}</StatusPill></td>
                     <td className="px-3 py-3">
                       {commission.status === "pending" ? <CommissionAction id={commission.id} status="approved" label="Approve" /> : null}
@@ -181,7 +188,12 @@ export default async function ReferralsAdminPage({
 }
 
 function totalPending(commissions: Awaited<ReturnType<typeof listCommissions>>) {
-  return commissions.filter((commission) => commission.status === "pending" || commission.status === "approved").reduce((total, commission) => total + commission.commissionAmount, 0);
+  return commissions
+    .filter((commission) => commission.status === "pending" || commission.status === "approved")
+    .reduce(
+      (total, commission) => total + commission.commissionAmount - commission.refundedCommissionAmount,
+      0,
+    );
 }
 
 function Metric({ label, value }: { label: string; value: string | number }) {

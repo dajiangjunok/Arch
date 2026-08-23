@@ -37,7 +37,9 @@ export default async function ApplicationDetailPage({
   }
 
   const orders = await getOrdersForApplication(application.id);
-  const hasCompletedOrder = orders.some((order) => order.status === "paid" || order.status === "refunded");
+  const hasCompletedOrder = orders.some((order) =>
+    ["paid", "partially_refunded", "refunded"].includes(order.status),
+  );
   const activeOrder = orders.find(
     (order) =>
       order.status === "checkout_created" &&
@@ -167,6 +169,11 @@ export default async function ApplicationDetailPage({
                   <p className="mt-2 break-all font-mono text-xs text-ink-soft">
                     Stripe Session {order.stripeCheckoutSessionId || "-"}
                   </p>
+                  {order.refundedAmount > 0 ? (
+                    <p className="mt-2 font-mono text-xs text-ink-soft">
+                      Refunded {formatMoney(order.refundedAmount, order.currency)}
+                    </p>
+                  ) : null}
                   <p className="mt-2 font-mono text-xs text-ink-soft">
                     Referral {order.referralCode || "-"}
                   </p>

@@ -1,5 +1,5 @@
 import { getTicketLabel } from "./tickets";
-import type { ApplicationStatus, OrderStatus, PaymentStatus, TicketId } from "./types";
+import type { ApplicationStatus, OrderStatus, PaymentStatus, RefundRequestStatus, TicketId } from "./types";
 
 export function formatDate(value: string | null) {
   if (!value) {
@@ -16,7 +16,7 @@ export function formatDate(value: string | null) {
 }
 
 export function formatMoney(amount: number | null, currency: string) {
-  if (!amount) {
+  if (amount === null) {
     return "Not configured";
   }
 
@@ -46,6 +46,7 @@ export function orderStatusLabel(status: OrderStatus) {
     pending: "Pending",
     checkout_created: "Checkout created",
     paid: "Paid",
+    partially_refunded: "Partially refunded",
     payment_failed: "Payment failed",
     canceled: "Canceled",
     refunded: "Refunded",
@@ -59,8 +60,22 @@ export function paymentStatusLabel(status: PaymentStatus) {
   const labels: Record<PaymentStatus, string> = {
     processing: "Processing",
     succeeded: "Succeeded",
+    partially_refunded: "Partially refunded",
     failed: "Failed",
     refunded: "Refunded",
+  };
+
+  return labels[status];
+}
+
+export function refundRequestStatusLabel(status: RefundRequestStatus) {
+  const labels: Record<RefundRequestStatus, string> = {
+    pending: "Pending review",
+    processing: "Refund processing",
+    succeeded: "Refunded",
+    rejected: "Request declined",
+    failed: "Refund failed",
+    canceled: "Canceled",
   };
 
   return labels[status];

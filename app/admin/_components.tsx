@@ -20,6 +20,9 @@ export function AdminShell({ children, title }: { children: React.ReactNode; tit
           <Link className="border border-line bg-paper px-4 py-3 hover:border-ink" href="/admin/orders">
             Orders
           </Link>
+          <Link className="border border-line bg-paper px-4 py-3 hover:border-ink" href="/admin/refunds">
+            Refunds
+          </Link>
           <Link className="border border-line bg-paper px-4 py-3 hover:border-ink" href="/admin/referrals">
             Referrals
           </Link>

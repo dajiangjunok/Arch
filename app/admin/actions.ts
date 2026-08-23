@@ -7,14 +7,20 @@ import {
   setAdminSession,
   validateAdminCredentials,
 } from "@/lib/admin-auth";
-import { createStripeCheckoutSession } from "@/lib/stripe";
+import { createStripeCheckoutSession, createStripeRefund } from "@/lib/stripe";
+import { parseMoneyInput } from "@/lib/money";
 import {
+  attachStripeRefundToRequest,
+  beginRefundRequest,
   createOrderForApplication,
   createDistributor,
   createReferralCode,
   getApplication,
   getOrdersForApplication,
+  getRefundRequest,
   recordAdminAuditLog,
+  rejectRefundRequest,
+  resetRefundRequestAfterStripeError,
   updateCommissionStatus,
   updateApplicationStatus,
   updateReferralCode,
@@ -206,7 +212,9 @@ export async function approveApplicationAction(formData: FormData) {
   }
 
   const orders = await getOrdersForApplication(application.id);
-  const paidOrder = orders.find((order) => order.status === "paid" || order.status === "refunded");
+  const paidOrder = orders.find((order) =>
+    ["paid", "partially_refunded", "refunded"].includes(order.status),
+  );
 
   if (paidOrder) {
     redirectWithMessage(
@@ -234,7 +242,9 @@ export async function approveApplicationAction(formData: FormData) {
     );
   }
 
-  let order = orders.find((item) => item.status !== "paid" && item.status !== "refunded") || null;
+  let order = orders.find((item) =>
+    !["paid", "partially_refunded", "refunded"].includes(item.status),
+  ) || null;
 
   if (application.status !== "approved" && application.status !== "payment_sent") {
     await updateApplicationStatus(application.id, "approved");
@@ -293,4 +303,116 @@ export async function approveApplicationAction(formData: FormData) {
     "notice",
     "Application approved and payment link created.",
   );
+}
+
+export async function approveRefundAction(formData: FormData) {
+  const session = await requireAdmin();
+  const refundRequestId = String(formData.get("refundRequestId") || "");
+  const request = refundRequestId ? await getRefundRequest(refundRequestId) : null;
+
+  if (!request || request.status !== "pending") {
+    redirectWithMessage("/admin/refunds", "error", "This refund request is no longer pending.");
+  }
+
+  const approvedAmount = parseMoneyInput(
+    String(formData.get("approvedAmount") || ""),
+    request.currency,
+  );
+  const adminNote = String(formData.get("adminNote") || "").trim();
+
+  if (!approvedAmount) {
+    redirectWithMessage("/admin/refunds", "error", "Enter a valid refund amount.");
+  }
+
+  let started = false;
+  let auditMetadata: Record<string, unknown> | null = null;
+
+  try {
+    const prepared = await beginRefundRequest({
+      refundRequestId: request.id,
+      adminEmail: session.email,
+      approvedAmount,
+      adminNote: adminNote || null,
+    });
+    started = true;
+
+    const refund = await createStripeRefund({
+      paymentIntentId: prepared.paymentIntentId,
+      amount: prepared.approvedAmount,
+      orderId: prepared.orderId,
+      refundRequestId: prepared.refundRequestId,
+    });
+
+    await attachStripeRefundToRequest({
+      refundRequestId: prepared.refundRequestId,
+      stripeRefundId: refund.id,
+      stripeStatus: refund.status,
+    });
+
+    auditMetadata = {
+      orderId: prepared.orderId,
+      approvedAmount: prepared.approvedAmount,
+      currency: prepared.currency,
+      stripeRefundId: refund.id,
+    };
+  } catch (error) {
+    console.error("Unable to create Stripe refund", error);
+    if (started) {
+      await resetRefundRequestAfterStripeError(
+        request.id,
+        error instanceof Error ? error.message : "Stripe refund request failed.",
+      ).catch(() => undefined);
+    }
+    redirectWithMessage(
+      "/admin/refunds",
+      "error",
+      "Stripe could not start the refund. The request remains available for a safe retry.",
+    );
+  }
+
+  if (auditMetadata) {
+    await recordAdminAuditLog({
+      adminEmail: session.email,
+      action: "refund.approved",
+      targetType: "refund_request",
+      targetId: request.id,
+      metadata: auditMetadata,
+    }).catch((error) => console.error("Unable to record refund audit log", error));
+  }
+
+  redirectWithMessage(
+    "/admin/refunds",
+    "notice",
+    "Refund submitted to Stripe. Final status will be confirmed by webhook.",
+  );
+}
+
+export async function rejectRefundAction(formData: FormData) {
+  const session = await requireAdmin();
+  const refundRequestId = String(formData.get("refundRequestId") || "");
+  const adminNote = String(formData.get("adminNote") || "").trim();
+
+  if (!refundRequestId || adminNote.length < 3 || adminNote.length > 1000) {
+    redirectWithMessage("/admin/refunds", "error", "Provide a reason for declining this request.");
+  }
+
+  const request = await rejectRefundRequest({
+    refundRequestId,
+    adminEmail: session.email,
+    adminNote,
+  });
+
+  if (!request) {
+    redirectWithMessage("/admin/refunds", "error", "This refund request is no longer pending.");
+  }
+
+  await recordAdminAuditLog({
+    adminEmail: session.email,
+    action: "refund.rejected",
+    targetType: "refund_request",
+    targetId: request.id,
+    metadata: { orderId: request.orderId, requestedAmount: request.requestedAmount },
+  });
+
+  redirectWithMessage("/admin/refunds", "notice", "Refund request declined.");
 }
