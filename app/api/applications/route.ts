@@ -6,10 +6,10 @@ import {
   deleteApplication,
 } from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { ApplicantType, TicketId } from "@/lib/types";
+import type { ProgramWeek, TicketId } from "@/lib/types";
 import { cookies } from "next/headers";
 
-const applicantTypes: ApplicantType[] = ["founder", "investor", "institution", "partner", "other"];
+const programWeeks: ProgramWeek[] = ["week_1", "week_2", "week_3"];
 
 function readString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
@@ -34,43 +34,44 @@ export async function POST(request: Request) {
   }
 
   const name = readString(body.name);
-  const company = readString(body.company);
-  const title = readString(body.title);
-  const country = readString(body.country);
-  const city = readString(body.city);
+  const contactEmail = readString(body.contactEmail).toLowerCase();
+  const alternateContact = readString(body.alternateContact);
   const message = readString(body.message);
+  const additionalInfo = readString(body.additionalInfo);
   const cookieStore = await cookies();
   const cookieReferralCode = cookieStore.get("arch_referral_code")?.value || "";
   const hasSubmittedReferralCode = Object.prototype.hasOwnProperty.call(body, "referralCode");
   const referralCode = hasSubmittedReferralCode ? readString(body.referralCode) : cookieReferralCode;
-  const applicantType = readString(body.applicantType) as ApplicantType;
   const selectedTicket = readString(body.selectedTicket) as TicketId;
+  const selectedWeek = readString(body.selectedWeek) as ProgramWeek;
   const validTicketIds = ticketOptions.map((ticket) => ticket.id);
 
-  if (!name || !company || !title || !country || !city) {
+  if (!name || !contactEmail || !alternateContact || !message) {
     return NextResponse.json({ error: "Please complete all required fields." }, { status: 400 });
-  }
-
-  if (!applicantTypes.includes(applicantType)) {
-    return NextResponse.json({ error: "Please select a valid applicant type." }, { status: 400 });
   }
 
   if (!validTicketIds.includes(selectedTicket)) {
     return NextResponse.json({ error: "Please select a valid program option." }, { status: 400 });
   }
 
+  if (selectedTicket === "single_week" && !programWeeks.includes(selectedWeek)) {
+    return NextResponse.json({ error: "Please select the week you want to attend." }, { status: 400 });
+  }
+
+  if (selectedTicket === "fellowship" && selectedWeek) {
+    return NextResponse.json({ error: "Fellowship applications do not require a week selection." }, { status: 400 });
+  }
+
   try {
     const application = await createApplication({
       userId: user.id,
       name,
-      email: user.email,
-      company,
-      title,
-      country,
-      city,
-      applicantType,
+      email: contactEmail,
       selectedTicket,
+      selectedWeek: selectedTicket === "single_week" ? selectedWeek : null,
+      alternateContact,
       message,
+      additionalInfo,
     });
 
     const referral = referralCode

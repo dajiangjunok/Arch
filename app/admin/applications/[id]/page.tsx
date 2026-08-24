@@ -8,6 +8,7 @@ import {
   formatDate,
   formatMoney,
   orderStatusLabel,
+  programWeekLabel,
   ticketLabel,
 } from "@/lib/format";
 import { getApplication, getOrdersForApplication } from "@/lib/store";
@@ -70,9 +71,7 @@ export default async function ApplicationDetailPage({
         <article className="border border-line bg-paper p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.24em] text-sun">
-                {application.applicantType}
-              </p>
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.24em] text-sun">{ticketLabel(application.selectedTicket)}</p>
               <h2 className="mt-3 font-poster text-5xl uppercase leading-none tracking-[0.08em]">
                 {application.name}
               </h2>
@@ -82,10 +81,9 @@ export default async function ApplicationDetailPage({
           </div>
 
           <dl className="mt-8 grid gap-px overflow-hidden border border-line bg-line/70 sm:grid-cols-2">
-            <Info label="Company" value={application.company} />
-            <Info label="Title" value={application.title} />
-            <Info label="Location" value={`${application.city}, ${application.country}`} />
             <Info label="Program" value={ticketLabel(application.selectedTicket)} />
+            <Info label="Week" value={programWeekLabel(application.selectedWeek)} />
+            <Info label="Alternate contact" value={application.alternateContact} />
             <Info label="Referral code" value={application.referralCode || "None"} />
             <Info label="Distributor" value={application.distributorId || "None"} />
             <Info label="Submitted" value={formatDate(application.createdAt)} />
@@ -94,8 +92,14 @@ export default async function ApplicationDetailPage({
 
           {application.message ? (
             <div className="mt-6 border border-line bg-cloud p-5">
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">Message</p>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">Background and goals</p>
               <p className="mt-3 whitespace-pre-wrap text-sm leading-7">{application.message}</p>
+            </div>
+          ) : null}
+          {application.additionalInfo ? (
+            <div className="mt-6 border border-line bg-cloud p-5">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">Additional info</p>
+              <p className="mt-3 whitespace-pre-wrap text-sm leading-7">{application.additionalInfo}</p>
             </div>
           ) : null}
         </article>

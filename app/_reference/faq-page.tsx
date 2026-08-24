@@ -83,8 +83,8 @@ const questions: readonly {
     question: "Can I attend more than one week?",
     answer: (
       <p>
-        Yes — apply to two or more weeks individually. Write to us directly
-        for <strong>multi-week or group pricing</strong>.
+        Yes — apply to each week individually. Write to us directly for
+        <strong> group arrangements</strong>.
       </p>
     ),
   },

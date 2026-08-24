@@ -9,6 +9,7 @@ import {
   formatMoney,
   orderStatusLabel,
   paymentStatusLabel,
+  programWeekLabel,
   refundRequestStatusLabel,
   ticketLabel,
 } from "@/lib/format";
@@ -130,7 +131,7 @@ export default async function AccountPage({
                 return (
                   <article key={order.id} className="grid gap-6 bg-card p-5 sm:p-6 lg:grid-cols-[1fr_0.72fr_auto] lg:items-center">
                     <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">{application ? ticketLabel(application.selectedTicket) : ticketLabel(order.selectedTicket)}</p>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">{application ? programLabel(application.selectedTicket, application.selectedWeek) : ticketLabel(order.selectedTicket)}</p>
                       <h3 className="mt-2 font-serif text-2xl font-semibold text-navy">{application?.name || "The Arch. application"}</h3>
                       <p className="mt-2 font-mono text-xs text-ink/50">Submitted {formatDate(application?.createdAt || order.createdAt)}</p>
                     </div>
@@ -232,12 +233,12 @@ export default async function AccountPage({
                 <article key={application.id} className="border border-ink/20 bg-card p-5">
                   <div className="flex items-start justify-between gap-5">
                     <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">{ticketLabel(application.selectedTicket)}</p>
-                      <h3 className="mt-2 font-serif text-2xl font-semibold text-navy">{application.company}</h3>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">{programLabel(application.selectedTicket, application.selectedWeek)}</p>
+                      <h3 className="mt-2 font-serif text-2xl font-semibold text-navy">{application.name}</h3>
                     </div>
                     <span className="border border-ink/20 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/65">{applicationStatusLabel(application.status)}</span>
                   </div>
-                  <p className="mt-5 text-sm text-ink/65">{application.title} / {application.city}, {application.country}</p>
+                  <p className="mt-5 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-ink/65">{application.message}</p>
                   <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">{formatDate(application.createdAt)}</p>
                 </article>
               ))}
@@ -282,6 +283,10 @@ async function loadAccountDataOnce(userId: string) {
 function isJwtIssuedAtFutureError(error: unknown) {
   const message = error instanceof Error ? error.message : JSON.stringify(error);
   return message.includes("JWT issued at future");
+}
+
+function programLabel(ticketId: Parameters<typeof ticketLabel>[0], selectedWeek: Parameters<typeof programWeekLabel>[0]) {
+  return selectedWeek ? `${ticketLabel(ticketId)} · ${programWeekLabel(selectedWeek)}` : ticketLabel(ticketId);
 }
 
 function Stat({ label, value }: { label: string; value: number }) {

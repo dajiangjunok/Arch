@@ -1,4 +1,5 @@
 export type ApplicantType = "founder" | "investor" | "institution" | "partner" | "other";
+export type ProgramWeek = "week_1" | "week_2" | "week_3";
 
 export type ApplicationStatus =
   | "pending_review"
@@ -34,7 +35,7 @@ export type DistributorStatus = "active" | "inactive";
 export type ReferralCodeStatus = "active" | "inactive";
 export type CommissionStatus = "pending" | "approved" | "paid" | "reversed";
 
-export type TicketId = "single_week_pass" | "multi_week_pass" | "full_residency";
+export type TicketId = "single_week" | "fellowship";
 
 export type Application = {
   id: string;
@@ -47,7 +48,10 @@ export type Application = {
   city: string;
   applicantType: ApplicantType;
   selectedTicket: TicketId;
+  selectedWeek: ProgramWeek | null;
+  alternateContact: string;
   message: string;
+  additionalInfo: string;
   status: ApplicationStatus;
   referralId: string | null;
   referralCode: string | null;

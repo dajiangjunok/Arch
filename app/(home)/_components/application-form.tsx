@@ -2,30 +2,31 @@
 
 import { useState } from "react";
 import { ticketOptions } from "@/lib/tickets";
-import type { TicketId } from "@/lib/types";
+import type { ProgramWeek, TicketId } from "@/lib/types";
 
-const applicantTypes = [
-  { value: "founder", label: "Founder" },
-  { value: "investor", label: "Investor" },
-  { value: "institution", label: "Institution" },
-  { value: "partner", label: "China partner" },
-  { value: "other", label: "Other" },
+const weekOptions = [
+  { value: "week_1", label: "Week 1" },
+  { value: "week_2", label: "Week 2" },
+  { value: "week_3", label: "Week 3" },
 ];
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
 export function ApplicationForm({
   email,
-  defaultTicket = "single_week_pass",
+  defaultTicket = "single_week",
+  defaultWeek = "week_1",
   referralCode = "",
 }: {
   email: string;
   defaultTicket?: TicketId;
+  defaultWeek?: ProgramWeek;
   referralCode?: string;
 }) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
   const [inviteCode, setInviteCode] = useState(referralCode);
+  const [selectedTicket, setSelectedTicket] = useState<TicketId>(defaultTicket);
 
   async function submitApplication(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -69,23 +70,19 @@ export function ApplicationForm({
 
   return (
     <form onSubmit={submitApplication} className="grid gap-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Name" name="name" required />
-        <label className="grid gap-2">
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">Account email</span>
-          <input
-            value={email}
-            readOnly
-            className="min-h-12 border border-ink/20 bg-ink/5 px-4 font-mono text-sm text-ink/70 outline-none"
-          />
-        </label>
-        <Field label="Company" name="company" required />
-        <Field label="Title" name="title" required />
-        <Field label="Country" name="country" required />
-        <Field label="City" name="city" required />
+      <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+        <Field label="Name" name="name" autoComplete="name" required />
+        <Field label="Best contact email" name="contactEmail" type="email" autoComplete="email" defaultValue={email} required />
       </div>
 
-      <label className="grid gap-2 border border-ink/20 bg-marigold/10 p-4">
+      <Field
+        label="Alternate contact"
+        name="alternateContact"
+        placeholder="Phone, WhatsApp, WeChat, Telegram, or another reliable way to reach you"
+        required
+      />
+
+      <label className="grid min-w-0 gap-2 border border-ink/20 bg-marigold/10 p-4">
         <span className="flex flex-wrap items-center justify-between gap-2">
           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
             Invite / referral code (optional)
@@ -103,37 +100,20 @@ export function ApplicationForm({
           autoComplete="off"
           maxLength={64}
           placeholder="Enter code"
-          className="min-h-12 rounded-none border border-ink/25 bg-ivory px-4 font-mono text-sm uppercase text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+          className="min-h-12 w-full min-w-0 rounded-none border border-ink/25 bg-ivory px-4 font-mono text-sm uppercase text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
         />
       </label>
 
-      <label className="grid gap-2">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
-          Applicant type
-        </span>
-        <select
-          name="applicantType"
-          required
-          defaultValue="founder"
-          className="min-h-12 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
-        >
-          {applicantTypes.map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label className="grid gap-2">
+      <label className="grid min-w-0 gap-2">
         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
           Program option
         </span>
         <select
           name="selectedTicket"
           required
-          defaultValue={defaultTicket}
-          className="min-h-12 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+          value={selectedTicket}
+          onChange={(event) => setSelectedTicket(event.target.value as TicketId)}
+          className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
         >
           {ticketOptions.map((ticket) => (
             <option key={ticket.id} value={ticket.id}>
@@ -143,13 +123,44 @@ export function ApplicationForm({
         </select>
       </label>
 
-      <label className="grid gap-2">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">Message</span>
+      {selectedTicket === "single_week" ? (
+        <label className="grid min-w-0 gap-2">
+          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
+            Which week do you want to attend?
+          </span>
+          <select
+            name="selectedWeek"
+            required
+            defaultValue={defaultWeek}
+            className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+          >
+            {weekOptions.map((week) => (
+              <option key={week.value} value={week.value}>
+                {week.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+
+      <label className="grid min-w-0 gap-2">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">Tell us about yourself and what you hope to get out of The Arch.</span>
         <textarea
           name="message"
+          rows={6}
+          required
+          className="w-full min-w-0 resize-none rounded-none border border-ink/20 bg-ivory px-4 py-3 font-mono text-sm leading-6 text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+          placeholder="Share your background, current work, and goals for joining."
+        />
+      </label>
+
+      <label className="grid min-w-0 gap-2">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">Anything else we should know?</span>
+        <textarea
+          name="additionalInfo"
           rows={4}
-          className="resize-none rounded-none border border-ink/20 bg-ivory px-4 py-3 font-mono text-sm leading-6 text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
-          placeholder="Share what you hope to explore in Shanghai."
+          className="w-full min-w-0 resize-none rounded-none border border-ink/20 bg-ivory px-4 py-3 font-mono text-sm leading-6 text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+          placeholder="Optional context, questions, accessibility needs, or scheduling constraints."
         />
       </label>
 
@@ -181,20 +192,29 @@ function Field({
   name,
   type = "text",
   required = false,
+  autoComplete,
+  defaultValue,
+  placeholder,
 }: {
   label: string;
   name: string;
   type?: string;
   required?: boolean;
+  autoComplete?: string;
+  defaultValue?: string;
+  placeholder?: string;
 }) {
   return (
-    <label className="grid gap-2">
+    <label className="grid min-w-0 gap-2">
       <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">{label}</span>
       <input
         name={name}
         type={type}
         required={required}
-        className="min-h-12 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+        autoComplete={autoComplete}
+        defaultValue={defaultValue}
+        placeholder={placeholder}
+        className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
       />
     </label>
   );

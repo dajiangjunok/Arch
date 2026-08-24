@@ -36,7 +36,10 @@ type ApplicationRow = {
   city: string;
   applicant_type: ApplicantType;
   selected_ticket: TicketId;
+  selected_week: Application["selectedWeek"];
+  alternate_contact: string;
   message: string;
+  additional_info: string;
   status: ApplicationStatus;
   referral_id: string | null;
   referral_code: string | null;
@@ -165,7 +168,10 @@ function mapApplication(row: ApplicationRow): Application {
     city: row.city,
     applicantType: row.applicant_type,
     selectedTicket: row.selected_ticket,
+    selectedWeek: row.selected_week,
+    alternateContact: row.alternate_contact || "",
     message: row.message,
+    additionalInfo: row.additional_info || "",
     status: row.status,
     referralId: row.referral_id,
     referralCode: row.referral_code,
@@ -321,13 +327,16 @@ export async function createApplication(input: {
   userId?: string | null;
   name: string;
   email: string;
-  company: string;
-  title: string;
-  country: string;
-  city: string;
-  applicantType: ApplicantType;
+  company?: string;
+  title?: string;
+  country?: string;
+  city?: string;
+  applicantType?: ApplicantType;
   selectedTicket: TicketId;
+  selectedWeek?: Application["selectedWeek"];
+  alternateContact: string;
   message: string;
+  additionalInfo: string;
 }) {
   const timestamp = now();
   const { data, error } = await createSupabaseAdminClient()
@@ -337,13 +346,16 @@ export async function createApplication(input: {
       user_id: input.userId || null,
       name: input.name.trim(),
       email: normalizeEmail(input.email),
-      company: input.company.trim(),
-      title: input.title.trim(),
-      country: input.country.trim(),
-      city: input.city.trim(),
-      applicant_type: input.applicantType,
+      company: input.company?.trim() || "",
+      title: input.title?.trim() || "",
+      country: input.country?.trim() || "",
+      city: input.city?.trim() || "",
+      applicant_type: input.applicantType || "other",
       selected_ticket: input.selectedTicket,
+      selected_week: input.selectedWeek || null,
+      alternate_contact: input.alternateContact.trim(),
       message: input.message.trim(),
+      additional_info: input.additionalInfo.trim(),
       status: "pending_review",
       created_at: timestamp,
       updated_at: timestamp,

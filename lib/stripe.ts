@@ -44,6 +44,7 @@ export async function createStripeCheckoutSession(application: Application, orde
       applicationId: application.id,
       orderId: order.id,
       selectedTicket: order.selectedTicket,
+      selectedWeek: application.selectedWeek || "",
       userId: application.userId || "",
       referralId: application.referralId || "",
       referralCode: application.referralCode || "",
@@ -53,6 +54,8 @@ export async function createStripeCheckoutSession(application: Application, orde
       metadata: {
         applicationId: application.id,
         orderId: order.id,
+        selectedTicket: order.selectedTicket,
+        selectedWeek: application.selectedWeek || "",
         userId: application.userId || "",
         referralId: application.referralId || "",
         referralCode: application.referralCode || "",

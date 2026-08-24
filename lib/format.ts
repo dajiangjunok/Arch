@@ -1,5 +1,5 @@
 import { getTicketLabel } from "./tickets";
-import type { ApplicationStatus, OrderStatus, PaymentStatus, RefundRequestStatus, TicketId } from "./types";
+import type { ApplicationStatus, OrderStatus, PaymentStatus, ProgramWeek, RefundRequestStatus, TicketId } from "./types";
 
 export function formatDate(value: string | null) {
   if (!value) {
@@ -83,4 +83,16 @@ export function refundRequestStatusLabel(status: RefundRequestStatus) {
 
 export function ticketLabel(ticketId: TicketId) {
   return getTicketLabel(ticketId);
+}
+
+export function programWeekLabel(week: ProgramWeek | null) {
+  if (!week) return "-";
+
+  const labels: Record<ProgramWeek, string> = {
+    week_1: "Week 1",
+    week_2: "Week 2",
+    week_3: "Week 3",
+  };
+
+  return labels[week];
 }

@@ -175,6 +175,9 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
     ? `Week ${weekNumber} Only`
     : "Choose Week 1, 2, or 3";
   const singleCta = weekNumber ? `Apply for Week ${weekNumber} →` : "Apply →";
+  const singleHref = weekNumber
+    ? `/apply?pass=single_week&week=week_${weekNumber}`
+    : "/apply?pass=single_week";
 
   const [passFlipped, setPassFlipped] = useState(false);
   const singleDescription =
@@ -225,14 +228,14 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
             <span className="fee fee-sm">$12,900</span>
           </div>
         </div>
-        <Link className="btn" href="/apply?pass=single_week_pass">
+        <Link className="btn" href={singleHref}>
           {singleCta}
         </Link>
       </div>
       <div className="price-card fellow tick-corner">
         <CornerStamp />
         <p className="kicker">Limited · Fellowship Program</p>
-        <h3>Fellow Pass</h3>
+        <h3>Fellowship</h3>
         <p className="card-hook">
           Most of the room pays their way, and that&apos;s what keeps The Arch
           independent. Every cohort, The Arch holds a handful of seats for
@@ -274,7 +277,7 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
                   <path d="M12 2 14.5 9 22 9.5 16 14 18 21.5 12 17.5 6 21.5 8 14 2 9.5 9.5 9Z" />
                 </svg>
               </div>
-              <p className="bp-badge">Fellow Pass</p>
+              <p className="bp-badge">Fellowship</p>
               <p className="bp-sub">Priority Seat · Apply to Reveal</p>
               <p className="bp-hint">Tap ↻</p>
             </div>
@@ -293,7 +296,7 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
               </div>
               <Link
                 className="bp-apply"
-                href="/apply?pass=full_residency"
+                href="/apply?pass=fellowship"
                 onClick={(event) => event.stopPropagation()}
               >
                 Apply for Fellowship →

@@ -6,6 +6,7 @@ import {
   formatDate,
   formatMoney,
   orderStatusLabel,
+  programWeekLabel,
   ticketLabel,
 } from "@/lib/format";
 import {
@@ -134,9 +135,9 @@ export default async function PartnerPage() {
                 <tbody>
                   {inviteeRows.map(({ referral, application, order }) => (
                     <tr key={referral.id} className="border-t border-ink/15 align-top">
-                      <td className="px-4 py-4"><p className="font-semibold">{application?.name || "Applicant"}</p><p className="mt-1 text-ink-soft">{application?.company || "-"}</p></td>
+                      <td className="px-4 py-4"><p className="font-semibold">{application?.name || "Applicant"}</p><p className="mt-1 text-ink-soft">{application?.email || "-"}</p></td>
                       <td className="px-4 py-4 font-mono text-xs">{referral.codeSnapshot}</td>
-                      <td className="px-4 py-4">{application ? ticketLabel(application.selectedTicket) : "-"}</td>
+                      <td className="px-4 py-4">{application ? `${ticketLabel(application.selectedTicket)}${application.selectedWeek ? ` · ${programWeekLabel(application.selectedWeek)}` : ""}` : "-"}</td>
                       <td className="px-4 py-4">{application ? applicationStatusLabel(application.status) : "Unavailable"}</td>
                       <td className="px-4 py-4">{order ? orderStatusLabel(order.status) : "Not created"}</td>
                       <td className="px-4 py-4 text-ink-soft">{formatDate(application?.createdAt || referral.createdAt)}</td>

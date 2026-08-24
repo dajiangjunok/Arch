@@ -53,7 +53,7 @@ export function HomePage() {
             <div className="hero-cta">
               <Link
                 className="btn btn-fill"
-                href="/apply?pass=single_week_pass"
+                href="/apply?pass=single_week"
               >
                 Apply to Participate
               </Link>
@@ -251,7 +251,7 @@ export function HomePage() {
             {audiences.map((audience) => (
               <Link
                 className={`audience-block ${audience.className}`}
-                href="/apply?pass=single_week_pass"
+                href="/apply?pass=single_week"
                 key={audience.title}
               >
                 <span className="tag">{audience.tag}</span>
@@ -282,7 +282,7 @@ export function HomePage() {
                 <div className="incl-price-cta">
                   <Link
                     className="btn btn-fill"
-                    href="/apply?pass=single_week_pass"
+                    href="/apply?pass=single_week"
                   >
                     Apply to Participate →
                   </Link>

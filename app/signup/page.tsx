@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { safeAuthNext } from "@/lib/auth-redirect";
 import { AuthMessage, AuthShell } from "../auth/_components";
 import { googleOAuthAction } from "../auth/actions";
 import { SubmitButton } from "../auth/submit-button";
@@ -10,7 +11,7 @@ export default async function SignUpPage({
   searchParams: Promise<{ error?: string; next?: string }>;
 }) {
   const params = await searchParams;
-  const next = params.next === "/" || params.next === "/apply" || params.next === "/account" || params.next === "/partner" ? params.next : "/";
+  const next = safeAuthNext(params.next);
   const user = await getCurrentUser();
 
   if (user) redirect(next);

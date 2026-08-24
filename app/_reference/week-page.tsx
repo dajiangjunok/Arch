@@ -55,7 +55,7 @@ export function WeekPage({ data }: { data: WeekPageData }) {
             <div className="hero-cta">
               <Link
                 className="btn btn-fill"
-                href="/apply?pass=single_week_pass"
+                href={`/apply?pass=single_week&week=week_${data.weekNumber}`}
               >
                 Apply for Week {data.weekNumber}
               </Link>

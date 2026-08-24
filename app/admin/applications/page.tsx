@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AdminShell, Notice, StatusPill } from "../_components";
 import { requireAdmin } from "@/lib/admin-auth";
-import { applicationStatusLabel, formatDate, ticketLabel } from "@/lib/format";
+import { applicationStatusLabel, formatDate, programWeekLabel, ticketLabel } from "@/lib/format";
 import { listApplications } from "@/lib/store";
 
 export default async function ApplicationsPage({
@@ -33,8 +33,8 @@ export default async function ApplicationsPage({
               <thead className="bg-ink text-paper">
                 <tr className="font-mono text-[10px] uppercase tracking-[0.2em]">
                   <th className="px-4 py-4">Applicant</th>
-                  <th className="px-4 py-4">Company</th>
-                  <th className="px-4 py-4">Ticket</th>
+                  <th className="px-4 py-4">Program</th>
+                  <th className="px-4 py-4">Interest</th>
                   <th className="px-4 py-4">Status</th>
                   <th className="px-4 py-4">Submitted</th>
                   <th className="px-4 py-4">Action</th>
@@ -48,10 +48,12 @@ export default async function ApplicationsPage({
                       <span className="text-ink-soft">{application.email}</span>
                     </td>
                     <td className="px-4 py-4">
-                      <strong className="block">{application.company}</strong>
-                      <span className="text-ink-soft">{application.title}</span>
+                      <strong className="block">{ticketLabel(application.selectedTicket)}</strong>
+                      <span className="text-ink-soft">{programWeekLabel(application.selectedWeek)}</span>
                     </td>
-                    <td className="px-4 py-4">{ticketLabel(application.selectedTicket)}</td>
+                    <td className="px-4 py-4">
+                      <span className="line-clamp-2 text-ink-soft">{application.message}</span>
+                    </td>
                     <td className="px-4 py-4">
                       <StatusPill>{applicationStatusLabel(application.status)}</StatusPill>
                     </td>

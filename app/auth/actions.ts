@@ -4,11 +4,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getSiteUrl } from "@/lib/stripe";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-function safeNext(value: FormDataEntryValue | null) {
-  const path = typeof value === "string" ? value : "";
-  return path === "/" || path === "/apply" || path === "/account" || path === "/partner" ? path : "/";
-}
+import { safeAuthNext } from "@/lib/auth-redirect";
 
 async function clearSupabaseAuthCookies() {
   const cookieStore = await cookies();
@@ -21,7 +17,7 @@ async function clearSupabaseAuthCookies() {
 }
 
 export async function googleOAuthAction(formData: FormData) {
-  const next = safeNext(formData.get("next"));
+  const next = safeAuthNext(String(formData.get("next") || ""));
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
   await clearSupabaseAuthCookies();

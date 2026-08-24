@@ -11,28 +11,20 @@ type TicketConfig = {
 
 export const ticketOptions: TicketConfig[] = [
   {
-    id: "single_week_pass",
-    label: "Single Week Pass",
+    id: "single_week",
+    label: "Single Week",
     priceLabel: "$9,799 USD",
-    description: "One week, choose Week 1, 2, or 3",
-    amountEnv: "ARCH_TICKET_AMOUNT_SINGLE_WEEK_PASS",
-    priceEnv: "STRIPE_PRICE_SINGLE_WEEK_PASS",
+    description: "Choose one week from Week 1, 2, or 3",
+    amountEnv: "ARCH_TICKET_AMOUNT_SINGLE_WEEK",
+    priceEnv: "STRIPE_PRICE_SINGLE_WEEK",
   },
   {
-    id: "multi_week_pass",
-    label: "Multi-Week Pass",
-    priceLabel: "$19,598 USD",
-    description: "Two weeks, choose any two of three weeks",
-    amountEnv: "ARCH_TICKET_AMOUNT_MULTI_WEEK_PASS",
-    priceEnv: "STRIPE_PRICE_MULTI_WEEK_PASS",
-  },
-  {
-    id: "full_residency",
-    label: "Full Residency",
-    priceLabel: "$29,397 USD",
-    description: "Three weeks, Nov 1 - 21, complete immersion",
-    amountEnv: "ARCH_TICKET_AMOUNT_FULL_RESIDENCY",
-    priceEnv: "STRIPE_PRICE_FULL_RESIDENCY",
+    id: "fellowship",
+    label: "Fellowship",
+    priceLabel: "By application",
+    description: "Full fellowship track; no week selection required",
+    amountEnv: "ARCH_TICKET_AMOUNT_FELLOWSHIP",
+    priceEnv: "STRIPE_PRICE_FELLOWSHIP",
   },
 ];
 

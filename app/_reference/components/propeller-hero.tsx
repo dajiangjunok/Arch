@@ -167,7 +167,7 @@ export function PropellerHero() {
         <span />
       </div>
       <div className="ph-hero-cta">
-        <Link className="ph-btn-navy" href="/apply?pass=single_week_pass">Apply to Participate</Link>
+        <Link className="ph-btn-navy" href="/apply?pass=single_week">Apply to Participate</Link>
         <Link className="ph-btn-line" href="#weeks">See the three weeks ↓</Link>
       </div>
       <div className="ph-hero-bottom">
