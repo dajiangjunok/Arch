@@ -1,110 +1,54 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { getSiteUrl } from "@/lib/stripe";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { verifyTurnstile } from "@/lib/turnstile";
 
 function safeNext(value: FormDataEntryValue | null) {
   const path = typeof value === "string" ? value : "";
-  return path === "/apply" || path === "/account" || path === "/partner" ? path : "/account";
+  return path === "/" || path === "/apply" || path === "/account" || path === "/partner" ? path : "/";
 }
 
-function redirectWithMessage(
-  path: string,
-  key: "error" | "notice",
-  message: string,
-  next: string,
-  extra?: Record<string, string>,
-): never {
-  const query = new URLSearchParams({ [key]: message, next, ...extra });
-  redirect(`${path}?${query.toString()}`);
-}
+async function clearSupabaseAuthCookies() {
+  const cookieStore = await cookies();
 
-export async function loginAction(formData: FormData) {
-  const email = String(formData.get("email") || "").trim().toLowerCase();
-  const password = String(formData.get("password") || "");
-  const next = safeNext(formData.get("next"));
-
-  if (!email || !password) {
-    redirectWithMessage("/login", "error", "Enter your email and password.", next);
-  }
-
-  const verification = await verifyTurnstile(formData, "login");
-
-  if (!verification.ok) {
-    redirectWithMessage("/login", "error", verification.message, next);
-  }
-
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    if (error.code === "over_request_rate_limit") {
-      redirectWithMessage("/login", "error", "Too many sign-in attempts. Wait a few minutes before trying again.", next);
+  for (const cookie of cookieStore.getAll()) {
+    if (cookie.name.startsWith("sb-") && (cookie.name.includes("auth-token") || cookie.name.includes("code-verifier"))) {
+      cookieStore.delete(cookie.name);
     }
-
-    if (error.code === "email_not_confirmed") {
-      redirectWithMessage(
-        "/login",
-        "error",
-        "Confirm your email address before signing in. Check your inbox for the activation email.",
-        next,
-      );
-    }
-
-    redirectWithMessage("/login", "error", "The email or password is incorrect.", next);
   }
-
-  redirect(next);
 }
 
-export async function signUpAction(formData: FormData) {
-  const email = String(formData.get("email") || "").trim().toLowerCase();
-  const password = String(formData.get("password") || "");
+export async function googleOAuthAction(formData: FormData) {
   const next = safeNext(formData.get("next"));
-
-  if (!email || password.length < 8) {
-    redirectWithMessage("/signup", "error", "Use a valid email and a password with at least 8 characters.", next);
-  }
-
-  const verification = await verifyTurnstile(formData, "signup");
-
-  if (!verification.ok) {
-    redirectWithMessage("/signup", "error", verification.message, next);
-  }
-
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
+  await supabase.auth.signOut();
+  await clearSupabaseAuthCookies();
+
+  const redirectTo = `${getSiteUrl()}/auth/callback?next=${encodeURIComponent(next)}`;
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
     options: {
-      emailRedirectTo: `${getSiteUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
+      redirectTo,
+      skipBrowserRedirect: true,
     },
   });
 
-  if (error) {
-    const message =
-      error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit"
-        ? "Too many account requests. Wait a few minutes before trying again."
-        : error.message;
-    redirectWithMessage("/signup", "error", message, next);
+  if (error || !data.url) {
+    const query = new URLSearchParams({
+      error: error?.message || "Google sign-in is not available. Check the authentication provider configuration.",
+      next,
+    });
+    redirect(`/login?${query.toString()}`);
   }
 
-  if (data.session) {
-    redirect(next);
-  }
-
-  redirectWithMessage(
-    "/login",
-    "notice",
-    "Account created. Check your inbox to confirm your email, then sign in.",
-    next,
-  );
+  redirect(data.url);
 }
 
 export async function logoutAction() {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
+  await clearSupabaseAuthCookies();
   redirect("/login");
 }

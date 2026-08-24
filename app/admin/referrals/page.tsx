@@ -73,7 +73,7 @@ export default async function ReferralsAdminPage({
                 </option>
                 {availableUsers.map((user) => (
                   <option key={user.id} value={user.id}>
-                    {user.email}
+                    {user.displayName} - {user.email}
                   </option>
                 ))}
               </select>
@@ -106,7 +106,8 @@ export default async function ReferralsAdminPage({
                   return (
                     <tr key={distributor.id} className="border-t border-line">
                       <td className="px-3 py-3">
-                        <p className="font-semibold">{distributor.email || distributor.name}</p>
+                        <p className="font-semibold">{distributor.name}</p>
+                        <p className="mt-1 text-xs text-ink-soft">{distributor.email || "No email"}</p>
                         <p className="mt-1 font-mono text-[10px] text-ink-soft">{distributor.userId || "No linked user"}</p>
                       </td>
                       <td className="px-3 py-3">{distributor.commissionRate}%</td>

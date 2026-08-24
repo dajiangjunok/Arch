@@ -103,7 +103,7 @@ export async function createDistributorAction(formData: FormData) {
   try {
     const distributor = await createDistributor({
       userId: user.id,
-      name: user.email,
+      name: user.displayName,
       email: user.email,
       commissionRate,
     });

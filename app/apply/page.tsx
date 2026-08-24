@@ -3,10 +3,12 @@ import { ApplicationForm } from "@/app/(home)/_components/application-form";
 import { requireUser } from "@/lib/auth";
 import { ticketOptions } from "@/lib/tickets";
 import type { TicketId } from "@/lib/types";
+import { getUserIdentity } from "@/lib/user-identity";
 import { cookies } from "next/headers";
 
 export default async function ApplyPage({ searchParams }: { searchParams: Promise<{ pass?: string }> }) {
   const user = await requireUser("/apply");
+  const identity = getUserIdentity(user);
   const { pass } = await searchParams;
   const defaultTicket = ticketOptions.some((ticket) => ticket.id === pass)
     ? (pass as TicketId)
@@ -55,7 +57,13 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
           <div className="shadow-ink border border-ink bg-card p-6 sm:p-8">
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-ink">The Arch. admission desk</p>
             <div className="mt-7">
-              <ApplicationForm email={user.email || ""} defaultTicket={defaultTicket} referralCode={referralCode} />
+              {identity.email ? (
+                <ApplicationForm email={identity.email} defaultTicket={defaultTicket} referralCode={referralCode} />
+              ) : (
+                <p className="border border-red-800/30 bg-red-50 px-4 py-3 text-sm leading-6 text-red-900">
+                  Google did not provide an email for this account. Sign out and use a Google account with an email address before applying.
+                </p>
+              )}
             </div>
           </div>
         </section>

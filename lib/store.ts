@@ -1,5 +1,6 @@
 import { getConfiguredTicketAmount, getCurrency } from "./tickets";
 import { createSupabaseAdminClient } from "./supabase/admin";
+import { getUserIdentity } from "./user-identity";
 import type { AuthUser } from "@supabase/supabase-js";
 import type {
   AdminAuditLog,
@@ -305,10 +306,12 @@ function normalizeEmail(email: string) {
 
 function mapAdminUserOption(user: AuthUser): AdminUserOption | null {
   if (!user.email) return null;
+  const identity = getUserIdentity(user);
 
   return {
     id: user.id,
     email: normalizeEmail(user.email),
+    displayName: identity.displayName,
     createdAt: user.created_at,
     lastSignInAt: user.last_sign_in_at || null,
   };

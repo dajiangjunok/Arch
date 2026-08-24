@@ -20,14 +20,16 @@ export function SubmitButton({ children, pendingLabel, className = "", disabled,
       aria-busy={pending}
       className={`${className} disabled:cursor-wait disabled:pointer-events-none disabled:opacity-80`}
     >
-      <span className="inline-flex items-center justify-center gap-2">
+      <span className="inline-flex min-w-0 items-center justify-center gap-2 whitespace-nowrap">
         {pending ? (
           <span
             aria-hidden="true"
             className="size-3.5 shrink-0 animate-spin rounded-full border-2 border-current border-r-transparent"
           />
         ) : null}
-        <span>{pending ? pendingLabel : children}</span>
+        <span className="inline-flex min-w-0 items-center justify-center gap-2">
+          {pending ? pendingLabel : children}
+        </span>
       </span>
     </button>
   );

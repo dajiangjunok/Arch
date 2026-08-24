@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getCurrentUser } from "@/lib/auth";
+import { getUserIdentity } from "@/lib/user-identity";
 import { AccountMenu } from "./account-menu";
 import type { ReferencePageId } from "./types";
 
@@ -15,13 +16,7 @@ const links = [
 
 export async function ReferenceHeader({ page }: { page: ReferencePageId }) {
   const user = await getCurrentUser();
-  const email = user?.email || "";
-  const metadataName =
-    user?.user_metadata?.full_name || user?.user_metadata?.name;
-  const displayName =
-    (typeof metadataName === "string" && metadataName.trim()) ||
-    email.split("@")[0] ||
-    "Member";
+  const identity = getUserIdentity(user);
 
   function renderAuthControl() {
     if (!user) {
@@ -35,7 +30,7 @@ export async function ReferenceHeader({ page }: { page: ReferencePageId }) {
       );
     }
 
-    return <AccountMenu email={email} displayName={displayName} />;
+    return <AccountMenu identity={identity} />;
   }
 
   return (

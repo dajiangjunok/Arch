@@ -18,13 +18,15 @@ import {
 } from "@/lib/store";
 import { CopyLinkButton } from "./_components/copy-link-button";
 import { logoutAction } from "@/app/auth/actions";
+import { getUserIdentity } from "@/lib/user-identity";
 
 export default async function PartnerPage() {
   const user = await requireUser("/partner");
+  const identity = getUserIdentity(user);
   const distributor = await getDistributorForUser(user.id);
 
   if (!distributor || distributor.status !== "active") {
-    return <PartnerAccessDenied email={user.email || ""} />;
+    return <PartnerAccessDenied identity={identity} />;
   }
 
   const [codes, referrals, commissions] = await Promise.all([
@@ -154,7 +156,11 @@ function Stat({ label, value }: { label: string; value: number | string }) {
   return <div className="min-w-28 bg-card px-4 py-4 text-center"><p className="font-serif text-2xl font-semibold text-navy">{value}</p><p className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/50">{label}</p></div>;
 }
 
-function PartnerAccessDenied({ email }: { email: string }) {
+function PartnerAccessDenied({ identity }: { identity: ReturnType<typeof getUserIdentity> }) {
+  const accountLabel = identity.email
+    ? `${identity.displayName} (${identity.email})`
+    : identity.displayName;
+
   return (
     <main className="min-h-screen bg-ivory px-6 py-10 text-ink sm:px-10 lg:px-20">
       <div className="mx-auto max-w-[720px]">
@@ -162,7 +168,7 @@ function PartnerAccessDenied({ email }: { email: string }) {
         <section className="mt-16 border border-ink bg-card p-7 shadow-ink sm:p-10">
           <p className="arch-eyebrow">Partner desk</p>
           <h1 className="mt-4 font-serif text-4xl font-semibold leading-none text-navy">Partner access pending</h1>
-          <p className="mt-6 text-sm leading-7 text-ink-soft">The signed-in account {email || "you are using"} is not linked to an active distributor account. Ask the Arch. team to add this email as a partner.</p>
+          <p className="mt-6 text-sm leading-7 text-ink-soft">The signed-in Google account {accountLabel} is not linked to an active distributor account. Ask the Arch. team to add this user as a partner.</p>
           <Link href="/account" className="mt-7 inline-flex min-h-11 items-center bg-navy px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory">Back to account</Link>
         </section>
       </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { logoutAction } from "@/app/auth/actions";
 import { requestRefundAction } from "./actions";
 import { requireUser } from "@/lib/auth";
+import { getUserIdentity } from "@/lib/user-identity";
 import {
   applicationStatusLabel,
   formatDate,
@@ -27,16 +28,10 @@ export default async function AccountPage({
   searchParams: Promise<{ error?: string; notice?: string }>;
 }) {
   const user = await requireUser("/account");
+  const identity = getUserIdentity(user);
   const query = await searchParams;
-  const [applications, orders, distributor] = await Promise.all([
-    listApplicationsForUser(user.id),
-    listOrdersForUser(user.id),
-    getDistributorForUser(user.id),
-  ]);
-  const [payments, refundRequests] = await Promise.all([
-    listPaymentsForOrders(orders.map((order) => order.id)),
-    listRefundRequestsForUser(user.id),
-  ]);
+  const accountData = await loadAccountData(user.id);
+  const { applications, orders, distributor, payments, refundRequests } = accountData;
   const applicationsById = new Map(applications.map((application) => [application.id, application]));
   const paymentByOrderId = new Map(payments.map((payment) => [payment.orderId, payment]));
   const latestRefundByOrderId = new Map<string, RefundRequest>();
@@ -50,9 +45,17 @@ export default async function AccountPage({
     <main className="min-h-screen bg-ivory px-6 py-8 text-ink sm:px-10 lg:px-20">
       <div className="mx-auto max-w-[1240px]">
         <header className="flex flex-wrap items-start justify-between gap-6 border-b border-ink/20 pb-7">
-          <div>
-            <Link href="/" className="font-serif text-4xl font-black leading-none text-navy sm:text-5xl">The Arch.</Link>
-            <p className="mt-3 break-all font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55">{user.email}</p>
+          <div className="flex min-w-0 items-center gap-4">
+            <AccountAvatar identity={identity} />
+            <div className="min-w-0">
+              <Link href="/" className="font-serif text-4xl font-black leading-none text-navy sm:text-5xl">The Arch.</Link>
+              <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55">{identity.displayName}</p>
+              {identity.email ? (
+                <p className="mt-1 break-all text-xs text-ink-soft">{identity.email}</p>
+              ) : (
+                <p className="mt-1 text-xs text-red-800">Google did not provide an email for this account.</p>
+              )}
+            </div>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/apply" className="rounded-md bg-marigold px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-navy transition hover:bg-navy hover:text-ivory">
@@ -246,12 +249,61 @@ export default async function AccountPage({
   );
 }
 
+async function loadAccountData(userId: string) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await loadAccountDataOnce(userId);
+    } catch (error) {
+      if (!isJwtIssuedAtFutureError(error) || attempt === 2) {
+        throw error;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 750 * (attempt + 1)));
+    }
+  }
+
+  return loadAccountDataOnce(userId);
+}
+
+async function loadAccountDataOnce(userId: string) {
+  const [applications, orders, distributor] = await Promise.all([
+    listApplicationsForUser(userId),
+    listOrdersForUser(userId),
+    getDistributorForUser(userId),
+  ]);
+  const [payments, refundRequests] = await Promise.all([
+    listPaymentsForOrders(orders.map((order) => order.id)),
+    listRefundRequestsForUser(userId),
+  ]);
+
+  return { applications, orders, distributor, payments, refundRequests };
+}
+
+function isJwtIssuedAtFutureError(error: unknown) {
+  const message = error instanceof Error ? error.message : JSON.stringify(error);
+  return message.includes("JWT issued at future");
+}
+
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="min-w-28 bg-card px-5 py-4 text-center">
       <p className="font-serif text-3xl font-semibold text-navy">{value}</p>
       <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em] text-ink/50">{label}</p>
     </div>
+  );
+}
+
+function AccountAvatar({ identity }: { identity: ReturnType<typeof getUserIdentity> }) {
+  const className = "size-14 shrink-0 rounded-full border border-ink/20 bg-navy object-cover text-ivory shadow-ink";
+
+  if (identity.avatarUrl) {
+    return <img src={identity.avatarUrl} alt="" referrerPolicy="no-referrer" className={className} />;
+  }
+
+  return (
+    <span className={`${className} grid place-items-center font-mono text-base font-semibold`}>
+      {identity.initials}
+    </span>
   );
 }
 

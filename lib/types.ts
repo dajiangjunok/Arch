@@ -132,6 +132,7 @@ export type AdminAuditLog = {
 export type AdminUserOption = {
   id: string;
   email: string;
+  displayName: string;
   createdAt: string;
   lastSignInAt: string | null;
 };

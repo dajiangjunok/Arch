@@ -3,14 +3,11 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { logoutAction } from "@/app/auth/actions";
+import type { getUserIdentity } from "@/lib/user-identity";
 
-export function AccountMenu({
-  email,
-  displayName,
-}: {
-  email: string;
-  displayName: string;
-}) {
+type UserIdentity = ReturnType<typeof getUserIdentity>;
+
+export function AccountMenu({ identity }: { identity: UserIdentity }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -44,12 +41,13 @@ export function AccountMenu({
         type="button"
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label={`Signed in as ${email || displayName}`}
+        aria-label={`Signed in as ${identity.email || identity.displayName}`}
         onClick={() => setOpen((current) => !current)}
       >
+        <AccountAvatar identity={identity} compact />
         <span className="account-copy">
           <span className="account-state">Signed in</span>
-          <span className="account-name">{displayName}</span>
+          <span className="account-name">{identity.displayName}</span>
         </span>
         <span className="account-chevron" aria-hidden="true">
           ↓
@@ -58,9 +56,10 @@ export function AccountMenu({
 
       <div className="account-popover" role="menu">
         <div className="account-identity">
+          <AccountAvatar identity={identity} />
           <span className="account-identity-copy">
-            <strong>{displayName}</strong>
-            <span>{email}</span>
+            <strong>{identity.displayName}</strong>
+            <span>{identity.email || "Google account"}</span>
           </span>
         </div>
         <div className="account-actions">
@@ -81,5 +80,19 @@ export function AccountMenu({
         </div>
       </div>
     </div>
+  );
+}
+
+function AccountAvatar({ identity, compact = false }: { identity: UserIdentity; compact?: boolean }) {
+  const className = compact ? "account-avatar account-avatar-compact" : "account-avatar";
+
+  if (identity.avatarUrl) {
+    return <img className={className} src={identity.avatarUrl} alt="" referrerPolicy="no-referrer" />;
+  }
+
+  return (
+    <span className={className} aria-hidden="true">
+      {identity.initials}
+    </span>
   );
 }

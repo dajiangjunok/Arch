@@ -65,18 +65,3 @@ export function AuthMessage({ error, notice }: { error?: string; notice?: string
     </p>
   );
 }
-
-export function AuthField({ label, name, type = "text", autoComplete }: { label: string; name: string; type?: string; autoComplete?: string }) {
-  return (
-    <label className="grid gap-2">
-      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-ink-soft">{label}</span>
-      <input
-        name={name}
-        type={type}
-        autoComplete={autoComplete}
-        required
-        className="min-h-12 border border-ink/20 bg-ivory px-4 text-sm outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
-      />
-    </label>
-  );
-}

@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
 
   if (!user?.email) {
-    return NextResponse.json({ error: "Sign in before submitting an application." }, { status: 401 });
+    return NextResponse.json({ error: "Sign in with a Google account that provides an email address before submitting an application." }, { status: 401 });
   }
 
   let body: Record<string, unknown>;
