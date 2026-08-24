@@ -1,7 +1,9 @@
 import { getConfiguredTicketAmount, getCurrency } from "./tickets";
 import { createSupabaseAdminClient } from "./supabase/admin";
+import type { AuthUser } from "@supabase/supabase-js";
 import type {
   AdminAuditLog,
+  AdminUserOption,
   ApplicantType,
   Application,
   ApplicationStatus,
@@ -16,7 +18,6 @@ import type {
   Referral,
   ReferralCode,
   ReferralCodeStatus,
-  ReferralCodeType,
   RefundRequest,
   RefundRequestStatus,
   StripeEventRecord,
@@ -104,7 +105,6 @@ type DistributorRow = {
   name: string;
   email: string | null;
   status: DistributorStatus;
-  parent_distributor_id: string | null;
   commission_rate: number;
   created_at: string;
   updated_at: string;
@@ -114,12 +114,7 @@ type ReferralCodeRow = {
   id: string;
   code: string;
   distributor_id: string;
-  code_type: ReferralCodeType;
-  auto_approve: boolean;
-  stripe_promotion_code_id: string | null;
-  max_uses: number | null;
   used_count: number;
-  expires_at: string | null;
   status: ReferralCodeStatus;
   created_at: string;
   updated_at: string;
@@ -209,7 +204,6 @@ function mapDistributor(row: DistributorRow): Distributor {
     name: row.name,
     email: row.email,
     status: row.status,
-    parentDistributorId: row.parent_distributor_id,
     commissionRate: Number(row.commission_rate),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -221,12 +215,7 @@ function mapReferralCode(row: ReferralCodeRow): ReferralCode {
     id: row.id,
     code: row.code,
     distributorId: row.distributor_id,
-    codeType: row.code_type,
-    autoApprove: row.auto_approve,
-    stripePromotionCodeId: row.stripe_promotion_code_id,
-    maxUses: row.max_uses,
     usedCount: row.used_count,
-    expiresAt: row.expires_at,
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -314,6 +303,17 @@ function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
 
+function mapAdminUserOption(user: AuthUser): AdminUserOption | null {
+  if (!user.email) return null;
+
+  return {
+    id: user.id,
+    email: normalizeEmail(user.email),
+    createdAt: user.created_at,
+    lastSignInAt: user.last_sign_in_at || null,
+  };
+}
+
 export async function createApplication(input: {
   userId?: string | null;
   name: string;
@@ -375,8 +375,6 @@ export async function attachReferralToApplication(input: {
   return {
     referralId: row.referral_id as string,
     distributorId: row.distributor_id as string,
-    codeType: row.code_type as "referral" | "admission",
-    autoApprove: Boolean(row.auto_approve),
   };
 }
 
@@ -894,37 +892,46 @@ export async function listDistributors() {
   return (data as DistributorRow[]).map(mapDistributor);
 }
 
-export async function getDistributorForUser(userId: string, email: string | null) {
+export async function listAdminUserOptions() {
+  const supabase = createSupabaseAdminClient();
+  const users: AuthUser[] = [];
+  let page = 1;
+  const perPage = 1000;
+
+  while (true) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
+    if (error) throw error;
+
+    users.push(...data.users);
+    if (!data.nextPage) break;
+    page = data.nextPage;
+  }
+
+  return users
+    .map(mapAdminUserOption)
+    .filter((user): user is AdminUserOption => Boolean(user))
+    .sort((a, b) => a.email.localeCompare(b.email));
+}
+
+export async function getAdminUserOption(userId: string) {
+  const { data, error } = await createSupabaseAdminClient().auth.admin.getUserById(userId);
+  if (error) throw error;
+  return mapAdminUserOption(data.user);
+}
+
+export async function getDistributorForUser(userId: string) {
   const admin = createSupabaseAdminClient();
   const byUser = await admin.from("distributors").select("*").eq("user_id", userId).maybeSingle();
   if (byUser.error) throw byUser.error;
   if (byUser.data) return mapDistributor(byUser.data as DistributorRow);
 
-  if (!email) return null;
-  const byEmail = await admin.from("distributors").select("*").ilike("email", email.trim()).maybeSingle();
-  if (byEmail.error) throw byEmail.error;
-  if (!byEmail.data) return null;
-
-  const row = byEmail.data as DistributorRow;
-  if (!row.user_id) {
-    const linked = await admin
-      .from("distributors")
-      .update({ user_id: userId, updated_at: now() })
-      .eq("id", row.id)
-      .is("user_id", null)
-      .select()
-      .single();
-    if (linked.error) throw linked.error;
-    return mapDistributor(linked.data as DistributorRow);
-  }
-
   return null;
 }
 
 export async function createDistributor(input: {
+  userId: string;
   name: string;
   email?: string | null;
-  parentDistributorId?: string | null;
   commissionRate: number;
 }) {
   const timestamp = now();
@@ -932,9 +939,9 @@ export async function createDistributor(input: {
     .from("distributors")
     .insert({
       id: crypto.randomUUID(),
+      user_id: input.userId,
       name: input.name.trim(),
       email: input.email?.trim().toLowerCase() || null,
-      parent_distributor_id: input.parentDistributorId || null,
       commission_rate: input.commissionRate,
       status: "active",
       created_at: timestamp,
@@ -947,6 +954,27 @@ export async function createDistributor(input: {
   return mapDistributor(data as DistributorRow);
 }
 
+export async function updateDistributorStatus(id: string, status: DistributorStatus) {
+  const admin = createSupabaseAdminClient();
+  const timestamp = now();
+  const { data, error } = await admin
+    .from("distributors")
+    .update({ status, updated_at: timestamp })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  const { error: codesError } = await admin
+    .from("referral_codes")
+    .update({ status, updated_at: timestamp })
+    .eq("distributor_id", id);
+
+  if (codesError) throw codesError;
+  return mapDistributor(data as DistributorRow);
+}
+
 export async function listReferralCodesForDistributor(distributorId: string) {
   const { data, error } = await createSupabaseAdminClient()
     .from("referral_codes")
@@ -956,31 +984,6 @@ export async function listReferralCodesForDistributor(distributorId: string) {
 
   if (error) throw error;
   return (data as ReferralCodeRow[]).map(mapReferralCode);
-}
-
-export async function updateDistributor(id: string, patch: Partial<Pick<Distributor, "name" | "email" | "status" | "parentDistributorId" | "commissionRate">>) {
-  const rowPatch: Record<string, unknown> = { updated_at: now() };
-  const fields: Record<string, string> = {
-    name: "name",
-    email: "email",
-    status: "status",
-    parentDistributorId: "parent_distributor_id",
-    commissionRate: "commission_rate",
-  };
-
-  for (const [key, value] of Object.entries(patch)) {
-    if (fields[key]) rowPatch[fields[key]] = value;
-  }
-
-  const { data, error } = await createSupabaseAdminClient()
-    .from("distributors")
-    .update(rowPatch)
-    .eq("id", id)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return mapDistributor(data as DistributorRow);
 }
 
 export async function listReferralCodes() {
@@ -996,10 +999,6 @@ export async function listReferralCodes() {
 export async function createReferralCode(input: {
   code: string;
   distributorId: string;
-  codeType: ReferralCodeType;
-  autoApprove: boolean;
-  maxUses?: number | null;
-  expiresAt?: string | null;
 }) {
   const timestamp = now();
   const { data, error } = await createSupabaseAdminClient()
@@ -1008,37 +1007,10 @@ export async function createReferralCode(input: {
       id: crypto.randomUUID(),
       code: input.code.trim().toUpperCase(),
       distributor_id: input.distributorId,
-      code_type: input.codeType,
-      auto_approve: input.codeType === "admission" && input.autoApprove,
-      max_uses: input.maxUses || null,
       status: "active",
       created_at: timestamp,
       updated_at: timestamp,
     })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return mapReferralCode(data as ReferralCodeRow);
-}
-
-export async function updateReferralCode(id: string, patch: Partial<Pick<ReferralCode, "status" | "autoApprove" | "maxUses" | "expiresAt">>) {
-  const rowPatch: Record<string, unknown> = { updated_at: now() };
-  const fields: Record<string, string> = {
-    status: "status",
-    autoApprove: "auto_approve",
-    maxUses: "max_uses",
-    expiresAt: "expires_at",
-  };
-
-  for (const [key, value] of Object.entries(patch)) {
-    if (fields[key]) rowPatch[fields[key]] = value;
-  }
-
-  const { data, error } = await createSupabaseAdminClient()
-    .from("referral_codes")
-    .update(rowPatch)
-    .eq("id", id)
     .select()
     .single();
 

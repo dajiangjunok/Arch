@@ -31,7 +31,7 @@ export default async function AccountPage({
   const [applications, orders, distributor] = await Promise.all([
     listApplicationsForUser(user.id),
     listOrdersForUser(user.id),
-    getDistributorForUser(user.id, user.email || null),
+    getDistributorForUser(user.id),
   ]);
   const [payments, refundRequests] = await Promise.all([
     listPaymentsForOrders(orders.map((order) => order.id)),

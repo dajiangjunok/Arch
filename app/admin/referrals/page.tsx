@@ -1,6 +1,7 @@
 import { requireAdmin } from "@/lib/admin-auth";
 import { formatDate, formatMoney } from "@/lib/format";
 import {
+  listAdminUserOptions,
   listCommissions,
   listDistributors,
   listReferralCodes,
@@ -9,9 +10,8 @@ import {
 import { AdminShell, Notice, StatusPill } from "../_components";
 import {
   createDistributorAction,
-  createReferralCodeAction,
   updateCommissionStatusAction,
-  updateReferralCodeStatusAction,
+  updateDistributorStatusAction,
 } from "../actions";
 
 export default async function ReferralsAdminPage({
@@ -21,13 +21,35 @@ export default async function ReferralsAdminPage({
 }) {
   await requireAdmin();
   const params = await searchParams;
-  const [distributors, codes, referrals, commissions] = await Promise.all([
+  const [users, distributors, codes, referrals, commissions] = await Promise.all([
+    listAdminUserOptions(),
     listDistributors(),
     listReferralCodes(),
     listReferrals(),
     listCommissions(),
   ]);
   const distributorById = new Map(distributors.map((item) => [item.id, item]));
+  const distributorByUserId = new Map(
+    distributors
+      .filter((distributor) => distributor.userId)
+      .map((distributor) => [distributor.userId, distributor]),
+  );
+  const distributorEmailSet = new Set(
+    distributors
+      .map((distributor) => distributor.email?.toLowerCase())
+      .filter((email): email is string => Boolean(email)),
+  );
+  const codesByDistributorId = new Map<string, typeof codes>();
+
+  for (const code of codes) {
+    const distributorCodes = codesByDistributorId.get(code.distributorId) || [];
+    distributorCodes.push(code);
+    codesByDistributorId.set(code.distributorId, distributorCodes);
+  }
+
+  const availableUsers = users.filter(
+    (user) => !distributorByUserId.has(user.id) && !distributorEmailSet.has(user.email),
+  );
 
   return (
     <AdminShell title="Referral desk">
@@ -35,7 +57,7 @@ export default async function ReferralsAdminPage({
 
       <section className="grid gap-4 py-8 sm:grid-cols-4">
         <Metric label="Distributors" value={distributors.length} />
-        <Metric label="Active codes" value={codes.filter((code) => code.status === "active").length} />
+        <Metric label="Active distributors" value={distributors.filter((distributor) => distributor.status === "active").length} />
         <Metric label="Attributions" value={referrals.length} />
         <Metric label="Pending commission" value={formatMoney(totalPending(commissions), "usd")} />
       </section>
@@ -43,92 +65,80 @@ export default async function ReferralsAdminPage({
       <section className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
         <Panel eyebrow="Network" title="Add distributor">
           <form action={createDistributorAction} className="grid gap-3">
-            <Input label="Name" name="name" required />
-            <Input label="Email" name="email" type="email" />
             <label className="grid gap-1">
-              <span className="label">Parent distributor</span>
-              <select name="parentDistributorId" className="field" defaultValue="">
-                <option value="">Top level</option>
-                {distributors.map((distributor) => (
-                  <option key={distributor.id} value={distributor.id}>
-                    {distributor.name}
+              <span className="label">User</span>
+              <select name="userId" className="field" required defaultValue="" disabled={availableUsers.length === 0}>
+                <option value="" disabled>
+                  {availableUsers.length === 0 ? "No available users" : "Select user"}
+                </option>
+                {availableUsers.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.email}
                   </option>
                 ))}
               </select>
             </label>
             <Input label="Commission %" name="commissionRate" type="number" min="0" max="100" step="0.01" defaultValue="10" required />
-            <button className="button-primary" type="submit">Create distributor</button>
+            <button className="button-primary" type="submit" disabled={availableUsers.length === 0}>
+              Create distributor
+            </button>
           </form>
-
-          <div className="mt-8 border-t border-line pt-5">
-            <p className="label">Current network</p>
-            <div className="mt-3 grid gap-2">
-              {distributors.length === 0 ? <p className="muted">No distributors yet.</p> : null}
-              {distributors.map((distributor) => (
-                <div key={distributor.id} className="flex items-center justify-between gap-3 border border-line bg-paper px-3 py-3 text-sm">
-                  <div>
-                    <p className="font-semibold">{distributor.name}</p>
-                    <p className="muted">{distributor.parentDistributorId ? `Under ${distributorById.get(distributor.parentDistributorId)?.name || "unknown"}` : "Top level"}</p>
-                  </div>
-                  <StatusPill>{distributor.commissionRate}% · {distributor.status}</StatusPill>
-                </div>
-              ))}
-            </div>
-          </div>
         </Panel>
 
-        <Panel eyebrow="Access" title="Create invite code">
-          <form action={createReferralCodeAction} className="grid gap-3 sm:grid-cols-2">
-            <Input label="Code" name="code" placeholder="ARCH-PARTNER" required />
-            <label className="grid gap-1">
-              <span className="label">Distributor</span>
-              <select name="distributorId" className="field" required defaultValue="">
-                <option value="" disabled>Select distributor</option>
-                {distributors.map((distributor) => <option key={distributor.id} value={distributor.id}>{distributor.name}</option>)}
-              </select>
-            </label>
-            <label className="grid gap-1">
-              <span className="label">Code type</span>
-              <select name="codeType" className="field" defaultValue="referral">
-                <option value="referral">Referral only</option>
-                <option value="admission">Admission + referral</option>
-              </select>
-            </label>
-            <Input label="Maximum uses" name="maxUses" type="number" min="1" />
-            <Input label="Expires at" name="expiresAt" type="datetime-local" />
-            <label className="flex items-center gap-3 self-end border border-line bg-paper px-3 py-3 text-sm">
-              <input name="autoApprove" type="checkbox" className="h-4 w-4 accent-sun" />
-              Auto-approve this admission code
-            </label>
-            <button className="button-primary sm:col-span-2" type="submit">Create code</button>
-          </form>
-
-          <div className="mt-8 overflow-x-auto border-t border-line pt-5">
-            <table className="w-full min-w-[680px] text-left text-sm">
+        <Panel eyebrow="Access" title="Distributors">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px] text-left text-sm">
               <thead className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-soft">
-                <tr><th className="px-3 py-3">Code</th><th className="px-3 py-3">Owner</th><th className="px-3 py-3">Type</th><th className="px-3 py-3">Uses</th><th className="px-3 py-3">Link</th><th className="px-3 py-3">Status</th></tr>
+                <tr>
+                  <th className="px-3 py-3">User</th>
+                  <th className="px-3 py-3">Commission</th>
+                  <th className="px-3 py-3">Invite code</th>
+                  <th className="px-3 py-3">Uses</th>
+                  <th className="px-3 py-3">Status</th>
+                  <th className="px-3 py-3">Action</th>
+                </tr>
               </thead>
               <tbody>
-                {codes.map((code) => (
-                  <tr key={code.id} className="border-t border-line">
-                    <td className="px-3 py-3 font-mono font-bold">{code.code}</td>
-                    <td className="px-3 py-3">{distributorById.get(code.distributorId)?.name || "-"}</td>
-                    <td className="px-3 py-3"><StatusPill>{code.codeType}{code.autoApprove ? " · auto" : ""}</StatusPill></td>
-                    <td className="px-3 py-3">{code.usedCount}{code.maxUses ? ` / ${code.maxUses}` : ""}</td>
-                    <td className="px-3 py-3 font-mono text-xs text-ink-soft">/r/{code.code}</td>
-                    <td className="px-3 py-3">
-                      <form action={updateReferralCodeStatusAction}>
-                        <input type="hidden" name="codeId" value={code.id} />
-                        <input type="hidden" name="status" value={code.status === "active" ? "inactive" : "active"} />
-                        <button type="submit" className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-navy underline decoration-sun decoration-2 underline-offset-4">
-                          {code.status === "active" ? "Disable" : "Enable"}
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                ))}
+                {distributors.map((distributor) => {
+                  const distributorCodes = codesByDistributorId.get(distributor.id) || [];
+                  const primaryCode = distributorCodes[0];
+
+                  return (
+                    <tr key={distributor.id} className="border-t border-line">
+                      <td className="px-3 py-3">
+                        <p className="font-semibold">{distributor.email || distributor.name}</p>
+                        <p className="mt-1 font-mono text-[10px] text-ink-soft">{distributor.userId || "No linked user"}</p>
+                      </td>
+                      <td className="px-3 py-3">{distributor.commissionRate}%</td>
+                      <td className="px-3 py-3">
+                        {primaryCode ? (
+                          <>
+                            <p className="font-mono font-bold">{primaryCode.code}</p>
+                            <p className="mt-1 font-mono text-xs text-ink-soft">/r/{primaryCode.code}</p>
+                          </>
+                        ) : (
+                          <span className="text-ink-soft">-</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-3">
+                        {primaryCode ? primaryCode.usedCount : "-"}
+                      </td>
+                      <td className="px-3 py-3"><StatusPill>{distributor.status}</StatusPill></td>
+                      <td className="px-3 py-3">
+                        <form action={updateDistributorStatusAction}>
+                          <input type="hidden" name="distributorId" value={distributor.id} />
+                          <input type="hidden" name="status" value={distributor.status === "active" ? "inactive" : "active"} />
+                          <button type="submit" className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-navy underline decoration-sun decoration-2 underline-offset-4">
+                            {distributor.status === "active" ? "Disable" : "Enable"}
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
+            {distributors.length === 0 ? <p className="muted px-3 py-4">No distributors yet.</p> : null}
           </div>
         </Panel>
       </section>

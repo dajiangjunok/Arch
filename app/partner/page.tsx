@@ -21,7 +21,7 @@ import { logoutAction } from "@/app/auth/actions";
 
 export default async function PartnerPage() {
   const user = await requireUser("/partner");
-  const distributor = await getDistributorForUser(user.id, user.email || null);
+  const distributor = await getDistributorForUser(user.id);
 
   if (!distributor || distributor.status !== "active") {
     return <PartnerAccessDenied email={user.email || ""} />;
@@ -99,14 +99,14 @@ export default async function PartnerPage() {
                   <article key={code.id} className="border border-ink/20 bg-card p-5">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
-                        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">{code.codeType}{code.autoApprove ? " · direct payment" : " · review required"}</p>
+                        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">Invite code</p>
                         <h3 className="mt-2 font-serif text-3xl font-semibold text-navy">{code.code}</h3>
                       </div>
                       <span className={`border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] ${code.status === "active" ? "border-navy/25 text-navy" : "border-ink/20 text-ink/45"}`}>{code.status}</span>
                     </div>
                     <p className="mt-5 break-all border border-ink/15 bg-ivory px-3 py-3 font-mono text-xs text-ink/65">{link}</p>
                     <div className="mt-4 flex items-center justify-between gap-4">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink/45">{code.usedCount}{code.maxUses ? ` / ${code.maxUses}` : ""} uses</p>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink/45">{code.usedCount} uses</p>
                       {code.status === "active" ? <CopyLinkButton value={link} /> : null}
                     </div>
                   </article>

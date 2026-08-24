@@ -15,18 +15,20 @@ import {
   createOrderForApplication,
   createDistributor,
   createReferralCode,
+  getAdminUserOption,
   getApplication,
   getOrdersForApplication,
   getRefundRequest,
+  listDistributors,
   recordAdminAuditLog,
   rejectRefundRequest,
   resetRefundRequestAfterStripeError,
   updateCommissionStatus,
   updateApplicationStatus,
-  updateReferralCode,
+  updateDistributorStatus,
   updateOrder,
 } from "@/lib/store";
-import type { ApplicationStatus, CommissionStatus, ReferralCodeType } from "@/lib/types";
+import type { ApplicationStatus, CommissionStatus, DistributorStatus } from "@/lib/types";
 
 const editableStatuses: ApplicationStatus[] = [
   "pending_review",
@@ -44,6 +46,17 @@ const approvableStatuses: ApplicationStatus[] = [
 
 function redirectWithMessage(path: string, key: "notice" | "error", message: string): never {
   redirect(`${path}?${key}=${encodeURIComponent(message)}`);
+}
+
+function inviteCodeForEmail(email: string) {
+  const prefix = email
+    .split("@")[0]
+    .replace(/[^a-z0-9]+/gi, "")
+    .slice(0, 10)
+    .toUpperCase() || "USER";
+  const suffix = crypto.randomUUID().replace(/-/g, "").slice(0, 6).toUpperCase();
+
+  return `ARCH-${prefix}-${suffix}`;
 }
 
 export async function loginAction(formData: FormData) {
@@ -65,66 +78,74 @@ export async function logoutAction() {
 
 export async function createDistributorAction(formData: FormData) {
   const session = await requireAdmin();
-  const name = String(formData.get("name") || "").trim();
-  const email = String(formData.get("email") || "").trim();
-  const parentDistributorId = String(formData.get("parentDistributorId") || "").trim() || null;
+  const userId = String(formData.get("userId") || "").trim();
   const commissionRate = Number(formData.get("commissionRate") || 0);
 
-  if (!name || !Number.isFinite(commissionRate) || commissionRate < 0 || commissionRate > 100) {
-    redirectWithMessage("/admin/referrals", "error", "Enter a distributor name and a commission rate from 0 to 100.");
+  if (!userId || !Number.isFinite(commissionRate) || commissionRate < 0 || commissionRate > 100) {
+    redirectWithMessage("/admin/referrals", "error", "Select a user and enter a commission rate from 0 to 100.");
   }
 
-  const distributor = await createDistributor({ name, email: email || null, parentDistributorId, commissionRate });
-  await recordAdminAuditLog({
-    adminEmail: session.email,
-    action: "distributor.created",
-    targetType: "distributor",
-    targetId: distributor.id,
-    metadata: { name: distributor.name, parentDistributorId, commissionRate },
-  });
-  redirectWithMessage("/admin/referrals", "notice", "Distributor created.");
-}
-
-export async function createReferralCodeAction(formData: FormData) {
-  const session = await requireAdmin();
-  const code = String(formData.get("code") || "").trim();
-  const distributorId = String(formData.get("distributorId") || "").trim();
-  const codeType = String(formData.get("codeType") || "referral") as ReferralCodeType;
-  const autoApprove = formData.get("autoApprove") === "on";
-  const maxUsesValue = String(formData.get("maxUses") || "").trim();
-  const expiresAtValue = String(formData.get("expiresAt") || "").trim();
-  const maxUses = maxUsesValue ? Number(maxUsesValue) : null;
-
-  if (!code || !distributorId || !["referral", "admission"].includes(codeType)) {
-    redirectWithMessage("/admin/referrals", "error", "Enter a code, distributor and valid code type.");
+  const user = await getAdminUserOption(userId);
+  if (!user?.email) {
+    redirectWithMessage("/admin/referrals", "error", "The selected user could not be found.");
   }
 
-  if (maxUses !== null && (!Number.isInteger(maxUses) || maxUses < 1)) {
-    redirectWithMessage("/admin/referrals", "error", "Maximum uses must be a positive whole number.");
+  const existingDistributor = (await listDistributors()).find(
+    (distributor) => distributor.userId === user.id || distributor.email?.toLowerCase() === user.email,
+  );
+
+  if (existingDistributor) {
+    redirectWithMessage("/admin/referrals", "error", "This user is already a distributor.");
   }
+
+  let createdCode = "";
 
   try {
-    const referralCode = await createReferralCode({
-      code,
-      distributorId,
-      codeType,
-      autoApprove,
-      maxUses,
-      expiresAt: expiresAtValue ? new Date(expiresAtValue).toISOString() : null,
+    const distributor = await createDistributor({
+      userId: user.id,
+      name: user.email,
+      email: user.email,
+      commissionRate,
     });
+    const referralCode = await createReferralCode({
+      code: inviteCodeForEmail(user.email),
+      distributorId: distributor.id,
+    });
+
     await recordAdminAuditLog({
       adminEmail: session.email,
-      action: "referral_code.created",
-      targetType: "referral_code",
-      targetId: referralCode.id,
-      metadata: { code: referralCode.code, distributorId, codeType, autoApprove },
+      action: "distributor.created",
+      targetType: "distributor",
+      targetId: distributor.id,
+      metadata: { userId: user.id, email: user.email, commissionRate, referralCode: referralCode.code },
     });
+    createdCode = referralCode.code;
   } catch (error) {
-    console.error("Unable to create referral code", error);
-    redirectWithMessage("/admin/referrals", "error", "The referral code could not be created. It may already exist.");
+    console.error("Unable to create distributor", error);
+    redirectWithMessage("/admin/referrals", "error", "The distributor could not be created.");
   }
 
-  redirectWithMessage("/admin/referrals", "notice", "Referral code created.");
+  redirectWithMessage("/admin/referrals", "notice", `Distributor created. Invite code: ${createdCode}`);
+}
+
+export async function updateDistributorStatusAction(formData: FormData) {
+  const session = await requireAdmin();
+  const distributorId = String(formData.get("distributorId") || "").trim();
+  const status = String(formData.get("status") || "") as DistributorStatus;
+
+  if (!distributorId || !["active", "inactive"].includes(status)) {
+    redirectWithMessage("/admin/referrals", "error", "Invalid distributor update.");
+  }
+
+  await updateDistributorStatus(distributorId, status);
+  await recordAdminAuditLog({
+    adminEmail: session.email,
+    action: "distributor.status_updated",
+    targetType: "distributor",
+    targetId: distributorId,
+    metadata: { status },
+  });
+  redirectWithMessage("/admin/referrals", "notice", "Distributor status updated.");
 }
 
 export async function updateCommissionStatusAction(formData: FormData) {
@@ -145,26 +166,6 @@ export async function updateCommissionStatusAction(formData: FormData) {
     metadata: { status },
   });
   redirectWithMessage("/admin/referrals", "notice", "Commission status updated.");
-}
-
-export async function updateReferralCodeStatusAction(formData: FormData) {
-  const session = await requireAdmin();
-  const codeId = String(formData.get("codeId") || "");
-  const status = String(formData.get("status") || "") as "active" | "inactive";
-
-  if (!codeId || !["active", "inactive"].includes(status)) {
-    redirectWithMessage("/admin/referrals", "error", "Invalid referral code update.");
-  }
-
-  await updateReferralCode(codeId, { status });
-  await recordAdminAuditLog({
-    adminEmail: session.email,
-    action: "referral_code.status_updated",
-    targetType: "referral_code",
-    targetId: codeId,
-    metadata: { status },
-  });
-  redirectWithMessage("/admin/referrals", "notice", "Referral code status updated.");
 }
 
 export async function updateApplicationStatusAction(formData: FormData) {

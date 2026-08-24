@@ -31,7 +31,6 @@ export type RefundRequestStatus =
   | "canceled";
 
 export type DistributorStatus = "active" | "inactive";
-export type ReferralCodeType = "referral" | "admission";
 export type ReferralCodeStatus = "active" | "inactive";
 export type CommissionStatus = "pending" | "approved" | "paid" | "reversed";
 
@@ -130,13 +129,19 @@ export type AdminAuditLog = {
   createdAt: string;
 };
 
+export type AdminUserOption = {
+  id: string;
+  email: string;
+  createdAt: string;
+  lastSignInAt: string | null;
+};
+
 export type Distributor = {
   id: string;
   userId: string | null;
   name: string;
   email: string | null;
   status: DistributorStatus;
-  parentDistributorId: string | null;
   commissionRate: number;
   createdAt: string;
   updatedAt: string;
@@ -146,12 +151,7 @@ export type ReferralCode = {
   id: string;
   code: string;
   distributorId: string;
-  codeType: ReferralCodeType;
-  autoApprove: boolean;
-  stripePromotionCodeId: string | null;
-  maxUses: number | null;
   usedCount: number;
-  expiresAt: string | null;
   status: ReferralCodeStatus;
   createdAt: string;
   updatedAt: string;
