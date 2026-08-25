@@ -8,7 +8,7 @@ import { SubmitButton } from "@/app/_components/submit-button";
 
 type UserIdentity = ReturnType<typeof getUserIdentity>;
 
-export function AccountMenu({ identity }: { identity: UserIdentity }) {
+export function AccountMenu({ identity, isAdmin = false }: { identity: UserIdentity; isAdmin?: boolean }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -68,6 +68,12 @@ export function AccountMenu({ identity }: { identity: UserIdentity }) {
             <span>My account</span>
             <span aria-hidden="true">↗</span>
           </Link>
+          {isAdmin ? (
+            <Link href="/admin" className="account-action" role="menuitem">
+              <span>Admin dashboard</span>
+              <span aria-hidden="true">↗</span>
+            </Link>
+          ) : null}
           <form action={logoutAction}>
             <SubmitButton
               className="account-action account-signout"

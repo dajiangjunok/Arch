@@ -3,6 +3,7 @@ import { SubmitButton } from "@/app/_components/submit-button";
 import { logoutAction } from "@/app/auth/actions";
 import { requestRefundAction, updateApplicationAction } from "./actions";
 import { requireUser } from "@/lib/auth";
+import { getAdminSession } from "@/lib/admin-auth";
 import { getUserIdentity } from "@/lib/user-identity";
 import {
   applicationStatusLabel,
@@ -30,6 +31,7 @@ export default async function AccountPage({
   searchParams: Promise<{ error?: string; notice?: string }>;
 }) {
   const user = await requireUser("/account");
+  const isAdmin = Boolean(await getAdminSession());
   const identity = getUserIdentity(user);
   const query = await searchParams;
   const googleCalendarBookingUrl = process.env.GOOGLE_CALENDAR_BOOKING_URL?.trim();
@@ -67,6 +69,11 @@ export default async function AccountPage({
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
+            {isAdmin ? (
+              <Link href="/admin" className="rounded-md border border-navy bg-navy px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-marigold hover:text-ink">
+                Admin dashboard
+              </Link>
+            ) : null}
             <Link href="/apply" className="rounded-md bg-marigold px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-navy transition hover:bg-navy hover:text-ivory">
               New application
             </Link>

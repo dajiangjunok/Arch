@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getCurrentUser } from "@/lib/auth";
+import { getAdminSession } from "@/lib/admin-auth";
 import { getUserIdentity } from "@/lib/user-identity";
 import { AccountMenu } from "./account-menu";
 import type { ReferencePageId } from "./types";
@@ -16,6 +17,7 @@ const links = [
 
 export async function ReferenceHeader({ page }: { page: ReferencePageId }) {
   const user = await getCurrentUser();
+  const isAdmin = user ? Boolean(await getAdminSession()) : false;
   const identity = getUserIdentity(user);
 
   function renderAuthControl() {
@@ -30,7 +32,7 @@ export async function ReferenceHeader({ page }: { page: ReferencePageId }) {
       );
     }
 
-    return <AccountMenu identity={identity} />;
+    return <AccountMenu identity={identity} isAdmin={isAdmin} />;
   }
 
   return (
