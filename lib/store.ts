@@ -437,6 +437,30 @@ export async function updateApplicationStatus(id: string, status: ApplicationSta
   return mapApplication(data as ApplicationRow);
 }
 
+export async function updateUnpaidApplicationForUser(input: {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  alternateContact: string;
+  message: string;
+  additionalInfo: string;
+}) {
+  const { data, error } = await createSupabaseAdminClient().rpc("update_unpaid_application", {
+    p_application_id: input.id,
+    p_user_id: input.userId,
+    p_name: input.name.trim(),
+    p_email: normalizeEmail(input.email),
+    p_alternate_contact: input.alternateContact.trim(),
+    p_message: input.message.trim(),
+    p_additional_info: input.additionalInfo.trim(),
+  });
+
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  return row ? mapApplication(row as ApplicationRow) : null;
+}
+
 export async function listOrders() {
   const { data, error } = await createSupabaseAdminClient()
     .from("orders")

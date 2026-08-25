@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SubmitButton } from "@/app/_components/submit-button";
 import { requireAdmin } from "@/lib/admin-auth";
 import { formatDate, formatMoney, refundRequestStatusLabel, ticketLabel } from "@/lib/format";
 import { moneyInputStep, moneyInputValue } from "@/lib/money";
@@ -92,9 +93,9 @@ export default async function RefundsPage({
                           <span className="label">Approval note</span>
                           <textarea className="field min-h-24 resize-y py-3" name="adminNote" maxLength={1000} />
                         </label>
-                        <button className="button-primary" type="submit" disabled={refundableAmount <= 0}>
+                        <SubmitButton pendingLabel="Refunding..." className="button-primary" disabled={refundableAmount <= 0}>
                           Approve and refund
-                        </button>
+                        </SubmitButton>
                       </form>
 
                       <form action={rejectRefundAction} className="grid gap-3 border-t border-line pt-4">
@@ -103,9 +104,9 @@ export default async function RefundsPage({
                           <span className="label">Decline reason</span>
                           <textarea className="field min-h-20 resize-y py-3" name="adminNote" minLength={3} maxLength={1000} required />
                         </label>
-                        <button className="border border-line bg-paper px-4 py-3 font-mono text-xs font-bold uppercase tracking-[0.16em] hover:border-ink" type="submit">
+                        <SubmitButton pendingLabel="Declining..." className="border border-line bg-paper px-4 py-3 font-mono text-xs font-bold uppercase tracking-[0.16em] hover:border-ink">
                           Decline request
-                        </button>
+                        </SubmitButton>
                       </form>
                     </div>
                   ) : (

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { logoutAction } from "./actions";
+import { SubmitButton } from "@/app/_components/submit-button";
 
 export function AdminShell({ children, title }: { children: React.ReactNode; title: string }) {
   return (
@@ -27,9 +28,9 @@ export function AdminShell({ children, title }: { children: React.ReactNode; tit
             Referrals
           </Link>
           <form action={logoutAction}>
-            <button className="border border-line bg-ink px-4 py-3 text-paper hover:bg-sun hover:text-ink">
+            <SubmitButton pendingLabel="Signing out..." className="border border-line bg-ink px-4 py-3 text-paper hover:bg-sun hover:text-ink">
               Sign out
-            </button>
+            </SubmitButton>
           </form>
         </nav>
       </header>

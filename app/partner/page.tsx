@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SubmitButton } from "@/app/_components/submit-button";
 import { requireUser } from "@/lib/auth";
 import { getSiteUrl } from "@/lib/stripe";
 import {
@@ -64,7 +65,7 @@ export default async function PartnerPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/account" className="rounded-md border border-ink/25 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.18em] transition hover:border-ink hover:bg-card">My account</Link>
-            <form action={logoutAction}><button className="rounded-md bg-navy px-5 py-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory transition hover:bg-marigold hover:text-ink">Sign out</button></form>
+            <form action={logoutAction}><SubmitButton pendingLabel="Signing out..." className="rounded-md bg-navy px-5 py-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory transition hover:bg-marigold hover:text-ink">Sign out</SubmitButton></form>
           </div>
         </header>
 

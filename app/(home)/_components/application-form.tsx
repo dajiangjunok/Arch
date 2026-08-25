@@ -167,9 +167,15 @@ export function ApplicationForm({
       <button
         type="submit"
         disabled={status === "submitting" || status === "success"}
+        aria-busy={status === "submitting"}
         className="mt-2 inline-flex min-h-12 items-center justify-center rounded-md bg-navy px-6 py-4 font-mono text-xs font-semibold uppercase tracking-[0.24em] text-ivory transition hover:bg-marigold hover:text-ink focus:outline-none focus:ring-4 focus:ring-marigold/40 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {status === "submitting" ? "Submitting application" : status === "success" ? "Application submitted" : "Submit for review"}
+        {status === "submitting" ? (
+          <span className="inline-flex items-center gap-2">
+            <span aria-hidden="true" className="size-3.5 animate-spin rounded-full border-2 border-current border-r-transparent" />
+            Submitting application
+          </span>
+        ) : status === "success" ? "Application submitted" : "Submit for review"}
       </button>
 
       {message ? (

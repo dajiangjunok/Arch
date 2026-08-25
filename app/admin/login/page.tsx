@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/lib/admin-auth";
 import { loginAction } from "../actions";
+import { SubmitButton } from "@/app/_components/submit-button";
 
 export default async function AdminLoginPage({
   searchParams,
@@ -41,9 +42,9 @@ export default async function AdminLoginPage({
             />
           </label>
           {params.error ? <p className="border border-red-700/30 bg-red-50 px-4 py-3 text-sm text-red-900">{params.error}</p> : null}
-          <button className="mt-2 min-h-12 bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.24em] text-paper transition hover:bg-sun hover:text-ink focus:outline-none focus:ring-4 focus:ring-sun/40">
+          <SubmitButton pendingLabel="Signing in..." className="mt-2 min-h-12 bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.24em] text-paper transition hover:bg-sun hover:text-ink focus:outline-none focus:ring-4 focus:ring-sun/40">
             Sign in
-          </button>
+          </SubmitButton>
         </form>
       </section>
     </main>

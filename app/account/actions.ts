@@ -3,7 +3,12 @@
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { parseMoneyInput } from "@/lib/money";
-import { createRefundRequest, getOrder, listRefundRequestsForOrders } from "@/lib/store";
+import {
+  createRefundRequest,
+  getOrder,
+  listRefundRequestsForOrders,
+  updateUnpaidApplicationForUser,
+} from "@/lib/store";
 
 function redirectWithMessage(key: "notice" | "error", message: string): never {
   redirect(`/account?${key}=${encodeURIComponent(message)}`);
@@ -59,4 +64,52 @@ export async function requestRefundAction(formData: FormData) {
   }
 
   redirectWithMessage("notice", "Your refund request has been submitted for review.");
+}
+
+export async function updateApplicationAction(formData: FormData) {
+  const user = await requireUser("/account");
+  const applicationId = String(formData.get("applicationId") || "");
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim().toLowerCase();
+  const alternateContact = String(formData.get("alternateContact") || "").trim();
+  const message = String(formData.get("message") || "").trim();
+  const additionalInfo = String(formData.get("additionalInfo") || "").trim();
+
+  if (!applicationId || !name || !email || !alternateContact || !message) {
+    redirectWithMessage("error", "Please complete all required application fields.");
+  }
+
+  if (name.length > 200 || email.length > 320 || alternateContact.length > 500) {
+    redirectWithMessage("error", "One or more contact fields are too long.");
+  }
+
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    redirectWithMessage("error", "Enter a valid contact email address.");
+  }
+
+  if (message.length > 5000 || additionalInfo.length > 5000) {
+    redirectWithMessage("error", "Application responses must be 5,000 characters or fewer.");
+  }
+
+  let application;
+  try {
+    application = await updateUnpaidApplicationForUser({
+      id: applicationId,
+      userId: user.id,
+      name,
+      email,
+      alternateContact,
+      message,
+      additionalInfo,
+    });
+  } catch (error) {
+    console.error("Unable to update application", error);
+    redirectWithMessage("error", "The application could not be updated. Please try again.");
+  }
+
+  if (!application) {
+    redirectWithMessage("error", "This application cannot be edited after payment, or it could not be found.");
+  }
+
+  redirectWithMessage("notice", "Your application has been updated.");
 }

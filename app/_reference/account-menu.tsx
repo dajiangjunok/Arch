@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { logoutAction } from "@/app/auth/actions";
 import type { getUserIdentity } from "@/lib/user-identity";
+import { SubmitButton } from "@/app/_components/submit-button";
 
 type UserIdentity = ReturnType<typeof getUserIdentity>;
 
@@ -68,14 +69,14 @@ export function AccountMenu({ identity }: { identity: UserIdentity }) {
             <span aria-hidden="true">↗</span>
           </Link>
           <form action={logoutAction}>
-            <button
+            <SubmitButton
               className="account-action account-signout"
-              type="submit"
+              pendingLabel="Signing out..."
               role="menuitem"
             >
               <span>Sign out</span>
               <span aria-hidden="true">→</span>
-            </button>
+            </SubmitButton>
           </form>
         </div>
       </div>

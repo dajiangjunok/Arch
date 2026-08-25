@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SubmitButton } from "@/app/_components/submit-button";
 import { notFound } from "next/navigation";
 import { AdminShell, Notice, StatusPill } from "../../_components";
 import {
@@ -120,9 +121,9 @@ export default async function ApplicationDetailPage({
               <p className="mt-3 text-sm leading-6">
                 Invite the applicant to schedule an interview before making the final payment decision.
               </p>
-              <button className="mt-5 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-paper hover:bg-paper hover:text-ink">
+              <SubmitButton pendingLabel="Inviting..." className="mt-5 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-paper hover:bg-paper hover:text-ink">
                 Invite to interview
-              </button>
+              </SubmitButton>
             </form>
           ) : null}
 
@@ -133,11 +134,11 @@ export default async function ApplicationDetailPage({
               <p className="mt-3 text-sm leading-6">
                 After the interview, final approval creates a Stripe Checkout link and makes it available in the applicant&apos;s account.
               </p>
-              <button className="mt-5 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-paper hover:bg-paper hover:text-ink">
+              <SubmitButton pendingLabel="Creating payment link..." className="mt-5 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-paper hover:bg-paper hover:text-ink">
                 {application.status === "approved" || application.status === "payment_sent"
                   ? "Generate new payment link"
                   : "Final approve and create payment link"}
-              </button>
+              </SubmitButton>
             </form>
           ) : activeOrder ? (
             <div className="border border-line bg-paper p-5">
@@ -170,9 +171,9 @@ export default async function ApplicationDetailPage({
                   ))}
                 </select>
               </label>
-              <button className="mt-4 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.22em] text-paper hover:bg-sun hover:text-ink">
+              <SubmitButton pendingLabel="Saving..." className="mt-4 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.22em] text-paper hover:bg-sun hover:text-ink">
                 Save review status
-              </button>
+              </SubmitButton>
             </form>
           ) : null}
         </aside>

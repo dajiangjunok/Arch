@@ -1,4 +1,5 @@
 import { requireAdmin } from "@/lib/admin-auth";
+import { SubmitButton } from "@/app/_components/submit-button";
 import { formatDate, formatMoney } from "@/lib/format";
 import {
   listAdminUserOptions,
@@ -79,9 +80,9 @@ export default async function ReferralsAdminPage({
               </select>
             </label>
             <Input label="Commission %" name="commissionRate" type="number" min="0" max="100" step="0.01" defaultValue="10" required />
-            <button className="button-primary" type="submit" disabled={availableUsers.length === 0}>
+            <SubmitButton pendingLabel="Creating..." className="button-primary" disabled={availableUsers.length === 0}>
               Create distributor
-            </button>
+            </SubmitButton>
           </form>
         </Panel>
 
@@ -129,9 +130,9 @@ export default async function ReferralsAdminPage({
                         <form action={updateDistributorStatusAction}>
                           <input type="hidden" name="distributorId" value={distributor.id} />
                           <input type="hidden" name="status" value={distributor.status === "active" ? "inactive" : "active"} />
-                          <button type="submit" className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-navy underline decoration-sun decoration-2 underline-offset-4">
+                          <SubmitButton pendingLabel="Updating..." className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-navy underline decoration-sun decoration-2 underline-offset-4">
                             {distributor.status === "active" ? "Disable" : "Enable"}
-                          </button>
+                          </SubmitButton>
                         </form>
                       </td>
                     </tr>
@@ -220,5 +221,5 @@ function Input({ label, name, type = "text", required = false, defaultValue, pla
 }
 
 function CommissionAction({ id, status, label }: { id: string; status: "approved" | "paid" | "reversed"; label: string }) {
-  return <form action={updateCommissionStatusAction} className="inline-block mr-2"><input type="hidden" name="commissionId" value={id} /><input type="hidden" name="status" value={status} /><button type="submit" className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-navy underline decoration-sun decoration-2 underline-offset-4">{label}</button></form>;
+  return <form action={updateCommissionStatusAction} className="inline-block mr-2"><input type="hidden" name="commissionId" value={id} /><input type="hidden" name="status" value={status} /><SubmitButton pendingLabel="Updating..." className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-navy underline decoration-sun decoration-2 underline-offset-4">{label}</SubmitButton></form>;
 }

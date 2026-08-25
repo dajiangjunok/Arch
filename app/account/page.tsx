@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { SubmitButton } from "@/app/_components/submit-button";
 import { logoutAction } from "@/app/auth/actions";
-import { requestRefundAction } from "./actions";
+import { requestRefundAction, updateApplicationAction } from "./actions";
 import { requireUser } from "@/lib/auth";
 import { getUserIdentity } from "@/lib/user-identity";
 import {
@@ -36,6 +37,12 @@ export default async function AccountPage({
   const { applications, orders, distributor, payments, refundRequests } = accountData;
   const applicationsById = new Map(applications.map((application) => [application.id, application]));
   const paymentByOrderId = new Map(payments.map((payment) => [payment.orderId, payment]));
+  const ordersByApplicationId = new Map<string, typeof orders>();
+  for (const order of orders) {
+    const applicationOrders = ordersByApplicationId.get(order.applicationId) || [];
+    applicationOrders.push(order);
+    ordersByApplicationId.set(order.applicationId, applicationOrders);
+  }
   const latestRefundByOrderId = new Map<string, RefundRequest>();
   for (const refundRequest of refundRequests) {
     if (!latestRefundByOrderId.has(refundRequest.orderId)) {
@@ -69,7 +76,7 @@ export default async function AccountPage({
               </Link>
             ) : null}
             <form action={logoutAction}>
-              <button className="rounded-md border border-ink/25 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.18em] transition hover:border-ink hover:bg-card">Sign out</button>
+              <SubmitButton pendingLabel="Signing out..." className="rounded-md border border-ink/25 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.18em] transition hover:border-ink hover:bg-card">Sign out</SubmitButton>
             </form>
           </div>
         </header>
@@ -210,9 +217,9 @@ export default async function AccountPage({
                                 required
                               />
                             </label>
-                            <button className="min-h-11 bg-navy px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ivory transition hover:bg-marigold hover:text-ink">
+                            <SubmitButton pendingLabel="Submitting..." className="min-h-11 bg-navy px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ivory transition hover:bg-marigold hover:text-ink">
                               Submit request
-                            </button>
+                            </SubmitButton>
                           </form>
                         </details>
                       ) : null}
@@ -230,17 +237,51 @@ export default async function AccountPage({
             <p className="mt-6 text-sm text-ink-soft">No application has been submitted with this account.</p>
           ) : (
             <div className="mt-7 grid gap-4 md:grid-cols-2">
-              {applications.map((application) => (
-                <article key={application.id} className="border border-ink/20 bg-card p-5">
-                  <div className="flex items-start justify-between gap-5">
+              {applications.map((application) => {
+                const applicationOrders = ordersByApplicationId.get(application.id) || [];
+                const canEdit = !["paid", "confirmed"].includes(application.status) &&
+                  !applicationOrders.some((order) => {
+                    const payment = paymentByOrderId.get(order.id);
+                    return ["paid", "partially_refunded", "refunded"].includes(order.status) ||
+                      Boolean(payment && ["processing", "succeeded", "partially_refunded", "refunded"].includes(payment.status));
+                  });
+
+                return (
+                  <article key={application.id} className="border border-ink/20 bg-card p-5">
+                    <div className="flex items-start justify-between gap-5">
                     <div>
                       <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">{programLabel(application.selectedTicket, application.selectedWeek)}</p>
                       <h3 className="mt-2 font-serif text-2xl font-semibold text-navy">{application.name}</h3>
                     </div>
                     <span className="border border-ink/20 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/65">{applicationStatusLabel(application.status)}</span>
-                  </div>
-                  <p className="mt-5 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-ink/65">{application.message}</p>
-                  {application.status === "interview_invited" ? (
+                    </div>
+                    <p className="mt-5 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-ink/65">{application.message}</p>
+                    {canEdit ? (
+                    <details className="mt-5 border-t border-ink/15 pt-5">
+                      <summary className="cursor-pointer list-none font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-navy underline decoration-marigold decoration-2 underline-offset-4">
+                        Edit application
+                      </summary>
+                      <p className="mt-3 text-xs leading-5 text-ink-soft">
+                        Contact details and written responses can be updated until payment. Program choice and invite code are locked.
+                      </p>
+                      <form action={updateApplicationAction} className="mt-4 grid gap-4">
+                        <input type="hidden" name="applicationId" value={application.id} />
+                        <ApplicationInput label="Name" name="name" defaultValue={application.name} maxLength={200} />
+                        <ApplicationInput label="Best contact email" name="email" type="email" defaultValue={application.email} maxLength={320} />
+                        <ApplicationInput label="Alternate contact" name="alternateContact" defaultValue={application.alternateContact} maxLength={500} />
+                        <ApplicationTextarea label="About you and your goals" name="message" defaultValue={application.message} required />
+                        <ApplicationTextarea label="Anything else we should know?" name="additionalInfo" defaultValue={application.additionalInfo} />
+                        <SubmitButton pendingLabel="Saving..." className="min-h-11 justify-self-start rounded-md bg-navy px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ivory transition hover:bg-marigold hover:text-ink">
+                          Save changes
+                        </SubmitButton>
+                      </form>
+                    </details>
+                    ) : (
+                    <p className="mt-5 border-t border-ink/15 pt-4 text-xs leading-5 text-ink-soft">
+                      Application details are locked after payment.
+                    </p>
+                    )}
+                    {application.status === "interview_invited" ? (
                     <div className="mt-5 border-t border-ink/15 pt-5">
                       <p className="text-sm leading-6 text-ink/70">
                         You have been invited to an interview. Choose a convenient meeting time to continue your application.
@@ -260,10 +301,11 @@ export default async function AccountPage({
                         </p>
                       )}
                     </div>
-                  ) : null}
-                  <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">{formatDate(application.createdAt)}</p>
-                </article>
-              ))}
+                    ) : null}
+                    <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">{formatDate(application.createdAt)}</p>
+                  </article>
+                );
+              })}
             </div>
           )}
         </section>
@@ -317,6 +359,24 @@ function Stat({ label, value }: { label: string; value: number }) {
       <p className="font-serif text-3xl font-semibold text-navy">{value}</p>
       <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em] text-ink/50">{label}</p>
     </div>
+  );
+}
+
+function ApplicationInput({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <label className="grid gap-1 text-xs text-ink-soft">
+      {label}
+      <input {...props} required className="min-h-11 border border-ink/25 bg-ivory px-3 text-sm text-ink outline-none focus:border-navy" />
+    </label>
+  );
+}
+
+function ApplicationTextarea({ label, ...props }: { label: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <label className="grid gap-1 text-xs text-ink-soft">
+      {label}
+      <textarea {...props} maxLength={5000} rows={4} className="min-h-24 resize-y border border-ink/25 bg-ivory px-3 py-2 text-sm text-ink outline-none focus:border-navy" />
+    </label>
   );
 }
 
