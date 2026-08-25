@@ -25,10 +25,12 @@ export default async function SignUpPage({
           pendingLabel="Opening Google..."
           className="min-h-12 w-full rounded-md border border-ink/20 bg-ivory px-6 py-4 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-ink transition hover:border-navy hover:bg-navy hover:text-ivory focus:outline-none focus:ring-4 focus:ring-marigold/35"
         >
-          <span className="flex size-5 items-center justify-center rounded-full bg-white font-sans text-sm font-bold normal-case tracking-normal text-[#4285f4] shadow-sm">
-            G
+          <span className="inline-flex items-center justify-center gap-2 whitespace-nowrap">
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white font-sans text-sm font-bold normal-case tracking-normal text-[#4285f4] shadow-sm">
+              G
+            </span>
+            <span>Continue with Google</span>
           </span>
-          <span className="whitespace-nowrap">Continue with Google</span>
         </SubmitButton>
       </form>
       <p className="mt-6 text-sm leading-7 text-ink/70">If this Google account has already been used, you will be signed in instead.</p>
