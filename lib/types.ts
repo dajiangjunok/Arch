@@ -3,6 +3,7 @@ export type ProgramWeek = "week_1" | "week_2" | "week_3";
 
 export type ApplicationStatus =
   | "pending_review"
+  | "interview_invited"
   | "approved"
   | "rejected"
   | "more_info_required"

@@ -31,6 +31,7 @@ export default async function AccountPage({
   const user = await requireUser("/account");
   const identity = getUserIdentity(user);
   const query = await searchParams;
+  const googleCalendarBookingUrl = process.env.GOOGLE_CALENDAR_BOOKING_URL?.trim();
   const accountData = await loadAccountData(user.id);
   const { applications, orders, distributor, payments, refundRequests } = accountData;
   const applicationsById = new Map(applications.map((application) => [application.id, application]));
@@ -239,6 +240,27 @@ export default async function AccountPage({
                     <span className="border border-ink/20 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/65">{applicationStatusLabel(application.status)}</span>
                   </div>
                   <p className="mt-5 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-ink/65">{application.message}</p>
+                  {application.status === "interview_invited" ? (
+                    <div className="mt-5 border-t border-ink/15 pt-5">
+                      <p className="text-sm leading-6 text-ink/70">
+                        You have been invited to an interview. Choose a convenient meeting time to continue your application.
+                      </p>
+                      {googleCalendarBookingUrl ? (
+                        <a
+                          href={googleCalendarBookingUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-4 inline-flex min-h-11 items-center rounded-md bg-navy px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-marigold hover:text-ink"
+                        >
+                          Schedule interview
+                        </a>
+                      ) : (
+                        <p className="mt-3 text-xs leading-5 text-ink-soft">
+                          Scheduling is temporarily unavailable. Please contact the Arch.ai team.
+                        </p>
+                      )}
+                    </div>
+                  ) : null}
                   <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">{formatDate(application.createdAt)}</p>
                 </article>
               ))}

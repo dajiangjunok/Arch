@@ -29,6 +29,7 @@ export function formatMoney(amount: number | null, currency: string) {
 export function applicationStatusLabel(status: ApplicationStatus) {
   const labels: Record<ApplicationStatus, string> = {
     pending_review: "Pending review",
+    interview_invited: "Interview invited",
     approved: "Approved",
     rejected: "Rejected",
     more_info_required: "More info required",

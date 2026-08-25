@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminShell, Notice, StatusPill } from "../../_components";
-import { approveApplicationAction, updateApplicationStatusAction } from "../../actions";
+import {
+  approveApplicationAction,
+  inviteToInterviewAction,
+  updateApplicationStatusAction,
+} from "../../actions";
 import { requireAdmin } from "@/lib/admin-auth";
 import {
   applicationStatusLabel,
@@ -50,10 +54,14 @@ export default async function ApplicationDetailPage({
   const canApprove =
     !hasCompletedOrder &&
     !activeOrder &&
-    (["pending_review", "more_info_required", "approved", "payment_sent"] as ApplicationStatus[]).includes(
+    (["interview_invited", "approved", "payment_sent"] as ApplicationStatus[]).includes(
       application.status,
     );
-  const canChangeReviewStatus = statuses.includes(application.status);
+  const canInviteToInterview = (["pending_review", "more_info_required"] as ApplicationStatus[]).includes(
+    application.status,
+  );
+  const canChangeReviewStatus =
+    statuses.includes(application.status) || application.status === "interview_invited";
 
   return (
     <AdminShell title="Applicant">
@@ -105,17 +113,30 @@ export default async function ApplicationDetailPage({
         </article>
 
         <aside className="grid content-start gap-6">
+          {canInviteToInterview ? (
+            <form action={inviteToInterviewAction} className="border border-ink bg-sun p-5 text-ink">
+              <input type="hidden" name="applicationId" value={application.id} />
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">Interview access</p>
+              <p className="mt-3 text-sm leading-6">
+                Invite the applicant to schedule an interview before making the final payment decision.
+              </p>
+              <button className="mt-5 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-paper hover:bg-paper hover:text-ink">
+                Invite to interview
+              </button>
+            </form>
+          ) : null}
+
           {canApprove ? (
             <form action={approveApplicationAction} className="border border-ink bg-sun p-5 text-ink">
               <input type="hidden" name="applicationId" value={application.id} />
               <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">Payment access</p>
               <p className="mt-3 text-sm leading-6">
-                Approval creates a Stripe Checkout link for the selected ticket and makes it available in the applicant&apos;s account.
+                After the interview, final approval creates a Stripe Checkout link and makes it available in the applicant&apos;s account.
               </p>
               <button className="mt-5 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-paper hover:bg-paper hover:text-ink">
                 {application.status === "approved" || application.status === "payment_sent"
                   ? "Generate new payment link"
-                  : "Approve and create payment link"}
+                  : "Final approve and create payment link"}
               </button>
             </form>
           ) : activeOrder ? (
@@ -134,9 +155,14 @@ export default async function ApplicationDetailPage({
                 </span>
                 <select
                   name="status"
-                  defaultValue={application.status}
+                  defaultValue={application.status === "interview_invited" ? "" : application.status}
                   className="min-h-12 border border-line bg-cloud px-4 text-sm outline-none focus:border-ink focus:ring-4 focus:ring-sun/25"
                 >
+                  {application.status === "interview_invited" ? (
+                    <option value="" disabled>
+                      Select next status
+                    </option>
+                  ) : null}
                   {statuses.map((status) => (
                     <option key={status} value={status}>
                       {applicationStatusLabel(status)}

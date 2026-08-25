@@ -30,16 +30,25 @@ import {
 } from "@/lib/store";
 import type { ApplicationStatus, CommissionStatus, DistributorStatus } from "@/lib/types";
 
-const editableStatuses: ApplicationStatus[] = [
+const reviewStatuses: ApplicationStatus[] = [
   "pending_review",
   "rejected",
   "more_info_required",
   "canceled",
 ];
 
-const approvableStatuses: ApplicationStatus[] = [
+const reviewEditableStatuses: ApplicationStatus[] = [
+  ...reviewStatuses,
+  "interview_invited",
+];
+
+const interviewInvitableStatuses: ApplicationStatus[] = [
   "pending_review",
   "more_info_required",
+];
+
+const approvableStatuses: ApplicationStatus[] = [
+  "interview_invited",
   "approved",
   "payment_sent",
 ];
@@ -173,13 +182,13 @@ export async function updateApplicationStatusAction(formData: FormData) {
   const applicationId = String(formData.get("applicationId") || "");
   const status = String(formData.get("status") || "") as ApplicationStatus;
 
-  if (!applicationId || !editableStatuses.includes(status)) {
+  if (!applicationId || !reviewStatuses.includes(status)) {
     redirectWithMessage("/admin/applications", "error", "Invalid status update.");
   }
 
   const application = await getApplication(applicationId);
 
-  if (!application || !editableStatuses.includes(application.status)) {
+  if (!application || !reviewEditableStatuses.includes(application.status)) {
     redirectWithMessage(
       application ? `/admin/applications/${applicationId}` : "/admin/applications",
       "error",
@@ -197,6 +206,35 @@ export async function updateApplicationStatusAction(formData: FormData) {
   });
 
   redirectWithMessage(`/admin/applications/${applicationId}`, "notice", "Application status updated.");
+}
+
+export async function inviteToInterviewAction(formData: FormData) {
+  const session = await requireAdmin();
+  const applicationId = String(formData.get("applicationId") || "");
+  const application = applicationId ? await getApplication(applicationId) : null;
+
+  if (!application || !interviewInvitableStatuses.includes(application.status)) {
+    redirectWithMessage(
+      applicationId ? `/admin/applications/${applicationId}` : "/admin/applications",
+      "error",
+      "This application cannot be invited to an interview.",
+    );
+  }
+
+  await updateApplicationStatus(application.id, "interview_invited");
+  await recordAdminAuditLog({
+    adminEmail: session.email,
+    action: "application.interview_invited",
+    targetType: "application",
+    targetId: application.id,
+    metadata: { previousStatus: application.status },
+  });
+
+  redirectWithMessage(
+    `/admin/applications/${application.id}`,
+    "notice",
+    "Applicant invited to schedule an interview.",
+  );
 }
 
 export async function approveApplicationAction(formData: FormData) {
