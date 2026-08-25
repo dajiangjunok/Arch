@@ -864,6 +864,7 @@ export async function recordAdminAuditLog(input: Omit<AdminAuditLog, "id" | "cre
     .from("admin_audit_logs")
     .insert({
       id: crypto.randomUUID(),
+      admin_user_id: input.adminUserId,
       admin_email: input.adminEmail,
       action: input.action,
       target_type: input.targetType,
@@ -877,6 +878,7 @@ export async function recordAdminAuditLog(input: Omit<AdminAuditLog, "id" | "cre
   if (error) throw error;
   return {
     id: data.id,
+    adminUserId: data.admin_user_id,
     adminEmail: data.admin_email,
     action: data.action,
     targetType: data.target_type,

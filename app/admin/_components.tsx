@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { logoutAction } from "./actions";
+import { logoutAction } from "@/app/auth/actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 
 export function AdminShell({ children, title }: { children: React.ReactNode; title: string }) {

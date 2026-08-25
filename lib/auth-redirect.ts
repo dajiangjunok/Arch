@@ -1,4 +1,4 @@
-const plainPaths = new Set(["/", "/account", "/partner"]);
+const plainPaths = new Set(["/", "/account", "/partner", "/admin"]);
 const ticketIds = new Set(["single_week", "fellowship"]);
 const weekIds = new Set(["week_1", "week_2", "week_3"]);
 

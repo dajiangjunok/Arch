@@ -1,12 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-  clearAdminSession,
-  requireAdmin,
-  setAdminSession,
-  validateAdminCredentials,
-} from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createStripeCheckoutSession, createStripeRefund } from "@/lib/stripe";
 import { parseMoneyInput } from "@/lib/money";
 import {
@@ -68,23 +63,6 @@ function inviteCodeForEmail(email: string) {
   return `ARCH-${prefix}-${suffix}`;
 }
 
-export async function loginAction(formData: FormData) {
-  const email = String(formData.get("email") || "");
-  const password = String(formData.get("password") || "");
-
-  if (!validateAdminCredentials(email, password)) {
-    redirect("/admin/login?error=Invalid%20admin%20credentials%20or%20missing%20ADMIN_EMAIL%2FADMIN_PASSWORD.");
-  }
-
-  await setAdminSession(email.trim().toLowerCase());
-  redirect("/admin/applications");
-}
-
-export async function logoutAction() {
-  await clearAdminSession();
-  redirect("/admin/login");
-}
-
 export async function createDistributorAction(formData: FormData) {
   const session = await requireAdmin();
   const userId = String(formData.get("userId") || "").trim();
@@ -122,6 +100,7 @@ export async function createDistributorAction(formData: FormData) {
     });
 
     await recordAdminAuditLog({
+      adminUserId: session.userId,
       adminEmail: session.email,
       action: "distributor.created",
       targetType: "distributor",
@@ -148,6 +127,7 @@ export async function updateDistributorStatusAction(formData: FormData) {
 
   await updateDistributorStatus(distributorId, status);
   await recordAdminAuditLog({
+    adminUserId: session.userId,
     adminEmail: session.email,
     action: "distributor.status_updated",
     targetType: "distributor",
@@ -168,6 +148,7 @@ export async function updateCommissionStatusAction(formData: FormData) {
 
   await updateCommissionStatus(commissionId, status);
   await recordAdminAuditLog({
+    adminUserId: session.userId,
     adminEmail: session.email,
     action: "commission.status_updated",
     targetType: "commission",
@@ -198,6 +179,7 @@ export async function updateApplicationStatusAction(formData: FormData) {
 
   await updateApplicationStatus(applicationId, status);
   await recordAdminAuditLog({
+    adminUserId: session.userId,
     adminEmail: session.email,
     action: "application.status_updated",
     targetType: "application",
@@ -223,6 +205,7 @@ export async function inviteToInterviewAction(formData: FormData) {
 
   await updateApplicationStatus(application.id, "interview_invited");
   await recordAdminAuditLog({
+    adminUserId: session.userId,
     adminEmail: session.email,
     action: "application.interview_invited",
     targetType: "application",
@@ -288,6 +271,7 @@ export async function approveApplicationAction(formData: FormData) {
   if (application.status !== "approved" && application.status !== "payment_sent") {
     await updateApplicationStatus(application.id, "approved");
     await recordAdminAuditLog({
+      adminUserId: session.userId,
       adminEmail: session.email,
       action: "application.approved",
       targetType: "application",
@@ -319,6 +303,7 @@ export async function approveApplicationAction(formData: FormData) {
     });
     await updateApplicationStatus(application.id, "payment_sent");
     await recordAdminAuditLog({
+      adminUserId: session.userId,
       adminEmail: session.email,
       action: "application.payment_link_created",
       targetType: "application",
@@ -411,6 +396,7 @@ export async function approveRefundAction(formData: FormData) {
 
   if (auditMetadata) {
     await recordAdminAuditLog({
+      adminUserId: session.userId,
       adminEmail: session.email,
       action: "refund.approved",
       targetType: "refund_request",
@@ -437,7 +423,7 @@ export async function rejectRefundAction(formData: FormData) {
 
   const request = await rejectRefundRequest({
     refundRequestId,
-    adminEmail: session.email,
+      adminEmail: session.email,
     adminNote,
   });
 
@@ -446,6 +432,7 @@ export async function rejectRefundAction(formData: FormData) {
   }
 
   await recordAdminAuditLog({
+    adminUserId: session.userId,
     adminEmail: session.email,
     action: "refund.rejected",
     targetType: "refund_request",

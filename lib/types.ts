@@ -35,6 +35,7 @@ export type RefundRequestStatus =
 export type DistributorStatus = "active" | "inactive";
 export type ReferralCodeStatus = "active" | "inactive";
 export type CommissionStatus = "pending" | "approved" | "paid" | "reversed";
+export type UserRole = "admin";
 
 export type TicketId = "single_week" | "fellowship";
 
@@ -126,6 +127,7 @@ export type StripeEventRecord = {
 
 export type AdminAuditLog = {
   id: string;
+  adminUserId: string | null;
   adminEmail: string;
   action: string;
   targetType: string;
