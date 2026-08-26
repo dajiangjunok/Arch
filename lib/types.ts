@@ -4,12 +4,12 @@ export type ProgramWeek = "week_1" | "week_2" | "week_3";
 export type ApplicationStatus =
   | "pending_review"
   | "interview_invited"
+  | "interview_scheduled"
   | "approved"
   | "rejected"
   | "more_info_required"
   | "payment_sent"
   | "paid"
-  | "confirmed"
   | "canceled";
 
 export type OrderStatus =

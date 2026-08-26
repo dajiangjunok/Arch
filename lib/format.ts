@@ -30,12 +30,12 @@ export function applicationStatusLabel(status: ApplicationStatus) {
   const labels: Record<ApplicationStatus, string> = {
     pending_review: "Pending review",
     interview_invited: "Interview invited",
+    interview_scheduled: "Interview scheduled",
     approved: "Approved",
     rejected: "Rejected",
     more_info_required: "More info required",
     payment_sent: "Payment sent",
     paid: "Paid",
-    confirmed: "Confirmed",
     canceled: "Canceled",
   };
 

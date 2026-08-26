@@ -27,15 +27,15 @@ import type { ApplicationStatus, CommissionStatus, DistributorStatus } from "@/l
 
 const reviewStatuses: ApplicationStatus[] = [
   "pending_review",
+  "interview_invited",
+  "interview_scheduled",
+  "approved",
   "rejected",
   "more_info_required",
   "canceled",
 ];
 
-const reviewEditableStatuses: ApplicationStatus[] = [
-  ...reviewStatuses,
-  "interview_invited",
-];
+const reviewEditableStatuses: ApplicationStatus[] = reviewStatuses;
 
 const interviewInvitableStatuses: ApplicationStatus[] = [
   "pending_review",
@@ -43,7 +43,6 @@ const interviewInvitableStatuses: ApplicationStatus[] = [
 ];
 
 const approvableStatuses: ApplicationStatus[] = [
-  "interview_invited",
   "approved",
   "payment_sent",
 ];

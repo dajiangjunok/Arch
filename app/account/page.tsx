@@ -16,7 +16,7 @@ import {
   ticketLabel,
 } from "@/lib/format";
 import { moneyInputStep, moneyInputValue } from "@/lib/money";
-import type { RefundRequest } from "@/lib/types";
+import type { ApplicationStatus, RefundRequest } from "@/lib/types";
 import {
   getDistributorForUser,
   listApplicationsForUser,
@@ -246,7 +246,7 @@ export default async function AccountPage({
             <div className="mt-7 grid gap-4 md:grid-cols-2">
               {applications.map((application) => {
                 const applicationOrders = ordersByApplicationId.get(application.id) || [];
-                const canEdit = !["paid", "confirmed"].includes(application.status) &&
+                const canEdit = !(["paid", "rejected", "canceled"] as ApplicationStatus[]).includes(application.status) &&
                   !applicationOrders.some((order) => {
                     const payment = paymentByOrderId.get(order.id);
                     return ["paid", "partially_refunded", "refunded"].includes(order.status) ||
@@ -260,7 +260,11 @@ export default async function AccountPage({
                       <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">{programLabel(application.selectedTicket, application.selectedWeeks)}</p>
                       <h3 className="mt-2 font-serif text-2xl font-semibold text-navy">{application.name}</h3>
                     </div>
-                    <span className="border border-ink/20 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/65">{applicationStatusLabel(application.status)}</span>
+                    <span className="border border-ink/20 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/65">
+                      {application.status === "payment_sent"
+                        ? "Approved — Awaiting Payment"
+                        : applicationStatusLabel(application.status)}
+                    </span>
                     </div>
                     <p className="mt-5 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-ink/65">{application.message}</p>
                     {canEdit ? (
@@ -285,30 +289,17 @@ export default async function AccountPage({
                     </details>
                     ) : (
                     <p className="mt-5 border-t border-ink/15 pt-4 text-xs leading-5 text-ink-soft">
-                      Application details are locked after payment.
+                      {application.status === "rejected"
+                        ? "This application is closed and can no longer be edited."
+                        : application.status === "canceled"
+                          ? "This application has been canceled and can no longer be edited."
+                          : "Application details are locked after payment."}
                     </p>
                     )}
-                    {application.status === "interview_invited" ? (
-                    <div className="mt-5 border-t border-ink/15 pt-5">
-                      <p className="text-sm leading-6 text-ink/70">
-                        You have been invited to an interview. Choose a convenient meeting time to continue your application.
-                      </p>
-                      {googleCalendarBookingUrl ? (
-                        <a
-                          href={googleCalendarBookingUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-4 inline-flex min-h-11 items-center rounded-md bg-navy px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-marigold hover:text-ink"
-                        >
-                          Schedule interview
-                        </a>
-                      ) : (
-                        <p className="mt-3 text-xs leading-5 text-ink-soft">
-                          Scheduling is temporarily unavailable. Please contact the Arch.ai team.
-                        </p>
-                      )}
-                    </div>
-                    ) : null}
+                    <ApplicationNextStep
+                      status={application.status}
+                      googleCalendarBookingUrl={googleCalendarBookingUrl}
+                    />
                     <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">{formatDate(application.createdAt)}</p>
                   </article>
                 );
@@ -319,6 +310,51 @@ export default async function AccountPage({
       </div>
     </main>
   );
+}
+
+function ApplicationNextStep({
+  status,
+  googleCalendarBookingUrl,
+}: {
+  status: ApplicationStatus;
+  googleCalendarBookingUrl?: string;
+}) {
+  if (status === "interview_invited") {
+    return (
+      <div className="mt-5 border-t border-ink/15 pt-5">
+        <p className="text-sm leading-6 text-ink/70">
+          You have been invited to an interview. Choose a convenient meeting time to continue your application.
+        </p>
+        {googleCalendarBookingUrl ? (
+          <a
+            href={googleCalendarBookingUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4 inline-flex min-h-11 items-center rounded-md bg-navy px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-marigold hover:text-ink"
+          >
+            Schedule interview
+          </a>
+        ) : (
+          <p className="mt-3 text-xs leading-5 text-ink-soft">
+            Scheduling is temporarily unavailable. Please contact the Arch.ai team.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  const messages: Partial<Record<ApplicationStatus, string>> = {
+    more_info_required: "We need some additional information before continuing. Please update your application and save your changes.",
+    interview_scheduled: "Your interview has been scheduled. Please join at the time shown in your Google Calendar invitation.",
+    approved: "Your application has been approved. We are preparing your payment link and will make it available here shortly.",
+  };
+  const message = messages[status];
+
+  return message ? (
+    <div className="mt-5 border-t border-ink/15 pt-5">
+      <p className="text-sm leading-6 text-ink/70">{message}</p>
+    </div>
+  ) : null;
 }
 
 async function loadAccountData(userId: string) {
