@@ -118,8 +118,7 @@ export function HomePage() {
             index="01"
           />
           <p className="section-intro">
-            Each week runs as its own gate — apply to one, or join the full
-            Fellowship across all three.
+            Each week runs as its own gate - apply forone, two, or the full three-week program.
           </p>
           <div className="weeks-grid">
             {programWeeks.map((week) => (

@@ -62,20 +62,25 @@ const questions: readonly {
   },
   {
     category: "app",
-    question: "What's the refund policy?",
+    question: "What is the payment policy?",
     answer: (
-      <ul>
-        <li>
-          <strong>30+ days before your week starts:</strong> full refund, minus
-          a non-refundable deposit/application fee.
-        </li>
-        <li>
-          <strong>14–30 days before:</strong> partial refund.
-        </li>
-        <li>
-          <strong>Under 14 days before, or after it begins:</strong> no refund.
-        </li>
-      </ul>
+      <p>
+        <strong>Full payment is required</strong> to secure your spot. Your
+        place is
+        <strong> only confirmed once payment has been received in full</strong>.
+      </p>
+    ),
+  },
+  {
+    category: "app",
+    question: "What is the cancellation / refund policy?",
+    answer: (
+      <p>
+        All payments are <strong>non-refundable</strong>. If you&apos;re unable
+        to attend, however, you may
+        <strong> transfer your spot to another person</strong>, subject to
+        approval by The Arch.
+      </p>
     ),
   },
   {

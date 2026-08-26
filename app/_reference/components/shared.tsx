@@ -235,10 +235,10 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
       <div className="price-card fellow tick-corner">
         <CornerStamp />
         <p className="kicker">Limited · Fellowship Program</p>
-        <h3>Fellowship</h3>
+        <h3>Fellowship Pass</h3>
         <p className="card-hook">
           Most of the room pays their way, and that&apos;s what keeps The Arch
-          independent. Every cohort, The Arch holds a handful of seats for
+          independent and sustainable. Every cohort, The Arch holds a handful of seats for
           builders who don&apos;t have funding yet, don&apos;t have a travel budget,
           and have nothing to show the world but the thing they&apos;re actually
           building. Apply below, and see the <Link href="/faq">FAQ</Link> for

@@ -8,7 +8,7 @@ export const weekPages = {
       eyebrow: "Shanghai · Nov 1–7",
       title: "AI Everywhere",
       accent: "in Work & Life",
-      meta: ["7 Days / 6 Nights", "Shanghai, China", "Application Only"],
+      meta: ["6 Days / 5 Nights", "Shanghai, China", "Application Only"],
       stampImage: "/reference/5806e79f0804dc44.jpg",
       stampLabel: "Week One of Three",
       stampStats: [
@@ -17,11 +17,11 @@ export const weekPages = {
           label: "Days on the ground",
         },
         {
-          value: "10+",
+          value: "15+",
           label: "Companies & labs",
         },
         {
-          value: "5",
+          value: "10+",
           label: "Guest speakers",
         },
       ],
@@ -266,8 +266,8 @@ export const weekPages = {
     },
     logistics: [
       {
-        title: "Shanghai Bases",
-        body: "Shared accommodation is included in both cities. Staying with the group is where the real connections happen — over meals, transport, and evenings.",
+        title: "Shanghai Base",
+        body: "Shared accommodation is included in Shanghai. Staying with the group is where the real connections happen — over meals, transport, and evenings.",
         image: {
           src: "/reference/342f3eb92ccf8840.jpg",
           alt: "Shared Housing",
@@ -325,15 +325,15 @@ export const weekPages = {
       stampLabel: "Week Two of Three",
       stampStats: [
         {
-          value: "5",
+          value: "6",
           label: "Days on the ground",
         },
         {
-          value: "14+",
+          value: "15+",
           label: "Companies & labs",
         },
         {
-          value: "5",
+          value: "10+",
           label: "Guest speakers",
         },
       ],
@@ -574,8 +574,8 @@ export const weekPages = {
     },
     logistics: [
       {
-        title: "Shanghai Base",
-        body: "Shared accommodation is included. Staying with the group is where the real connections happen — over meals, transport, and evenings.",
+        title: "Shanghai + Beijing",
+        body: "Shared accommodation is included in both cities. Staying with the group is where the real connections happen — over meals, transport, and evenings.",
         image: {
           src: "/reference/342f3eb92ccf8840.jpg",
           alt: "Shared Housing",
@@ -628,7 +628,7 @@ export const weekPages = {
       eyebrow: "Shanghai + Shenzhen · Nov 15–21",
       title: "Smart Hardware",
       accent: "& Wearables",
-      meta: ["7 Days / 6 Nights", "Shanghai + Shenzhen", "Application Only"],
+      meta: ["6 Days / 5 Nights", "Shanghai + Shenzhen", "Application Only"],
       stampImage: "/reference/ee47a6f1ed4076c2.jpg",
       stampLabel: "Week Three of Three",
       stampStats: [
@@ -637,11 +637,11 @@ export const weekPages = {
           label: "Days on the ground",
         },
         {
-          value: "10+",
+          value: "15+",
           label: "Companies & makers",
         },
         {
-          value: "5",
+          value: "10+",
           label: "Guest speakers",
         },
       ],

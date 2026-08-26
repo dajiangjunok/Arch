@@ -324,6 +324,7 @@
 
 .arch-reference .builder-pass-back .bp-not-included {
   margin-top: 0.9rem;
+  color: var(--rust, #9f4438);
 }
 
 .arch-reference .builder-pass-back .not-incl-mini {
@@ -333,7 +334,7 @@
 }
 
 .arch-reference .builder-pass-back .not-incl-mini li {
-  color: var(--muted);
+  color: var(--navy);
   font-size: 0.8rem;
 }
 
@@ -347,6 +348,20 @@
   color: var(--rust, #b45447);
   content: "—";
   font-weight: 700;
+}
+
+/* Keep the light pass back readable inside the dark Fellowship price card. */
+.arch-reference .price-card.fellow .builder-pass-back .incl-heading {
+  color: var(--muted);
+}
+
+.arch-reference .price-card.fellow .builder-pass-back .incl-heading.bp-not-included,
+.arch-reference .price-card.fellow .builder-pass-back .not-incl-mini li::before {
+  color: var(--rust, #9f4438);
+}
+
+.arch-reference .price-card.fellow .builder-pass-back .not-incl-mini li {
+  color: var(--navy);
 }
 
 .arch-reference .builder-pass-back .bp-apply {
