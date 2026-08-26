@@ -12,6 +12,7 @@ import {
 } from "@/lib/format";
 import {
   getDistributorForUser,
+  listDistributorPaidReferralCounts,
   listCommissionsForDistributor,
   listDistributorTiers,
   listReferralCodesForDistributor,
@@ -32,15 +33,13 @@ export default async function PartnerPage() {
     return <PartnerAccessDenied identity={identity} />;
   }
 
-  const [codes, referrals, commissions, tiers] = await Promise.all([
+  const [codes, referrals, commissions, tiers, paidReferralCounts] = await Promise.all([
     listReferralCodesForDistributor(distributor.id),
     listReferralsForDistributor(distributor.id),
     listCommissionsForDistributor(distributor.id),
     listDistributorTiers(),
+    listDistributorPaidReferralCounts(),
   ]);
-  const currentTier = [...tiers]
-    .reverse()
-    .find((tier) => referrals.length >= tier.minimumReferrals);
   const inviteeRows = await Promise.all(
     referrals.map(async (referral) => {
       const application = await getApplication(referral.applicationId);
@@ -48,13 +47,14 @@ export default async function PartnerPage() {
       return { referral, application, order: orders[0] || null };
     }),
   );
-  const paidCount = inviteeRows.filter((row) =>
-    row.order && ["paid", "partially_refunded", "refunded"].includes(row.order.status),
-  ).length;
+  const paidCount = paidReferralCounts.find((item) => item.distributorId === distributor.id)?.paidReferralCount || 0;
+  const currentTier = [...tiers]
+    .reverse()
+    .find((tier) => paidCount >= tier.minimumReferrals);
   const pendingCount = inviteeRows.filter((row) => row.application?.status === "pending_review").length;
   const unsettled = commissions.filter((commission) => commission.status === "pending" || commission.status === "approved");
   const unsettledAmount = unsettled.reduce(
-    (total, commission) => total + commission.commissionAmount - commission.refundedCommissionAmount,
+    (total, commission) => total + commission.commissionAmount,
     0,
   );
   const currency = unsettled[0]?.currency || commissions[0]?.currency || "usd";
@@ -87,7 +87,7 @@ export default async function PartnerPage() {
               <Stat label="Commission" value={currentTier ? `${currentTier.commissionRate}%` : "0%"} />
               <Stat label="Paid" value={paidCount} />
               <Stat label="Pending review" value={pendingCount} />
-              <Stat label="To settle" value={formatMoney(unsettledAmount, currency)} />
+              <Stat label="Open balance" value={formatMoney(unsettledAmount, currency)} />
             </div>
           </div>
         </section>

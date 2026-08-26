@@ -196,6 +196,7 @@ export type Commission = {
   rate: number;
   basisAmount: number;
   commissionAmount: number;
+  entryType: "payment" | "tier_adjustment" | "refund_adjustment" | "status_adjustment";
   refundedBasisAmount: number;
   refundedCommissionAmount: number;
   currency: string;

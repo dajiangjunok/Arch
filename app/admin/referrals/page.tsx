@@ -6,6 +6,7 @@ import {
   listCommissions,
   listDistributors,
   listDistributorTiers,
+  listDistributorPaidReferralCounts,
   listReferralCodes,
   listReferrals,
 } from "@/lib/store";
@@ -24,13 +25,14 @@ export default async function ReferralsAdminPage({
 }) {
   await requireAdmin();
   const params = await searchParams;
-  const [users, distributors, tiers, codes, referrals, commissions] = await Promise.all([
+  const [users, distributors, tiers, codes, referrals, commissions, paidReferralCounts] = await Promise.all([
     listAdminUserOptions(),
     listDistributors(),
     listDistributorTiers(),
     listReferralCodes(),
     listReferrals(),
     listCommissions(),
+    listDistributorPaidReferralCounts(),
   ]);
   const distributorById = new Map(distributors.map((item) => [item.id, item]));
   const distributorByUserId = new Map(
@@ -45,6 +47,9 @@ export default async function ReferralsAdminPage({
   );
   const codesByDistributorId = new Map<string, typeof codes>();
   const referralCountByDistributorId = new Map<string, number>();
+  const paidReferralCountByDistributorId = new Map(
+    paidReferralCounts.map((item) => [item.distributorId, item.paidReferralCount]),
+  );
 
   for (const code of codes) {
     const distributorCodes = codesByDistributorId.get(code.distributorId) || [];
@@ -70,7 +75,7 @@ export default async function ReferralsAdminPage({
         <Metric label="Distributors" value={distributors.length} />
         <Metric label="Active distributors" value={distributors.filter((distributor) => distributor.status === "active").length} />
         <Metric label="Attributions" value={referrals.length} />
-        <Metric label="Pending commission" value={formatMoney(totalPending(commissions), "usd")} />
+        <Metric label="Open commission balance" value={formatMoney(totalPending(commissions), "usd")} />
       </section>
 
       <section className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
@@ -113,9 +118,10 @@ export default async function ReferralsAdminPage({
                   const distributorCodes = codesByDistributorId.get(distributor.id) || [];
                   const primaryCode = distributorCodes[0];
                   const referralCount = referralCountByDistributorId.get(distributor.id) || 0;
+                  const paidReferralCount = paidReferralCountByDistributorId.get(distributor.id) || 0;
                   const currentTier = [...tiers]
                     .reverse()
-                    .find((tier) => referralCount >= tier.minimumReferrals);
+                    .find((tier) => paidReferralCount >= tier.minimumReferrals);
 
                   return (
                     <tr key={distributor.id} className="border-t border-line">
@@ -126,7 +132,7 @@ export default async function ReferralsAdminPage({
                       </td>
                       <td className="px-3 py-3">
                         <p className="font-semibold">{currentTier?.name || "Not qualified"}</p>
-                        <p className="mt-1 text-xs text-ink-soft">{currentTier ? `${currentTier.commissionRate}%` : "0%"} · {referralCount} invites</p>
+                        <p className="mt-1 text-xs text-ink-soft">{currentTier ? `${currentTier.commissionRate}%` : "0%"} · {paidReferralCount} paid / {referralCount} invited</p>
                       </td>
                       <td className="px-3 py-3">
                         {primaryCode ? (
@@ -163,12 +169,12 @@ export default async function ReferralsAdminPage({
 
       <section className="mt-8">
         <Panel eyebrow="Commission" title="Distributor tiers">
-          <p className="mb-5 text-sm text-ink-soft">A distributor earns one rate on the full amount of each newly paid referral, based on their total attributed invites at that time.</p>
+          <p className="mb-5 text-sm text-ink-soft">The current rate applies to the combined net amount of all paid referrals. Tier upgrades retroactively adjust the full earned commission.</p>
           <form action={updateDistributorTiersAction}>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[620px] text-left text-sm">
                 <thead className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-soft">
-                  <tr><th className="px-3 py-3">Tier</th><th className="px-3 py-3">Minimum invites</th><th className="px-3 py-3">Commission</th></tr>
+                  <tr><th className="px-3 py-3">Tier</th><th className="px-3 py-3">Minimum paid referrals</th><th className="px-3 py-3">Commission</th></tr>
                 </thead>
                 <tbody>
                   {tiers.map((tier) => (
@@ -204,29 +210,26 @@ export default async function ReferralsAdminPage({
         </Panel>
 
         <Panel eyebrow="Settlement" title="Commission ledger">
+          <p className="mb-4 text-sm text-ink-soft">Negative adjustments are deductions. They are approved automatically and are marked applied after they have been included in a settlement.</p>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-soft">
-                <tr><th className="px-3 py-3">Beneficiary</th><th className="px-3 py-3">Level</th><th className="px-3 py-3">Amount</th><th className="px-3 py-3">Status</th><th className="px-3 py-3">Action</th></tr>
+                <tr><th className="px-3 py-3">Beneficiary</th><th className="px-3 py-3">Reason / rate</th><th className="px-3 py-3">Amount</th><th className="px-3 py-3">Status</th><th className="px-3 py-3">Action</th></tr>
               </thead>
               <tbody>
                 {commissions.map((commission) => (
                   <tr key={commission.id} className="border-t border-line">
                     <td className="px-3 py-3">{distributorById.get(commission.beneficiaryDistributorId)?.name || "-"}</td>
-                    <td className="px-3 py-3">L{commission.level} · {commission.rate}%</td>
+                    <td className="px-3 py-3">{commissionEntryLabel(commission)} · {commission.rate}%</td>
                     <td className="px-3 py-3 font-semibold">
-                      {formatMoney(commission.commissionAmount - commission.refundedCommissionAmount, commission.currency)}
-                      {commission.refundedCommissionAmount > 0 ? (
-                        <span className="mt-1 block text-xs font-normal text-ink-soft">
-                          {formatMoney(commission.refundedCommissionAmount, commission.currency)} refunded
-                        </span>
-                      ) : null}
+                      {formatMoney(commission.commissionAmount, commission.currency)}
                     </td>
-                    <td className="px-3 py-3"><StatusPill>{commission.status}</StatusPill></td>
+                    <td className="px-3 py-3"><StatusPill>{commission.commissionAmount < 0 && commission.status === "paid" ? "applied" : commission.status}</StatusPill></td>
                     <td className="px-3 py-3">
-                      {commission.status === "pending" ? <CommissionAction id={commission.id} status="approved" label="Approve" /> : null}
-                      {commission.status === "approved" ? <CommissionAction id={commission.id} status="paid" label="Mark paid" /> : null}
-                      {commission.status !== "paid" && commission.status !== "reversed" ? <CommissionAction id={commission.id} status="reversed" label="Reverse" /> : null}
+                      {commission.commissionAmount >= 0 && commission.status === "pending" ? <CommissionAction id={commission.id} status="approved" label="Approve" /> : null}
+                      {commission.commissionAmount >= 0 && commission.status === "approved" ? <CommissionAction id={commission.id} status="paid" label="Mark paid" /> : null}
+                      {commission.commissionAmount < 0 && commission.status === "approved" ? <CommissionAction id={commission.id} status="paid" label="Mark applied" /> : null}
+                      {commission.commissionAmount >= 0 && (commission.status === "pending" || commission.status === "approved") ? <CommissionAction id={commission.id} status="reversed" label="Reverse" /> : null}
                     </td>
                   </tr>
                 ))}
@@ -244,9 +247,16 @@ function totalPending(commissions: Awaited<ReturnType<typeof listCommissions>>) 
   return commissions
     .filter((commission) => commission.status === "pending" || commission.status === "approved")
     .reduce(
-      (total, commission) => total + commission.commissionAmount - commission.refundedCommissionAmount,
+      (total, commission) => total + commission.commissionAmount,
       0,
     );
+}
+
+function commissionEntryLabel(commission: Awaited<ReturnType<typeof listCommissions>>[number]) {
+  if (commission.entryType === "tier_adjustment") return commission.commissionAmount < 0 ? "Tier deduction" : "Tier adjustment";
+  if (commission.entryType === "refund_adjustment") return "Refund deduction";
+  if (commission.entryType === "status_adjustment") return commission.commissionAmount < 0 ? "Status deduction" : "Status adjustment";
+  return "Payment";
 }
 
 function Metric({ label, value }: { label: string; value: string | number }) {

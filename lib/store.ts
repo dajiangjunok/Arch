@@ -156,6 +156,7 @@ type CommissionRow = {
   rate: number;
   basis_amount: number;
   commission_amount: number;
+  entry_type: Commission["entryType"];
   refunded_basis_amount: number;
   refunded_commission_amount: number;
   currency: string;
@@ -276,6 +277,7 @@ function mapCommission(row: CommissionRow): Commission {
     rate: Number(row.rate),
     basisAmount: row.basis_amount,
     commissionAmount: row.commission_amount,
+    entryType: row.entry_type,
     refundedBasisAmount: row.refunded_basis_amount,
     refundedCommissionAmount: row.refunded_commission_amount,
     currency: row.currency,
@@ -966,6 +968,16 @@ export async function listDistributorTiers() {
   return (data as DistributorTierRow[]).map(mapDistributorTier);
 }
 
+export async function listDistributorPaidReferralCounts() {
+  const { data, error } = await createSupabaseAdminClient().rpc("list_distributor_paid_referral_counts");
+  if (error) throw error;
+
+  return ((data || []) as { distributor_id: string; paid_referral_count: number | string }[]).map((row) => ({
+    distributorId: row.distributor_id,
+    paidReferralCount: Number(row.paid_referral_count),
+  }));
+}
+
 export async function updateDistributorTiers(
   tiers: Pick<DistributorTier, "key" | "minimumReferrals" | "commissionRate">[],
 ) {
@@ -983,6 +995,9 @@ export async function updateDistributorTiers(
       .eq("tier_key", tier.key);
     if (error) throw error;
   }
+
+  const { error } = await createSupabaseAdminClient().rpc("recalculate_all_distributor_commissions");
+  if (error) throw error;
 }
 
 export async function listAdminUserOptions() {
@@ -1049,22 +1064,20 @@ export async function createDistributor(input: {
 
 export async function updateDistributorStatus(id: string, status: DistributorStatus) {
   const admin = createSupabaseAdminClient();
-  const timestamp = now();
-  const { data, error } = await admin
-    .from("distributors")
-    .update({ status, updated_at: timestamp })
-    .eq("id", id)
-    .select()
-    .single();
+  const { error } = await admin.rpc("set_distributor_status", {
+    p_distributor_id: id,
+    p_status: status,
+  });
 
   if (error) throw error;
 
-  const { error: codesError } = await admin
-    .from("referral_codes")
-    .update({ status, updated_at: timestamp })
-    .eq("distributor_id", id);
+  const { data, error: fetchError } = await admin
+    .from("distributors")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-  if (codesError) throw codesError;
+  if (fetchError) throw fetchError;
   return mapDistributor(data as DistributorRow);
 }
 
@@ -1153,17 +1166,20 @@ export async function listCommissionsForDistributor(distributorId: string) {
 }
 
 export async function updateCommissionStatus(id: string, status: CommissionStatus) {
-  const { data, error } = await createSupabaseAdminClient()
-    .from("commissions")
-    .update({
-      status,
-      paid_at: status === "paid" ? now() : null,
-      updated_at: now(),
-    })
-    .eq("id", id)
-    .select()
-    .single();
+  const admin = createSupabaseAdminClient();
+  const { error } = await admin.rpc("set_commission_status", {
+    p_commission_id: id,
+    p_status: status,
+  });
 
   if (error) throw error;
+
+  const { data, error: fetchError } = await admin
+    .from("commissions")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) throw fetchError;
   return mapCommission(data as CommissionRow);
 }
