@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { logoutAction } from "@/app/auth/actions";
-import { requestRefundAction, updateApplicationAction } from "./actions";
+import { updateApplicationAction } from "./actions";
 import { requireUser } from "@/lib/auth";
 import { getAdminSession } from "@/lib/admin-auth";
 import { getUserIdentity } from "@/lib/user-identity";
@@ -15,7 +15,6 @@ import {
   refundRequestStatusLabel,
   ticketLabel,
 } from "@/lib/format";
-import { moneyInputStep, moneyInputValue } from "@/lib/money";
 import type { ApplicationStatus, RefundRequest } from "@/lib/types";
 import {
   getDistributorForUser,
@@ -127,15 +126,8 @@ export default async function AccountPage({
                 const application = applicationsById.get(order.applicationId);
                 const payment = paymentByOrderId.get(order.id);
                 const latestRefund = latestRefundByOrderId.get(order.id);
-                const refundableAmount = Math.max(0, (order.amount || 0) - order.refundedAmount);
                 const hasActiveRefund = Boolean(
                   latestRefund && ["pending", "processing"].includes(latestRefund.status),
-                );
-                const canRequestRefund = Boolean(
-                  ["paid", "partially_refunded"].includes(order.status) &&
-                  order.stripePaymentIntentId &&
-                  refundableAmount > 0 &&
-                  !hasActiveRefund,
                 );
                 const canResume = Boolean(
                   order.checkoutUrl &&
@@ -193,42 +185,6 @@ export default async function AccountPage({
                           <p>{refundRequestStatusLabel(latestRefund.status)}</p>
                           {latestRefund.adminNote ? <p>{latestRefund.adminNote}</p> : null}
                         </div>
-                      ) : null}
-                      {canRequestRefund ? (
-                        <details className="w-full max-w-72 text-left">
-                          <summary className="cursor-pointer list-none font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-navy underline decoration-marigold decoration-2 underline-offset-4">
-                            Request refund
-                          </summary>
-                          <form action={requestRefundAction} className="mt-4 grid gap-3 border-t border-ink/15 pt-4">
-                            <input type="hidden" name="orderId" value={order.id} />
-                            <label className="grid gap-1 text-xs text-ink-soft">
-                              Refund amount ({order.currency.toUpperCase()})
-                              <input
-                                className="min-h-11 border border-ink/25 bg-ivory px-3 text-sm text-ink outline-none focus:border-navy"
-                                name="requestedAmount"
-                                type="number"
-                                min={moneyInputStep(order.currency)}
-                                max={moneyInputValue(refundableAmount, order.currency)}
-                                step={moneyInputStep(order.currency)}
-                                defaultValue={moneyInputValue(refundableAmount, order.currency)}
-                                required
-                              />
-                            </label>
-                            <label className="grid gap-1 text-xs text-ink-soft">
-                              Reason
-                              <textarea
-                                className="min-h-24 resize-y border border-ink/25 bg-ivory px-3 py-2 text-sm text-ink outline-none focus:border-navy"
-                                name="reason"
-                                minLength={10}
-                                maxLength={1000}
-                                required
-                              />
-                            </label>
-                            <SubmitButton pendingLabel="Submitting..." className="min-h-11 bg-navy px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ivory transition hover:bg-marigold hover:text-ink">
-                              Submit request
-                            </SubmitButton>
-                          </form>
-                        </details>
                       ) : null}
                     </div>
                   </article>
