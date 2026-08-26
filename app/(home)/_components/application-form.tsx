@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ticketOptions } from "@/lib/tickets";
 import type { ProgramWeek, TicketId } from "@/lib/types";
 
@@ -25,16 +26,70 @@ export function ApplicationForm({
 }) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
+  const [redirectCountdown, setRedirectCountdown] = useState(4);
+  const [emailError, setEmailError] = useState("");
   const [inviteCode, setInviteCode] = useState(referralCode);
   const [selectedTicket, setSelectedTicket] = useState<TicketId>(defaultTicket);
+  const [selectedWeeks, setSelectedWeeks] = useState<ProgramWeek[]>([defaultWeek]);
+
+  useEffect(() => {
+    if (status !== "success") return;
+
+    setRedirectCountdown(4);
+    const countdownTimer = window.setInterval(() => {
+      setRedirectCountdown((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    const redirectTimer = window.setTimeout(() => {
+      window.location.assign("/account");
+    }, 4000);
+
+    return () => {
+      window.clearInterval(countdownTimer);
+      window.clearTimeout(redirectTimer);
+    };
+  }, [status]);
+
+  function validateEmail(input: HTMLInputElement) {
+    const value = input.value.trim();
+    const error = input.validity.valueMissing
+      ? "Please enter your best contact email."
+      : input.validity.typeMismatch || value.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+        ? "Please enter a valid email address"
+        : "";
+    setEmailError(error);
+    return !error;
+  }
+
+  function changeTicket(ticket: TicketId) {
+    setSelectedTicket(ticket);
+    if (ticket === "single_week") setSelectedWeeks((weeks) => [weeks[0] || defaultWeek]);
+    if (ticket === "two_weeks") setSelectedWeeks((weeks) => weeks.slice(0, 2));
+    if (ticket === "full_program") setSelectedWeeks(weekOptions.map((week) => week.value as ProgramWeek));
+  }
+
+  function toggleWeek(week: ProgramWeek) {
+    if (selectedTicket === "single_week") {
+      setSelectedWeeks([week]);
+      return;
+    }
+    setSelectedWeeks((weeks) =>
+      weeks.includes(week) ? weeks.filter((item) => item !== week) : weeks.length < 2 ? [...weeks, week] : weeks,
+    );
+  }
 
   async function submitApplication(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const contactEmailInput = event.currentTarget.elements.namedItem("contactEmail");
+    if (contactEmailInput instanceof HTMLInputElement && !validateEmail(contactEmailInput)) {
+      contactEmailInput.focus();
+      return;
+    }
+
     setStatus("submitting");
     setMessage("");
 
     const formData = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(formData.entries());
+    const payload = { ...Object.fromEntries(formData.entries()), selectedWeeks };
     const response = await fetch("/api/applications", {
       method: "POST",
       headers: {
@@ -72,7 +127,24 @@ export function ApplicationForm({
     <form onSubmit={submitApplication} className="grid gap-4">
       <div className="grid min-w-0 gap-4 sm:grid-cols-2">
         <Field label="Name" name="name" autoComplete="name" required />
-        <Field label="Best contact email" name="contactEmail" type="email" autoComplete="email" defaultValue={email} required />
+        <Field
+          label="Best contact email"
+          name="contactEmail"
+          type="email"
+          autoComplete="email"
+          defaultValue={email}
+          required
+          error={emailError}
+          onBlur={(event) => validateEmail(event.currentTarget)}
+          onChange={(event) => {
+            if (emailError) validateEmail(event.currentTarget);
+          }}
+          onInvalid={(event) => {
+            event.preventDefault();
+            validateEmail(event.currentTarget);
+            event.currentTarget.focus();
+          }}
+        />
       </div>
 
       <Field
@@ -112,7 +184,7 @@ export function ApplicationForm({
           name="selectedTicket"
           required
           value={selectedTicket}
-          onChange={(event) => setSelectedTicket(event.target.value as TicketId)}
+          onChange={(event) => changeTicket(event.target.value as TicketId)}
           className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
         >
           {ticketOptions.map((ticket) => (
@@ -123,24 +195,21 @@ export function ApplicationForm({
         </select>
       </label>
 
-      {selectedTicket === "single_week" ? (
-        <label className="grid min-w-0 gap-2">
+      {selectedTicket !== "full_program" ? (
+        <fieldset className="grid min-w-0 gap-2">
           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
-            Which week do you want to attend?
+            {selectedTicket === "single_week" ? "Which week would you like to attend?" : "Which weeks would you like to attend?"}
           </span>
-          <select
-            name="selectedWeek"
-            required
-            defaultValue={defaultWeek}
-            className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
-          >
+          <div className="grid gap-2 sm:grid-cols-3">
             {weekOptions.map((week) => (
-              <option key={week.value} value={week.value}>
+              <label key={week.value} className="flex min-h-12 cursor-pointer items-center gap-3 border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink has-[:checked]:border-navy has-[:checked]:bg-navy has-[:checked]:text-ivory">
+                <input type={selectedTicket === "single_week" ? "radio" : "checkbox"} checked={selectedWeeks.includes(week.value as ProgramWeek)} onChange={() => toggleWeek(week.value as ProgramWeek)} className="accent-current" />
                 {week.label}
-              </option>
+              </label>
             ))}
-          </select>
-        </label>
+          </div>
+          {selectedTicket === "two_weeks" ? <span className="text-xs text-ink/65">Select exactly 2 weeks ({selectedWeeks.length}/2 selected).</span> : null}
+        </fieldset>
       ) : null}
 
       <label className="grid min-w-0 gap-2">
@@ -178,14 +247,24 @@ export function ApplicationForm({
         ) : status === "success" ? "Application submitted" : "Submit for review"}
       </button>
 
-      {message ? (
-        <p
-          className={`border px-4 py-3 font-mono text-sm leading-6 ${
-            status === "success"
-              ? "border-ink/20 bg-ivory text-ink"
-              : "border-red-700/30 bg-red-50 text-red-900"
-          }`}
-        >
+      {message && status === "success" ? (
+        <div role="status" aria-live="polite" className="border-2 border-emerald-700 bg-emerald-50 px-5 py-5 text-emerald-950 shadow-[6px_6px_0_0_#047857]">
+          <div className="flex items-start gap-4">
+            <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-xl font-bold text-white">✓</span>
+            <div>
+              <p className="font-serif text-xl font-bold text-emerald-900">Application submitted successfully!</p>
+              <p className="mt-1 text-sm leading-6">{message}</p>
+              <p className="mt-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800">
+                Redirecting to My account in {redirectCountdown} seconds…
+              </p>
+              <Link href="/account" className="mt-3 inline-flex border border-emerald-800 bg-emerald-800 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white transition hover:bg-emerald-950">
+                Go to My account now
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : message ? (
+        <p role="alert" className="border border-red-700/30 bg-red-50 px-4 py-3 font-mono text-sm leading-6 text-red-900">
           {message}
         </p>
       ) : null}
@@ -201,6 +280,10 @@ function Field({
   autoComplete,
   defaultValue,
   placeholder,
+  error,
+  onBlur,
+  onChange,
+  onInvalid,
 }: {
   label: string;
   name: string;
@@ -209,7 +292,13 @@ function Field({
   autoComplete?: string;
   defaultValue?: string;
   placeholder?: string;
+  error?: string;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onInvalid?: React.FormEventHandler<HTMLInputElement>;
 }) {
+  const errorId = `${name}-error`;
+
   return (
     <label className="grid min-w-0 gap-2">
       <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">{label}</span>
@@ -220,8 +309,14 @@ function Field({
         autoComplete={autoComplete}
         defaultValue={defaultValue}
         placeholder={placeholder}
-        className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? errorId : undefined}
+        onBlur={onBlur}
+        onChange={onChange}
+        onInvalid={onInvalid}
+        className={`min-h-12 w-full min-w-0 rounded-none border bg-ivory px-4 font-mono text-sm text-ink outline-none focus:ring-4 ${error ? "border-red-700 focus:border-red-700 focus:ring-red-700/20" : "border-ink/20 focus:border-ink focus:ring-marigold/25"}`}
       />
+      {error ? <span id={errorId} role="alert" className="text-xs leading-5 text-red-800">{error}</span> : null}
     </label>
   );
 }

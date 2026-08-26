@@ -99,7 +99,7 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
           <div className="w-full max-w-[720px] border border-ink bg-card p-5 shadow-ink sm:p-7 lg:justify-self-end">
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-ink">Application form</p>
             <p className="mt-2 text-sm leading-6 text-ink/65">
-              Choose Single Week or Fellowship below. Single Week applicants can select Week 1, 2, or 3.
+              Choose how many weeks you would like to join, then select your preferred week or weeks.
             </p>
             <div className="mt-5">
               {identity.email ? (

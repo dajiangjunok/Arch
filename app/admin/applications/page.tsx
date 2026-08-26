@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AdminShell, Notice, StatusPill } from "../_components";
 import { requireAdmin } from "@/lib/admin-auth";
-import { applicationStatusLabel, formatDate, programWeekLabel, ticketLabel } from "@/lib/format";
+import { applicationStatusLabel, formatDate, programWeeksLabel, ticketLabel } from "@/lib/format";
 import { listApplications } from "@/lib/store";
 
 export default async function ApplicationsPage({
@@ -49,7 +49,7 @@ export default async function ApplicationsPage({
                     </td>
                     <td className="px-4 py-4">
                       <strong className="block">{ticketLabel(application.selectedTicket)}</strong>
-                      <span className="text-ink-soft">{programWeekLabel(application.selectedWeek)}</span>
+                      <span className="text-ink-soft">{programWeeksLabel(application.selectedWeeks)}</span>
                     </td>
                     <td className="px-4 py-4">
                       <span className="line-clamp-2 text-ink-soft">{application.message}</span>

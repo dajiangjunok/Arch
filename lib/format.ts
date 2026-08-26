@@ -97,3 +97,7 @@ export function programWeekLabel(week: ProgramWeek | null) {
 
   return labels[week];
 }
+
+export function programWeeksLabel(weeks: ProgramWeek[]) {
+  return weeks.length ? weeks.map((week) => programWeekLabel(week)).join(" + ") : "-";
+}

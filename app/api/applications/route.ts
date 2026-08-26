@@ -15,6 +15,10 @@ function readString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function isValidEmail(value: string) {
+  return value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 export async function POST(request: Request) {
   const supabase = await createSupabaseServerClient();
   const {
@@ -43,23 +47,31 @@ export async function POST(request: Request) {
   const hasSubmittedReferralCode = Object.prototype.hasOwnProperty.call(body, "referralCode");
   const referralCode = hasSubmittedReferralCode ? readString(body.referralCode) : cookieReferralCode;
   const selectedTicket = readString(body.selectedTicket) as TicketId;
-  const selectedWeek = readString(body.selectedWeek) as ProgramWeek;
+  const submittedWeeks = Array.isArray(body.selectedWeeks) ? body.selectedWeeks.map(readString) : [];
+  const selectedWeeks = submittedWeeks.filter((week): week is ProgramWeek => programWeeks.includes(week as ProgramWeek));
   const validTicketIds = ticketOptions.map((ticket) => ticket.id);
 
   if (!name || !contactEmail || !alternateContact || !message) {
     return NextResponse.json({ error: "Please complete all required fields." }, { status: 400 });
   }
 
+  if (!isValidEmail(contactEmail)) {
+    return NextResponse.json({ error: "Please enter a valid contact email address." }, { status: 400 });
+  }
+
   if (!validTicketIds.includes(selectedTicket)) {
     return NextResponse.json({ error: "Please select a valid program option." }, { status: 400 });
   }
 
-  if (selectedTicket === "single_week" && !programWeeks.includes(selectedWeek)) {
+  const expectedWeekCount = selectedTicket === "single_week" ? 1 : selectedTicket === "two_weeks" ? 2 : 3;
+  const uniqueSelectedWeeks = [...new Set(selectedWeeks)];
+
+  if (selectedWeeks.length !== submittedWeeks.length || uniqueSelectedWeeks.length !== expectedWeekCount) {
     return NextResponse.json({ error: "Please select the week you want to attend." }, { status: 400 });
   }
 
-  if (selectedTicket === "fellowship" && selectedWeek) {
-    return NextResponse.json({ error: "Fellowship applications do not require a week selection." }, { status: 400 });
+  if (selectedTicket === "full_program" && !programWeeks.every((week) => uniqueSelectedWeeks.includes(week))) {
+    return NextResponse.json({ error: "The full program includes all three weeks." }, { status: 400 });
   }
 
   try {
@@ -68,7 +80,7 @@ export async function POST(request: Request) {
       name,
       email: contactEmail,
       selectedTicket,
-      selectedWeek: selectedTicket === "single_week" ? selectedWeek : null,
+      selectedWeeks: uniqueSelectedWeeks,
       alternateContact,
       message,
       additionalInfo,

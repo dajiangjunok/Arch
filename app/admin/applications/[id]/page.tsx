@@ -13,7 +13,7 @@ import {
   formatDate,
   formatMoney,
   orderStatusLabel,
-  programWeekLabel,
+  programWeeksLabel,
   ticketLabel,
 } from "@/lib/format";
 import { getApplication, getOrdersForApplication } from "@/lib/store";
@@ -91,7 +91,7 @@ export default async function ApplicationDetailPage({
 
           <dl className="mt-8 grid gap-px overflow-hidden border border-line bg-line/70 sm:grid-cols-2">
             <Info label="Program" value={ticketLabel(application.selectedTicket)} />
-            <Info label="Week" value={programWeekLabel(application.selectedWeek)} />
+            <Info label="Weeks" value={programWeeksLabel(application.selectedWeeks)} />
             <Info label="Alternate contact" value={application.alternateContact} />
             <Info label="Referral code" value={application.referralCode || "None"} />
             <Info label="Distributor" value={application.distributorId || "None"} />

@@ -36,7 +36,7 @@ type ApplicationRow = {
   city: string;
   applicant_type: ApplicantType;
   selected_ticket: TicketId;
-  selected_week: Application["selectedWeek"];
+  selected_weeks: Application["selectedWeeks"];
   alternate_contact: string;
   message: string;
   additional_info: string;
@@ -168,7 +168,7 @@ function mapApplication(row: ApplicationRow): Application {
     city: row.city,
     applicantType: row.applicant_type,
     selectedTicket: row.selected_ticket,
-    selectedWeek: row.selected_week,
+    selectedWeeks: row.selected_weeks || [],
     alternateContact: row.alternate_contact || "",
     message: row.message,
     additionalInfo: row.additional_info || "",
@@ -333,7 +333,7 @@ export async function createApplication(input: {
   city?: string;
   applicantType?: ApplicantType;
   selectedTicket: TicketId;
-  selectedWeek?: Application["selectedWeek"];
+  selectedWeeks: Application["selectedWeeks"];
   alternateContact: string;
   message: string;
   additionalInfo: string;
@@ -352,7 +352,7 @@ export async function createApplication(input: {
       city: input.city?.trim() || "",
       applicant_type: input.applicantType || "other",
       selected_ticket: input.selectedTicket,
-      selected_week: input.selectedWeek || null,
+      selected_weeks: input.selectedWeeks,
       alternate_contact: input.alternateContact.trim(),
       message: input.message.trim(),
       additional_info: input.additionalInfo.trim(),

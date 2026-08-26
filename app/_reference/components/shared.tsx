@@ -296,7 +296,7 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
               </div>
               <Link
                 className="bp-apply"
-                href="/apply?pass=fellowship"
+                href="/apply?pass=full_program"
                 onClick={(event) => event.stopPropagation()}
               >
                 Apply for Fellowship →

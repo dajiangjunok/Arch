@@ -1,5 +1,5 @@
 const plainPaths = new Set(["/", "/account", "/partner", "/admin"]);
-const ticketIds = new Set(["single_week", "fellowship"]);
+const ticketIds = new Set(["single_week", "two_weeks", "full_program"]);
 const weekIds = new Set(["week_1", "week_2", "week_3"]);
 
 export function safeAuthNext(value: string | null | undefined) {
