@@ -13,6 +13,7 @@ import {
 import {
   getDistributorForUser,
   listCommissionsForDistributor,
+  listDistributorTiers,
   listReferralCodesForDistributor,
   listReferralsForDistributor,
   getApplication,
@@ -31,11 +32,15 @@ export default async function PartnerPage() {
     return <PartnerAccessDenied identity={identity} />;
   }
 
-  const [codes, referrals, commissions] = await Promise.all([
+  const [codes, referrals, commissions, tiers] = await Promise.all([
     listReferralCodesForDistributor(distributor.id),
     listReferralsForDistributor(distributor.id),
     listCommissionsForDistributor(distributor.id),
+    listDistributorTiers(),
   ]);
+  const currentTier = [...tiers]
+    .reverse()
+    .find((tier) => referrals.length >= tier.minimumReferrals);
   const inviteeRows = await Promise.all(
     referrals.map(async (referral) => {
       const application = await getApplication(referral.applicationId);
@@ -69,15 +74,17 @@ export default async function PartnerPage() {
           </div>
         </header>
 
-        <section className="py-12 sm:py-16">
-          <div className="flex flex-wrap items-end justify-between gap-6">
+        <section className="py-10 sm:py-12">
+          <div className="grid items-end gap-8 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
               <p className="arch-eyebrow">Partner network</p>
-              <h1 className="mt-4 font-serif text-[clamp(2.8rem,6vw,5rem)] font-semibold leading-none text-navy">Your referrals</h1>
+              <h1 className="mt-4 whitespace-nowrap font-serif text-[clamp(2.35rem,3.5vw,3.25rem)] font-semibold leading-none text-navy">Your referrals</h1>
               <span className="title-rule" />
             </div>
-            <div className="grid grid-cols-2 gap-px border border-ink/20 bg-ink/20 sm:grid-cols-4">
+            <div className="grid w-full max-w-[640px] grid-cols-3 gap-px justify-self-end border border-ink/20 bg-ink/20">
               <Stat label="Invited" value={referrals.length} />
+              <Stat label="Tier" value={currentTier?.name || "Not qualified"} />
+              <Stat label="Commission" value={currentTier ? `${currentTier.commissionRate}%` : "0%"} />
               <Stat label="Paid" value={paidCount} />
               <Stat label="Pending review" value={pendingCount} />
               <Stat label="To settle" value={formatMoney(unsettledAmount, currency)} />
@@ -155,7 +162,7 @@ export default async function PartnerPage() {
 }
 
 function Stat({ label, value }: { label: string; value: number | string }) {
-  return <div className="min-w-28 bg-card px-4 py-4 text-center"><p className="font-serif text-2xl font-semibold text-navy">{value}</p><p className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/50">{label}</p></div>;
+  return <div className="min-w-0 bg-card px-2.5 py-2.5 text-center"><p className="whitespace-nowrap font-serif text-xl font-semibold text-navy">{value}</p><p className="mt-1 whitespace-nowrap font-mono text-[8px] uppercase tracking-[0.1em] text-ink/50">{label}</p></div>;
 }
 
 function PartnerAccessDenied({ identity }: { identity: ReturnType<typeof getUserIdentity> }) {

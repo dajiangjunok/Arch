@@ -11,6 +11,7 @@ import type {
   Commission,
   CommissionStatus,
   Distributor,
+  DistributorTier,
   DistributorStatus,
   Order,
   OrderStatus,
@@ -114,6 +115,16 @@ type DistributorRow = {
   updated_at: string;
 };
 
+type DistributorTierRow = {
+  id: string;
+  tier_key: DistributorTier["key"];
+  name: string;
+  minimum_referrals: number;
+  commission_rate: number;
+  created_at: string;
+  updated_at: string;
+};
+
 type ReferralCodeRow = {
   id: string;
   code: string;
@@ -211,6 +222,18 @@ function mapDistributor(row: DistributorRow): Distributor {
     name: row.name,
     email: row.email,
     status: row.status,
+    commissionRate: Number(row.commission_rate),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapDistributorTier(row: DistributorTierRow): DistributorTier {
+  return {
+    id: row.id,
+    key: row.tier_key,
+    name: row.name,
+    minimumReferrals: row.minimum_referrals,
     commissionRate: Number(row.commission_rate),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -931,6 +954,35 @@ export async function listDistributors() {
 
   if (error) throw error;
   return (data as DistributorRow[]).map(mapDistributor);
+}
+
+export async function listDistributorTiers() {
+  const { data, error } = await createSupabaseAdminClient()
+    .from("distributor_tiers")
+    .select("*")
+    .order("minimum_referrals", { ascending: true });
+
+  if (error) throw error;
+  return (data as DistributorTierRow[]).map(mapDistributorTier);
+}
+
+export async function updateDistributorTiers(
+  tiers: Pick<DistributorTier, "key" | "minimumReferrals" | "commissionRate">[],
+) {
+  const timestamp = now();
+  const admin = createSupabaseAdminClient();
+
+  for (const tier of tiers) {
+    const { error } = await admin
+      .from("distributor_tiers")
+      .update({
+        minimum_referrals: tier.minimumReferrals,
+        commission_rate: tier.commissionRate,
+        updated_at: timestamp,
+      })
+      .eq("tier_key", tier.key);
+    if (error) throw error;
+  }
 }
 
 export async function listAdminUserOptions() {

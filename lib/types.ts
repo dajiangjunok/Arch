@@ -155,6 +155,16 @@ export type Distributor = {
   updatedAt: string;
 };
 
+export type DistributorTier = {
+  id: string;
+  key: "single_seat" | "starter" | "standard" | "growth";
+  name: string;
+  minimumReferrals: number;
+  commissionRate: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type ReferralCode = {
   id: string;
   code: string;

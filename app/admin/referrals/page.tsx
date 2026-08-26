@@ -5,6 +5,7 @@ import {
   listAdminUserOptions,
   listCommissions,
   listDistributors,
+  listDistributorTiers,
   listReferralCodes,
   listReferrals,
 } from "@/lib/store";
@@ -13,6 +14,7 @@ import {
   createDistributorAction,
   updateCommissionStatusAction,
   updateDistributorStatusAction,
+  updateDistributorTiersAction,
 } from "../actions";
 
 export default async function ReferralsAdminPage({
@@ -22,9 +24,10 @@ export default async function ReferralsAdminPage({
 }) {
   await requireAdmin();
   const params = await searchParams;
-  const [users, distributors, codes, referrals, commissions] = await Promise.all([
+  const [users, distributors, tiers, codes, referrals, commissions] = await Promise.all([
     listAdminUserOptions(),
     listDistributors(),
+    listDistributorTiers(),
     listReferralCodes(),
     listReferrals(),
     listCommissions(),
@@ -41,11 +44,18 @@ export default async function ReferralsAdminPage({
       .filter((email): email is string => Boolean(email)),
   );
   const codesByDistributorId = new Map<string, typeof codes>();
+  const referralCountByDistributorId = new Map<string, number>();
 
   for (const code of codes) {
     const distributorCodes = codesByDistributorId.get(code.distributorId) || [];
     distributorCodes.push(code);
     codesByDistributorId.set(code.distributorId, distributorCodes);
+  }
+  for (const referral of referrals) {
+    referralCountByDistributorId.set(
+      referral.distributorId,
+      (referralCountByDistributorId.get(referral.distributorId) || 0) + 1,
+    );
   }
 
   const availableUsers = users.filter(
@@ -79,7 +89,6 @@ export default async function ReferralsAdminPage({
                 ))}
               </select>
             </label>
-            <Input label="Commission %" name="commissionRate" type="number" min="0" max="100" step="0.01" defaultValue="10" required />
             <SubmitButton pendingLabel="Creating..." className="button-primary" disabled={availableUsers.length === 0}>
               Create distributor
             </SubmitButton>
@@ -92,7 +101,7 @@ export default async function ReferralsAdminPage({
               <thead className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-soft">
                 <tr>
                   <th className="px-3 py-3">User</th>
-                  <th className="px-3 py-3">Commission</th>
+                  <th className="px-3 py-3">Tier / commission</th>
                   <th className="px-3 py-3">Invite code</th>
                   <th className="px-3 py-3">Uses</th>
                   <th className="px-3 py-3">Status</th>
@@ -103,6 +112,10 @@ export default async function ReferralsAdminPage({
                 {distributors.map((distributor) => {
                   const distributorCodes = codesByDistributorId.get(distributor.id) || [];
                   const primaryCode = distributorCodes[0];
+                  const referralCount = referralCountByDistributorId.get(distributor.id) || 0;
+                  const currentTier = [...tiers]
+                    .reverse()
+                    .find((tier) => referralCount >= tier.minimumReferrals);
 
                   return (
                     <tr key={distributor.id} className="border-t border-line">
@@ -111,7 +124,10 @@ export default async function ReferralsAdminPage({
                         <p className="mt-1 text-xs text-ink-soft">{distributor.email || "No email"}</p>
                         <p className="mt-1 font-mono text-[10px] text-ink-soft">{distributor.userId || "No linked user"}</p>
                       </td>
-                      <td className="px-3 py-3">{distributor.commissionRate}%</td>
+                      <td className="px-3 py-3">
+                        <p className="font-semibold">{currentTier?.name || "Not qualified"}</p>
+                        <p className="mt-1 text-xs text-ink-soft">{currentTier ? `${currentTier.commissionRate}%` : "0%"} · {referralCount} invites</p>
+                      </td>
                       <td className="px-3 py-3">
                         {primaryCode ? (
                           <>
@@ -142,6 +158,31 @@ export default async function ReferralsAdminPage({
             </table>
             {distributors.length === 0 ? <p className="muted px-3 py-4">No distributors yet.</p> : null}
           </div>
+        </Panel>
+      </section>
+
+      <section className="mt-8">
+        <Panel eyebrow="Commission" title="Distributor tiers">
+          <p className="mb-5 text-sm text-ink-soft">A distributor earns one rate on the full amount of each newly paid referral, based on their total attributed invites at that time.</p>
+          <form action={updateDistributorTiersAction}>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[620px] text-left text-sm">
+                <thead className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-soft">
+                  <tr><th className="px-3 py-3">Tier</th><th className="px-3 py-3">Minimum invites</th><th className="px-3 py-3">Commission</th></tr>
+                </thead>
+                <tbody>
+                  {tiers.map((tier) => (
+                    <tr key={tier.id} className="border-t border-line">
+                      <td className="px-3 py-3 font-semibold">{tier.name}</td>
+                      <td className="px-3 py-3"><input className="field max-w-40" name={`${tier.key}Minimum`} type="number" min="1" step="1" defaultValue={tier.minimumReferrals} required /></td>
+                      <td className="px-3 py-3"><div className="flex items-center gap-2"><input className="field max-w-40" name={`${tier.key}Rate`} type="number" min="0" max="100" step="0.01" defaultValue={tier.commissionRate} required /><span>%</span></div></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <SubmitButton pendingLabel="Saving..." className="button-primary mt-5">Save tier settings</SubmitButton>
+          </form>
         </Panel>
       </section>
 

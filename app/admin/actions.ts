@@ -15,6 +15,7 @@ import {
   getOrdersForApplication,
   getRefundRequest,
   listDistributors,
+  updateDistributorTiers,
   recordAdminAuditLog,
   rejectRefundRequest,
   resetRefundRequestAfterStripeError,
@@ -65,10 +66,9 @@ function inviteCodeForEmail(email: string) {
 export async function createDistributorAction(formData: FormData) {
   const session = await requireAdmin();
   const userId = String(formData.get("userId") || "").trim();
-  const commissionRate = Number(formData.get("commissionRate") || 0);
 
-  if (!userId || !Number.isFinite(commissionRate) || commissionRate < 0 || commissionRate > 100) {
-    redirectWithMessage("/admin/referrals", "error", "Select a user and enter a commission rate from 0 to 100.");
+  if (!userId) {
+    redirectWithMessage("/admin/referrals", "error", "Select a user.");
   }
 
   const user = await getAdminUserOption(userId);
@@ -91,7 +91,7 @@ export async function createDistributorAction(formData: FormData) {
       userId: user.id,
       name: user.displayName,
       email: user.email,
-      commissionRate,
+      commissionRate: 0,
     });
     const referralCode = await createReferralCode({
       code: inviteCodeForEmail(user.email),
@@ -104,7 +104,7 @@ export async function createDistributorAction(formData: FormData) {
       action: "distributor.created",
       targetType: "distributor",
       targetId: distributor.id,
-      metadata: { userId: user.id, email: user.email, commissionRate, referralCode: referralCode.code },
+      metadata: { userId: user.id, email: user.email, referralCode: referralCode.code },
     });
     createdCode = referralCode.code;
   } catch (error) {
@@ -113,6 +113,43 @@ export async function createDistributorAction(formData: FormData) {
   }
 
   redirectWithMessage("/admin/referrals", "notice", `Distributor created. Invite code: ${createdCode}`);
+}
+
+const distributorTierKeys = ["single_seat", "starter", "standard", "growth"] as const;
+
+export async function updateDistributorTiersAction(formData: FormData) {
+  const session = await requireAdmin();
+  const tiers = distributorTierKeys.map((key) => ({
+    key,
+    minimumReferrals: Number(formData.get(`${key}Minimum`)),
+    commissionRate: Number(formData.get(`${key}Rate`)),
+  }));
+
+  const validValues = tiers.every(
+    (tier) => Number.isInteger(tier.minimumReferrals)
+      && tier.minimumReferrals >= 1
+      && Number.isFinite(tier.commissionRate)
+      && tier.commissionRate >= 0
+      && tier.commissionRate <= 100,
+  );
+  const increasingThresholds = tiers.every(
+    (tier, index) => index === 0 || tier.minimumReferrals > tiers[index - 1].minimumReferrals,
+  );
+
+  if (!validValues || !increasingThresholds) {
+    redirectWithMessage("/admin/referrals", "error", "Tier invite requirements must be increasing whole numbers, and commission rates must be from 0 to 100.");
+  }
+
+  await updateDistributorTiers(tiers);
+  await recordAdminAuditLog({
+    adminUserId: session.userId,
+    adminEmail: session.email,
+    action: "distributor_tiers.updated",
+    targetType: "distributor_tiers",
+    targetId: "global",
+    metadata: { tiers },
+  });
+  redirectWithMessage("/admin/referrals", "notice", "Distributor tiers updated.");
 }
 
 export async function updateDistributorStatusAction(formData: FormData) {
