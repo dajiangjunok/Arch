@@ -37,7 +37,7 @@ export type ReferralCodeStatus = "active" | "inactive";
 export type CommissionStatus = "pending" | "approved" | "paid" | "reversed";
 export type UserRole = "admin";
 
-export type TicketId = "single_week" | "two_weeks" | "full_program";
+export type TicketId = "single_week" | "two_weeks" | "full_program" | "fellowship";
 
 export type Application = {
   id: string;

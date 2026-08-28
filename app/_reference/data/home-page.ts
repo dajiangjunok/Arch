@@ -80,7 +80,6 @@ export const programWeeks = [
     image: "/reference/ee47a6f1ed4076c2.jpg",
     points: [
       "AI + Consumer Electronics",
-      "AI + Consumer Electronics",
       "Al + Longevity",
     ],
   },

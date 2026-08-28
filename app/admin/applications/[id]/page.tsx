@@ -55,7 +55,9 @@ export default async function ApplicationDetailPage({
       order.checkoutUrl &&
       (!order.paymentLinkExpiresAt || new Date(order.paymentLinkExpiresAt) > new Date()),
   );
+  const isFellowship = application.selectedTicket === "fellowship";
   const canApprove =
+    !isFellowship &&
     !hasCompletedOrder &&
     !activeOrder &&
     (["approved", "payment_sent"] as ApplicationStatus[]).includes(
@@ -116,6 +118,15 @@ export default async function ApplicationDetailPage({
         </article>
 
         <aside className="grid content-start gap-6">
+          {isFellowship && application.status === "approved" ? (
+            <div className="border border-ink bg-sun p-5 text-ink">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">Fellowship access</p>
+              <p className="mt-3 text-sm leading-6">
+                This funded Fellowship application is approved. No Stripe payment link is required.
+              </p>
+            </div>
+          ) : null}
+
           {canInviteToInterview ? (
             <form action={inviteToInterviewAction} className="border border-ink bg-sun p-5 text-ink">
               <input type="hidden" name="applicationId" value={application.id} />

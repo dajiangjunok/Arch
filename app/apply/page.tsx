@@ -18,7 +18,7 @@ const applicationSteps = [
   },
   {
     title: "Receive your offer",
-    body: "If approved, you'll receive a formal offer with payment instructions and a deadline to confirm your seat.",
+    body: "If approved, you'll receive a formal offer with confirmation details and, where applicable, payment instructions.",
   },
   {
     title: "Join the cohort",
@@ -99,7 +99,7 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
           <div className="w-full max-w-[720px] border border-ink bg-card p-5 shadow-ink sm:p-7 lg:justify-self-end">
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-ink">Application form</p>
             <p className="mt-2 text-sm leading-6 text-ink/65">
-              Choose how many weeks you would like to join, then select your preferred week or weeks.
+              Choose Single Week Access or apply for a Fellowship. For Single Week Access, choose how many weeks you would like to join and select your preferred week or weeks.
             </p>
             <div className="mt-5">
               {identity.email ? (

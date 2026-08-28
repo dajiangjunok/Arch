@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { isValidEmailAddress } from "@/lib/email";
 import { ticketOptions } from "@/lib/tickets";
 import type { ProgramWeek, TicketId } from "@/lib/types";
 
@@ -10,6 +11,11 @@ const weekOptions = [
   { value: "week_2", label: "Week 2" },
   { value: "week_3", label: "Week 3" },
 ];
+
+const accessTicketOptions = ticketOptions.filter((ticket) => ticket.id !== "fellowship");
+
+type AccessTicketId = Exclude<TicketId, "fellowship">;
+type ProgramOption = "single_week_access" | "fellowship";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
@@ -30,7 +36,16 @@ export function ApplicationForm({
   const [emailError, setEmailError] = useState("");
   const [inviteCode, setInviteCode] = useState(referralCode);
   const [selectedTicket, setSelectedTicket] = useState<TicketId>(defaultTicket);
-  const [selectedWeeks, setSelectedWeeks] = useState<ProgramWeek[]>([defaultWeek]);
+  const [lastAccessTicket, setLastAccessTicket] = useState<AccessTicketId>(
+    defaultTicket === "fellowship" ? "single_week" : defaultTicket,
+  );
+  const [selectedWeeks, setSelectedWeeks] = useState<ProgramWeek[]>(
+    defaultTicket === "fellowship"
+      ? []
+      : defaultTicket === "full_program"
+        ? weekOptions.map((week) => week.value as ProgramWeek)
+        : [defaultWeek],
+  );
 
   useEffect(() => {
     if (status !== "success") return;
@@ -51,20 +66,33 @@ export function ApplicationForm({
 
   function validateEmail(input: HTMLInputElement) {
     const value = input.value.trim();
-    const error = input.validity.valueMissing
+    const error = !value
       ? "Please enter your best contact email."
-      : input.validity.typeMismatch || value.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-        ? "Please enter a valid email address"
+      : !isValidEmailAddress(value)
+        ? "Please enter a valid email address."
         : "";
     setEmailError(error);
     return !error;
   }
 
-  function changeTicket(ticket: TicketId) {
+  function changeTicket(ticket: AccessTicketId) {
     setSelectedTicket(ticket);
+    setLastAccessTicket(ticket);
     if (ticket === "single_week") setSelectedWeeks((weeks) => [weeks[0] || defaultWeek]);
-    if (ticket === "two_weeks") setSelectedWeeks((weeks) => weeks.slice(0, 2));
+    if (ticket === "two_weeks") {
+      setSelectedWeeks((weeks) => weeks.length ? weeks.slice(0, 2) : [defaultWeek]);
+    }
     if (ticket === "full_program") setSelectedWeeks(weekOptions.map((week) => week.value as ProgramWeek));
+  }
+
+  function changeProgramOption(option: ProgramOption) {
+    if (option === "fellowship") {
+      setSelectedTicket("fellowship");
+      setSelectedWeeks([]);
+      return;
+    }
+
+    changeTicket(lastAccessTicket);
   }
 
   function toggleWeek(week: ProgramWeek) {
@@ -133,6 +161,7 @@ export function ApplicationForm({
           type="email"
           autoComplete="email"
           defaultValue={email}
+          maxLength={254}
           required
           error={emailError}
           onBlur={(event) => validateEmail(event.currentTarget)}
@@ -181,21 +210,41 @@ export function ApplicationForm({
           Program option
         </span>
         <select
-          name="selectedTicket"
+          name="programOption"
           required
-          value={selectedTicket}
-          onChange={(event) => changeTicket(event.target.value as TicketId)}
+          value={selectedTicket === "fellowship" ? "fellowship" : "single_week_access"}
+          onChange={(event) => changeProgramOption(event.target.value as ProgramOption)}
           className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
         >
-          {ticketOptions.map((ticket) => (
-            <option key={ticket.id} value={ticket.id}>
-              {ticket.label} - {ticket.priceLabel} - {ticket.description}
-            </option>
-          ))}
+          <option value="single_week_access">Single Week Access</option>
+          <option value="fellowship">Fellowship</option>
         </select>
       </label>
 
-      {selectedTicket !== "full_program" ? (
+      {selectedTicket === "fellowship" ? (
+        <input type="hidden" name="selectedTicket" value="fellowship" />
+      ) : (
+        <label className="grid min-w-0 gap-2">
+          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
+            Choose Your Week
+          </span>
+          <select
+            name="selectedTicket"
+            required
+            value={selectedTicket}
+            onChange={(event) => changeTicket(event.target.value as AccessTicketId)}
+            className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+          >
+            {accessTicketOptions.map((ticket) => (
+              <option key={ticket.id} value={ticket.id}>
+                {ticket.label} - {ticket.priceLabel} - {ticket.description}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
+      {selectedTicket !== "full_program" && selectedTicket !== "fellowship" ? (
         <fieldset className="grid min-w-0 gap-2">
           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
             {selectedTicket === "single_week" ? "Which week would you like to attend?" : "Which weeks would you like to attend?"}
@@ -279,6 +328,7 @@ function Field({
   required = false,
   autoComplete,
   defaultValue,
+  maxLength,
   placeholder,
   error,
   onBlur,
@@ -291,6 +341,7 @@ function Field({
   required?: boolean;
   autoComplete?: string;
   defaultValue?: string;
+  maxLength?: number;
   placeholder?: string;
   error?: string;
   onBlur?: React.FocusEventHandler<HTMLInputElement>;
@@ -308,6 +359,7 @@ function Field({
         required={required}
         autoComplete={autoComplete}
         defaultValue={defaultValue}
+        maxLength={maxLength}
         placeholder={placeholder}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isValidEmailAddress } from "@/lib/email";
 import { ticketOptions } from "@/lib/tickets";
 import {
   attachReferralToApplication,
@@ -13,10 +14,6 @@ const programWeeks: ProgramWeek[] = ["week_1", "week_2", "week_3"];
 
 function readString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function isValidEmail(value: string) {
-  return value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 export async function POST(request: Request) {
@@ -55,7 +52,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please complete all required fields." }, { status: 400 });
   }
 
-  if (!isValidEmail(contactEmail)) {
+  if (!isValidEmailAddress(contactEmail)) {
     return NextResponse.json({ error: "Please enter a valid contact email address." }, { status: 400 });
   }
 
@@ -63,10 +60,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please select a valid program option." }, { status: 400 });
   }
 
-  const expectedWeekCount = selectedTicket === "single_week" ? 1 : selectedTicket === "two_weeks" ? 2 : 3;
   const uniqueSelectedWeeks = [...new Set(selectedWeeks)];
 
-  if (selectedWeeks.length !== submittedWeeks.length || uniqueSelectedWeeks.length !== expectedWeekCount) {
+  if (selectedWeeks.length !== submittedWeeks.length) {
+    return NextResponse.json({ error: "Please select a valid program week." }, { status: 400 });
+  }
+
+  if (selectedTicket === "fellowship" && uniqueSelectedWeeks.length !== 0) {
+    return NextResponse.json({ error: "The Fellowship does not require a week selection." }, { status: 400 });
+  }
+
+  const expectedWeekCount = selectedTicket === "single_week"
+    ? 1
+    : selectedTicket === "two_weeks"
+      ? 2
+      : selectedTicket === "full_program"
+        ? 3
+        : 0;
+
+  if (uniqueSelectedWeeks.length !== expectedWeekCount) {
     return NextResponse.json({ error: "Please select the week you want to attend." }, { status: 400 });
   }
 

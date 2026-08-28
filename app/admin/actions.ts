@@ -269,6 +269,14 @@ export async function approveApplicationAction(formData: FormData) {
     );
   }
 
+  if (application.selectedTicket === "fellowship") {
+    redirectWithMessage(
+      `/admin/applications/${application.id}`,
+      "error",
+      "Fellowship applications are funded and do not require a payment link.",
+    );
+  }
+
   const orders = await getOrdersForApplication(application.id);
   const paidOrder = orders.find((order) =>
     ["paid", "partially_refunded", "refunded"].includes(order.status),

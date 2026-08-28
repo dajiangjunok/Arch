@@ -34,6 +34,14 @@ export const ticketOptions: TicketConfig[] = [
     amountEnv: "ARCH_TICKET_AMOUNT_FULL_PROGRAM",
     priceEnv: "STRIPE_PRICE_FULL_PROGRAM",
   },
+  {
+    id: "fellowship",
+    label: "Fellowship Pass",
+    priceLabel: "Funded",
+    description: "A limited, funded place for builders and makers",
+    amountEnv: "ARCH_TICKET_AMOUNT_FELLOWSHIP",
+    priceEnv: "STRIPE_PRICE_FELLOWSHIP",
+  },
 ];
 
 export function getTicket(ticketId: TicketId) {
