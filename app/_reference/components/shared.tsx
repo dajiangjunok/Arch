@@ -289,10 +289,7 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
                   <li>Partial access to the week&apos;s company visits</li>
                   <li>Shared workspace on Fuxing Island to build</li>
                 </ul>
-                <p className="incl-heading bp-not-included">Not Included</p>
-                <ul className="not-incl-mini">
-                  <li>Meals</li>
-                </ul>
+                <p className="incl-heading bp-not-included">FUNDED</p>
               </div>
               <Link
                 className="bp-apply"
