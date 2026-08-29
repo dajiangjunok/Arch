@@ -1,0 +1,157 @@
+@font-face {
+  font-family: "Noto Sans SC";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/dossier/fonts/2da6ebd8-985b-4381-9d71-b74040c03b3e.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/dossier/fonts/22274f33-11d9-4907-8d94-a0164e404a7b.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/dossier/fonts/5a04400b-8934-4a6e-88f5-299f9c0f8c6c.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: Spectral;
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/dossier/fonts/7a990ce5-775d-4d83-aff7-633e3568e563.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: Spectral;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/dossier/fonts/5a206bbb-bbef-4035-abf4-9d4bb5b6f2fa.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: Spectral;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/dossier/fonts/8b927f96-7254-4a1d-8c88-10514cf811a3.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: Spectral;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/dossier/fonts/1774e8b8-b23a-459a-82d4-f862c25e45d3.woff2") format("woff2");
+}
+
+.dossier-route {
+  min-height: 100vh;
+  overflow-x: auto;
+  padding: 48px 24px;
+  background: #f5f5f4;
+}
+
+.dossier-sheet {
+  width: 816px;
+  margin: 0 auto;
+}
+
+.dossier-document {
+  width: 816px;
+  overflow: hidden;
+  padding: 67.2px;
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(20, 20, 19, 0.12);
+  color: #16305c;
+}
+
+body:has(.dossier-route)::before {
+  display: none;
+}
+
+.dossier-document * {
+  box-sizing: content-box;
+}
+
+.dossier-document h1,
+.dossier-document h2,
+.dossier-document p {
+  padding: 0;
+}
+
+.dossier-section {
+  position: relative;
+  width: 100%;
+}
+
+.dossier-image {
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+}
+
+.dossier-image-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.dossier-image-cropped {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 0;
+  object-fit: unset;
+}
+
+.dossier-running-footer {
+  margin-top: 12px;
+  border-top: 1px solid #e8e3d7;
+}
+
+@media (max-width: 864px) {
+  .dossier-route {
+    padding: 12px;
+  }
+
+  .dossier-sheet {
+    margin: 0;
+    zoom: calc((100vw - 24px) / 816px);
+  }
+}
+
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  body::before {
+    display: none;
+  }
+
+  .dossier-route {
+    overflow: visible;
+    padding: 0;
+    background: #fff;
+  }
+
+  .dossier-sheet {
+    margin: 0 auto;
+    zoom: 1;
+  }
+
+  .dossier-document {
+    box-shadow: none;
+  }
+}

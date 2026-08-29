@@ -107,14 +107,29 @@ export function HeroSurface({
 
 export function DossierLink() {
   return (
-    <button
+    <Link
       className="btn btn-line btn-dossier"
-      type="button"
-      onClick={() => window.alert("占位链接 — 请替换为真实 Dossier PDF 地址")}
+      href="/dossier"
+      target="_blank"
+      rel="noopener noreferrer"
     >
-      ↓ Full Dossier (PDF)
-      <span className="tag">占位</span>
-    </button>
+      Full Dossier
+      <svg
+        aria-hidden="true"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M15 3h6v6" />
+        <path d="M10 14 21 3" />
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      </svg>
+    </Link>
   );
 }
 
