@@ -31,7 +31,7 @@
 .arch-reference.arch-home .ph-wordmark{position:relative;z-index:20;margin-top:3rem;display:flex;align-items:center;gap:1.1rem;}
 .arch-reference.arch-home .ph-wordmark-icon{width:3.1rem;height:3.5rem;flex:none;}.arch-reference.arch-home .ph-wordmark-icon img{width:100%;height:100%;object-fit:contain;}
 .arch-reference.arch-home .ph-wordmark-divider{width:1px;align-self:stretch;background:#22201826;}
-.arch-reference.arch-home .ph-wordmark h1{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:1.6rem;letter-spacing:.28em;color:var(--navy);}
+.arch-reference.arch-home .ph-wordmark h1{font-family:Fraunces,serif;font-weight:700;font-size:1.6rem;letter-spacing:.06em;text-transform:uppercase;color:var(--navy);}
 .arch-reference.arch-home .ph-wordmark-rule{display:block;width:2.75rem;height:2px;background:var(--marigold);margin:.5rem 0;}.arch-reference.arch-home .ph-wordmark p{font-family:Fraunces,serif;font-style:italic;font-size:.95rem;color:var(--ink);}
 .arch-reference.arch-home .ph-hero-headline{position:relative;z-index:20;margin-top:clamp(48px,7vh,80px);max-width:18ch;font-family:Fraunces,serif;font-weight:600;font-size:clamp(2.6rem,5.4vw,4.2rem);line-height:1.05;letter-spacing:-.01em;color:var(--navy);}
 .arch-reference.arch-home .ph-hero-headline em{font-style:italic;color:var(--marigold);}
