@@ -237,7 +237,7 @@ export function ApplicationForm({
           >
             {accessTicketOptions.map((ticket) => (
               <option key={ticket.id} value={ticket.id}>
-                {ticket.label} - {ticket.priceLabel} - {ticket.description}
+                {ticket.label} - {ticket.description}
               </option>
             ))}
           </select>

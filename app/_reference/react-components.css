@@ -52,6 +52,17 @@
   text-transform: uppercase;
 }
 
+.arch-reference .fee-contact {
+  color: var(--navy);
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  text-align: right;
+  white-space: nowrap;
+}
+
 .arch-reference .foot-links[data-secondary="true"] {
   margin-top: 1.25rem;
   padding-top: 0;

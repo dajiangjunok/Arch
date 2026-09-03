@@ -219,13 +219,12 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
             <span className="lbl">
               Early Adopter <span className="fee-badge">Open Now</span>
             </span>
-            <span className="fee">$9,799</span>
+            <span className="fee-contact">CONTACT US FOR PRICING</span>
           </div>
           <div className="fee-row fee-row-muted">
             <span className="lbl">
               Regular <span className="fee-sub-note">from Oct 15</span>
             </span>
-            <span className="fee fee-sm">$12,900</span>
           </div>
         </div>
         <Link className="btn" href={singleHref}>
