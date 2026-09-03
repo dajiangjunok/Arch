@@ -104,6 +104,15 @@ const partnerLogos = [
   { src: "/reference/50c8e7747ef42a47.png", alt: "AGIBOT logo" },
   { src: "/reference/16e9af4852ce2f3a.png", alt: "Alibaba logo" },
   { src: "/reference/bc66b1405b54eb1d.png", alt: "ByteDance logo" },
+  {
+    src: "/reference/partner-ecuador-tech-week.png",
+    alt: "Ecuador Tech Week logo",
+  },
+  {
+    src: "/reference/partner-startup-grind.png",
+    alt: "Startup Grind logo",
+  },
+  { src: "/reference/partner-step.png", alt: "STEP logo" },
 ] as const;
 
 function emailLink(subject: string, address = contactAddress) {
