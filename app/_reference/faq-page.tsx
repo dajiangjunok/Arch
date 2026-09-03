@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { RevealSection } from "./components/interactive";
+import { VisaFaqAnswer } from "./components/visa-faq-answer";
 
 const categories = [
   { id: "all", label: "All" },
@@ -18,6 +19,7 @@ const questions: readonly {
   category: Exclude<CategoryId, "all">;
   question: string;
   answer: ReactNode;
+  answerVariant?: "visa";
 }[] = [
   {
     category: "app",
@@ -175,15 +177,8 @@ const questions: readonly {
   {
     category: "logi",
     question: "Do I need a visa?",
-    answer: (
-      <p>
-        Check the entry policy that applies to your nationality —
-        <strong>
-          {" "}China offers visa-free or short-term visa access to many
-          countries.
-        </strong>
-      </p>
-    ),
+    answer: <VisaFaqAnswer />,
+    answerVariant: "visa",
   },
   {
     category: "part",
@@ -260,7 +255,14 @@ export function FaqPage() {
               const open = openQuestions.has(index);
               const answerId = `faq-answer-${index}`;
               return (
-                <article className={`faq-item${open ? " open" : ""}`} key={question.question}>
+                <article
+                  className={`faq-item${open ? " open" : ""}${
+                    question.answerVariant
+                      ? ` faq-item--${question.answerVariant}`
+                      : ""
+                  }`}
+                  key={question.question}
+                >
                   <button
                     className="faq-q"
                     type="button"

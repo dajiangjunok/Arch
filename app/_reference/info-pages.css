@@ -426,6 +426,10 @@
   max-height: 760px;
 }
 
+.arch-reference.arch-faq .faq-item--visa.open .faq-a-wrap {
+  max-height: 2400px;
+}
+
 .arch-reference.arch-faq .faq-a {
   padding: 0 1.6rem 1.5rem 4.3rem;
   color: #4a4638;
@@ -450,6 +454,130 @@
 
 .arch-reference.arch-faq .faq-a li {
   margin-bottom: 0.55rem;
+}
+
+.arch-reference.arch-faq .arch-visa-answer {
+  --av-ink: #0f1626;
+  --av-paper: #f3f0e9;
+  --av-card: #ffffff;
+  --av-rule: #d9d4c7;
+  --av-muted: #5c5a54;
+  --av-marigold: #e0a32e;
+  --av-marigold-ink: #6b4a08;
+  --av-moss: #3f7a5c;
+  --av-moss-ink: #1f4433;
+  --av-slate: #2c4a7c;
+  --av-slate-ink: #16294a;
+  color: var(--av-ink);
+}
+
+.arch-reference.arch-faq .arch-visa-answer__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+  gap: 1rem;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__panel {
+  padding: 1.375rem 1.5rem;
+  border: 1px solid var(--av-rule);
+  border-radius: 10px;
+  background: var(--av-card);
+}
+
+.arch-reference.arch-faq .arch-visa-answer__panel--wide {
+  margin-bottom: 1rem;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__panel h4 {
+  max-width: 34ch;
+  margin: 0 0 0.75rem;
+  color: var(--av-ink);
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__panel--wide h4 {
+  font-size: 1.1875rem;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__panel p {
+  max-width: 62ch;
+  margin: 0.75rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__tag {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__tag--amber {
+  border-color: var(--av-marigold);
+  background: #fbf0d8;
+  color: var(--av-marigold-ink);
+}
+
+.arch-reference.arch-faq .arch-visa-answer__tag--green {
+  border-color: var(--av-moss);
+  background: #e4f0e9;
+  color: var(--av-moss-ink);
+}
+
+.arch-reference.arch-faq .arch-visa-answer__tag--blue {
+  border-color: var(--av-slate);
+  background: #e4ebf6;
+  color: var(--av-slate-ink);
+}
+
+.arch-reference.arch-faq .arch-visa-answer__note {
+  margin-top: 1rem;
+  padding: 1.375rem 1.5rem;
+  border-left: 3px solid var(--av-marigold);
+  background: var(--av-paper);
+}
+
+.arch-reference.arch-faq .arch-visa-answer__note h4 {
+  margin: 0 0 0.75rem;
+  color: var(--av-marigold-ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__note p {
+  max-width: 68ch;
+  margin: 0 0 0.75rem;
+  color: var(--av-muted);
+  font-size: 0.875rem;
+  line-height: 1.75;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__note p:last-child {
+  margin-bottom: 0;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__note a {
+  color: var(--av-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.arch-reference.arch-faq .arch-visa-answer__note a:hover {
+  color: var(--av-marigold-ink);
+}
+
+.arch-reference.arch-faq .arch-visa-answer__note a:focus-visible {
+  outline: 2px solid var(--av-marigold);
+  outline-offset: 2px;
 }
 
 /* Partners */
@@ -927,6 +1055,15 @@
 
   .arch-reference.arch-faq .faq-a {
     padding: 0 1.1rem 1.25rem 3.45rem;
+  }
+
+  .arch-reference.arch-faq .faq-item--visa.open .faq-a-wrap {
+    max-height: 3200px;
+  }
+
+  .arch-reference.arch-faq .arch-visa-answer__panel,
+  .arch-reference.arch-faq .arch-visa-answer__note {
+    padding: 1.125rem 1.25rem;
   }
 
   .arch-reference.arch-partners .stage-stats {
