@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "deploy": "npm run build && npx vercel --prod",
+    "deploy": "npm run build && node --env-file=.env scripts/deploy.mjs",
     "start": "next start",
     "lint": "next lint",
     "db:migrate-local": "node scripts/migrate-local-data.mjs"
