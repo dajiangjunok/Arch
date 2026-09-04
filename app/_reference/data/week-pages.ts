@@ -317,10 +317,10 @@ export const weekPages = {
     id: "week2",
     weekNumber: 2,
     hero: {
-      eyebrow: "Shanghai + Beijing · Nov 8–14",
+      eyebrow: "Shanghai + Beijing + Hangzhou · Nov 8–14",
       title: "Embodied AI",
       accent: "& Humanoid Robots",
-      meta: ["6 Days / 5 Nights", "Shanghai + Beijing", "Application Only"],
+      meta: ["6 Days / 5 Nights", "Shanghai + Beijing + Hangzhou", "Application Only"],
       stampImage: "/reference/567a5c65454c411c.jpg",
       stampLabel: "Week Two of Three",
       stampStats: [
@@ -574,8 +574,8 @@ export const weekPages = {
     },
     logistics: [
       {
-        title: "Shanghai + Beijing",
-        body: "Shared accommodation is included in both cities. Staying with the group is where the real connections happen — over meals, transport, and evenings.",
+        title: "Shanghai + Beijing + Hangzhou",
+        body: "Shared accommodation is included in Three cities. Staying with the group is where the real connections happen — over meals, transport, and evenings.",
         image: {
           src: "/reference/342f3eb92ccf8840.jpg",
           alt: "Shared Housing",

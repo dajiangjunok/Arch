@@ -353,7 +353,7 @@ export function HomePage() {
             <Link href="/week2">
               Week 2 — Embodied AI &amp; Humanoid Robots
             </Link>
-            <span>Nov 1 – Nov 21, 2026 · Shanghai, Beijing &amp; Shenzhen</span>
+            <span>Nov 1 – Nov 21, 2026 · Shanghai, Beijing, Hangzhou &amp; Shenzhen</span>
           </div>
         </div>
       </footer>

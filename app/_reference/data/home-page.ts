@@ -63,7 +63,7 @@ export const programWeeks = [
     href: "/week2",
     className: "wk2 wk-featured",
     title: "Week 2 — Embodied AI & Humanoid Robots",
-    location: "Shanghai + Beijing · Nov 8–14",
+    location: "Shanghai + Beijing + Hangzhou · Nov 8–14",
     image: "/reference/567a5c65454c411c.jpg",
     points: [
       "Upstream: Core Components & Systems",
