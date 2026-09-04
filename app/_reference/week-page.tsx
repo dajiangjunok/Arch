@@ -59,7 +59,7 @@ export function WeekPage({ data }: { data: WeekPageData }) {
               >
                 Apply for Week {data.weekNumber}
               </Link>
-              <DossierLink />
+              {data.weekNumber === 1 ? <DossierLink /> : null}
             </div>
           </HeroSurface>
           <div className="hero-stamp">

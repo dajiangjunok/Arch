@@ -10,7 +10,7 @@ if (!token) {
 const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
 const result = spawnSync(
   npxCommand,
-  ["vercel", "--prod", "--token", token],
+  ["vercel", "--prod", "--scope", "open-build", "--token", token],
   { stdio: "inherit" },
 );
 
