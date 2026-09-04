@@ -105,14 +105,9 @@ export function HeroSurface({
   );
 }
 
-export function DossierLink() {
-  return (
-    <Link
-      className="btn btn-line btn-dossier"
-      href="/dossier"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+export function DossierLink({ disabled = false }: { disabled?: boolean }) {
+  const content = (
+    <>
       Full Dossier
       <svg
         aria-hidden="true"
@@ -129,6 +124,25 @@ export function DossierLink() {
         <path d="M10 14 21 3" />
         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
       </svg>
+    </>
+  );
+
+  if (disabled) {
+    return (
+      <span className="btn btn-line btn-dossier" aria-disabled="true">
+        {content}
+      </span>
+    );
+  }
+
+  return (
+    <Link
+      className="btn btn-line btn-dossier"
+      href="/dossier"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {content}
     </Link>
   );
 }
