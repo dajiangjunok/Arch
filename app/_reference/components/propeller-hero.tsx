@@ -171,7 +171,7 @@ export function PropellerHero() {
         <Link className="ph-btn-line" href="#weeks">See the three weeks ↓</Link>
       </div>
       <div className="ph-hero-bottom">
-        <p>Nov.1 — Nov.21, 2026 <span className="ph-slash">/</span> Shanghai, Beijing &amp; Shenzhen</p>
+        <p>Nov.1 — Nov.21, 2026 <span className="ph-slash">/</span> Shanghai, Beijing, Hangzhou &amp; Shenzhen</p>
         <p className="ph-exno">Application Only</p>
       </div>
     </section>

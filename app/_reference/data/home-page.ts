@@ -37,7 +37,7 @@ export const homeHero = {
 
 export const programStats = [
   { value: "21", label: ["Days", "Nov 1 – Nov 21"] },
-  { value: "3", label: ["Cities", "Shanghai · Beijing · Shenzhen"] },
+  { value: "4", label: ["Cities", "Shanghai · Beijing · Hangzhou · Shenzhen"] },
   { value: "50", suffix: "+", label: ["Companies &", "Institutions"] },
   { value: "60", suffix: "+", label: ["Featured", "Guests"] },
   { value: "3", label: ["Themed", "Weeks"] },

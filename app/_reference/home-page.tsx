@@ -46,7 +46,7 @@ export function HomePage() {
               what <em>crosses</em> it.
             </h1>
             <div className="hero-meta">
-              <span className="meta-pill">Shanghai + Beijing + Shenzhen</span>
+              <span className="meta-pill">Shanghai + Beijing + Hangzhou + Shenzhen</span>
               <span className="meta-pill">20–30 residents per week</span>
               <span className="meta-pill">Application Only</span>
             </div>
@@ -118,7 +118,7 @@ export function HomePage() {
             index="01"
           />
           <p className="section-intro">
-            Each week runs as its own gate - apply forone, two, or the full three-week program.
+            Each week runs as its own gate - apply for one, two, or the full three-week program.
           </p>
           <div className="weeks-grid">
             {programWeeks.map((week) => (
