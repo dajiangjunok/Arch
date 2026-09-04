@@ -56,6 +56,7 @@ export const programWeeks = [
       "AI + Enterprise Productivity",
       "AI + Health Across All Ages",
     ],
+    flag: "Most Popular",
   },
   {
     number: "02",
@@ -69,7 +70,6 @@ export const programWeeks = [
       "Midstream: Full Robot Systems",
       "Downstream: Application Scenarios",
     ],
-    flag: "Most Popular",
   },
   {
     number: "03",
