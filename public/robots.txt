@@ -1,0 +1,19 @@
+# Public program information is available to search and AI crawlers.
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /admin
+Disallow: /api/
+Disallow: /apply
+Disallow: /auth/
+Disallow: /login
+Disallow: /partner$
+Disallow: /partner/
+Disallow: /partner?
+Disallow: /payment/
+Disallow: /r/
+Disallow: /signup
+
+Sitemap: https://www.thearch.global/sitemap.xml
+
+# Program overview: https://www.thearch.global/llms.txt

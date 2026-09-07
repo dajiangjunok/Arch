@@ -1,0 +1,29 @@
+# The Arch
+
+> The Arch is an in-person China innovation immersion program for international founders, builders, investors, business executives, and institutions exploring China's AI, robotics, and smart hardware ecosystem.
+
+The official website is https://www.thearch.global/. The program is based on Fuxing Island in Shanghai, with themed weeks across Shanghai, Beijing, Hangzhou, and Shenzhen. The published 2026 edition runs from November 1 to November 21, with 20–30 residents per week. Participants can apply for one, two, or all three weeks.
+
+The program combines company, factory, and research-lab visits with founder and investor conversations, product demonstrations, and business meetings. Chinese–English interpretation supports visits and discussions. Participation is application-based, with individual review and a conversation before an offer. Fellowship places are also available through an application process.
+
+The Arch 是面向国际创业者、开发者、投资人、企业管理者及机构的中国科技创新沉浸式交流项目，以上海复兴岛为基地，围绕人工智能、具身智能与人形机器人、智能硬件等主题开展企业参访、研究机构交流和创始人对话。2026 年项目时间为 11 月 1 日至 21 日，可申请参加一周、两周或完整三周。
+
+This overview summarizes the public program pages. Prices, availability, inclusions, and detailed schedules should be checked on the linked pages or confirmed with the team. Company visits and meeting times may be adjusted before the program.
+
+## Program
+
+- [Program overview](https://www.thearch.global/): The three-week program, intended participants, locations, participation options, and application entry point.
+- [Week 1: AI Everywhere in Work & Life](https://www.thearch.global/week1): November 1–7, 2026, in Shanghai. AI products, foundation models, enterprise applications, research, and founder and investor conversations.
+- [Week 2: Embodied AI & Humanoid Robots](https://www.thearch.global/week2): November 8–14, 2026, across Shanghai, Beijing, and Hangzhou. Core components, full robot systems, and real-world applications.
+- [Week 3: Smart Hardware & Longevity](https://www.thearch.global/week3): November 15–21, 2026, across Shanghai and Shenzhen. Smart hardware, consumer electronics, wearables, and longevity.
+- [Shanghai program dossier](https://www.thearch.global/dossier): Detailed information about the Shanghai week, including the six-day, five-night core residency and optional Day 7 activities.
+
+## Participation and partnerships
+
+- [Frequently asked questions](https://www.thearch.global/faq): Applications, payment policies, inclusions, accommodation, transport, cohort size, and Fellowship information.
+- [Partnerships](https://www.thearch.global/partners): Ways for companies and brands to participate in the program and contact the team about partnerships.
+
+## Contact
+
+- [Program enquiries](mailto:thearch@globalpropeller.com): Questions about applying and participating.
+- [Business and partnership enquiries](mailto:business@globalpropeller.com): Company and brand partnerships.
