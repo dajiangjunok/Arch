@@ -23,6 +23,11 @@ This overview summarizes the public program pages. Prices, availability, inclusi
 - [Frequently asked questions](https://www.thearch.global/faq): Applications, payment policies, inclusions, accommodation, transport, cohort size, and Fellowship information.
 - [Partnerships](https://www.thearch.global/partners): Ways for companies and brands to participate in the program and contact the team about partnerships.
 
+## Legal
+
+- [Privacy Policy](https://www.thearch.global/privacy): Google sign-in data, applications, payments, referrals, retention and privacy requests.
+- [Terms of Service](https://www.thearch.global/terms): Accounts, program applications, payments, cancellations and participation terms.
+
 ## Contact
 
 - [Program enquiries](mailto:thearch@globalpropeller.com): Questions about applying and participating.

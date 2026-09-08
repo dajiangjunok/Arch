@@ -48,6 +48,15 @@ export function AuthShell({
               <span className="title-rule" />
               <p className="mt-6 text-sm leading-7 text-ink/68">{description}</p>
               <div className="mt-8">{children}</div>
+              <div className="mt-6 border-t border-ink/15 pt-5 text-xs leading-6 text-ink/70">
+                <p>Google shares your basic profile and email so The Arch can create your account and connect you to your applications and orders.</p>
+                <p className="mt-3">
+                  By continuing, you agree to our{" "}
+                  <Link href="/terms" className="text-navy underline underline-offset-4">Terms of Service</Link>
+                  {" "}and acknowledge our{" "}
+                  <Link href="/privacy" className="text-navy underline underline-offset-4">Privacy Policy</Link>.
+                </p>
+              </div>
             </div>
           </div>
         </section>

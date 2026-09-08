@@ -282,6 +282,14 @@ export function ApplicationForm({
         />
       </label>
 
+      <p className="text-xs leading-6 text-ink/70">
+        By submitting, you agree to The Arch&apos;s{" "}
+        <Link href="/terms" className="text-navy underline underline-offset-4">Terms of Service</Link>
+        {" "}and acknowledge the{" "}
+        <Link href="/privacy" className="text-navy underline underline-offset-4">Privacy Policy</Link>.
+        {inviteCode.trim() ? " If you use a referral code, the referring partner can see your name, contact email, selected program, application and payment status, and submission date. Clear the code above if you do not want this attribution." : ""}
+      </p>
+
       <button
         type="submit"
         disabled={status === "submitting" || status === "success"}

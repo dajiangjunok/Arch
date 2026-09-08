@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LegalLinks } from "@/app/_components/legal-links";
 import { useRef, useState } from "react";
 import type { WeekPageData } from "./types";
 import {
@@ -391,6 +392,7 @@ export function WeekPage({ data }: { data: WeekPageData }) {
               ))}
             </div>
           ))}
+          <LegalLinks className="mt-8 border-t border-ivory/20 pt-6 text-ivory/80" />
         </div>
       </footer>
     </>

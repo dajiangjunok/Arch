@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LegalLinks } from "@/app/_components/legal-links";
 import {
   ArchImage,
   PhotoTile,
@@ -355,6 +356,7 @@ export function HomePage() {
             </Link>
             <span>Nov 1 – Nov 21, 2026 · Shanghai, Beijing, Hangzhou &amp; Shenzhen</span>
           </div>
+          <LegalLinks className="mt-8 border-t border-ivory/20 pt-6 text-ivory/80" />
         </div>
       </footer>
     </>

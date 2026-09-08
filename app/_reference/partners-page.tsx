@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { LegalLinks } from "@/app/_components/legal-links";
 import { useState } from "react";
 import { RevealSection } from "./components/interactive";
 
@@ -311,6 +312,7 @@ export function PartnersPage() {
             </a>
             <Link href="/">Back to home →</Link>
           </div>
+          <LegalLinks className="mt-8 border-t border-ivory/20 pt-6 text-ivory/80" />
         </div>
       </footer>
     </>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LegalLinks } from "@/app/_components/legal-links";
 import { useState, type ReactNode } from "react";
 import { RevealSection } from "./components/interactive";
 import { VisaFaqAnswer } from "./components/visa-faq-answer";
@@ -301,6 +302,7 @@ export function FaqPage() {
             </a>
             <Link href="/partners">Partners →</Link>
           </div>
+          <LegalLinks className="mt-8 border-t border-ivory/20 pt-6 text-ivory/80" />
         </div>
       </footer>
     </>
