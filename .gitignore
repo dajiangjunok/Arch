@@ -1,31 +1,50 @@
-node_modules
-bridge
-.claude
+# Dependencies and package manager caches
+node_modules/
+.npm/
+.pnpm-store/
 
 # Next.js
 .next/
 out/
+*.tsbuildinfo
 
 # Production
 dist/
 build/
+
+# Test reports and coverage
+test-results/
+playwright-report/
+blob-report/
+coverage/
+.nyc_output/
+
+# Local caches and data
+.cache/
+.data/
+/supabase/.temp/
+/supabase/.branches/
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-.data/
 
 # Local env
-.env
-.env*.local
+.env*
+!.env.example
+
+# Local deployment and working directories
+.vercel/
+.claude/
+bridge/
+example/
+todo/
 
 # System files
 .DS_Store
-example/
-todo/
-.vercel
-.env*
+
+# Local docs
 docs/*
 !docs/distributor-discounts.md
