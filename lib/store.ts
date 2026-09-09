@@ -1,4 +1,5 @@
 import { getConfiguredTicketAmount, getCurrency } from "./tickets";
+import { ReferralCodeError, normalizeReferralCode } from "./discounts";
 import { createSupabaseAdminClient } from "./supabase/admin";
 import { getUserIdentity } from "./user-identity";
 import type { AuthUser } from "@supabase/supabase-js";
@@ -26,7 +27,27 @@ import type {
   TicketId,
 } from "./types";
 
-type ApplicationRow = {
+type DiscountSnapshotRow = {
+  discount_code: string | null;
+  original_amount: number | null;
+  discount_amount: number;
+  amount_due: number | null;
+  pricing_currency: string | null;
+  stripe_coupon_id: string | null;
+};
+
+function mapDiscountSnapshot(row: DiscountSnapshotRow) {
+  return {
+    discountCode: row.discount_code,
+    originalAmount: row.original_amount,
+    discountAmount: row.discount_amount,
+    amountDue: row.amount_due,
+    pricingCurrency: row.pricing_currency,
+    stripeCouponId: row.stripe_coupon_id,
+  };
+}
+
+type ApplicationRow = DiscountSnapshotRow & {
   id: string;
   user_id: string | null;
   name: string;
@@ -49,7 +70,7 @@ type ApplicationRow = {
   updated_at: string;
 };
 
-type OrderRow = {
+type OrderRow = DiscountSnapshotRow & {
   id: string;
   user_id: string | null;
   application_id: string;
@@ -111,6 +132,7 @@ type DistributorRow = {
   email: string | null;
   status: DistributorStatus;
   commission_rate: number;
+  discount_enabled: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -126,6 +148,7 @@ type DistributorTierRow = {
 };
 
 type ReferralCodeRow = {
+  kind: ReferralCode["kind"];
   id: string;
   code: string;
   distributor_id: string;
@@ -170,6 +193,7 @@ type CommissionRow = {
 
 function mapApplication(row: ApplicationRow): Application {
   return {
+    ...mapDiscountSnapshot(row),
     id: row.id,
     userId: row.user_id,
     name: row.name,
@@ -195,6 +219,7 @@ function mapApplication(row: ApplicationRow): Application {
 
 function mapOrder(row: OrderRow): Order {
   return {
+    ...mapDiscountSnapshot(row),
     id: row.id,
     userId: row.user_id,
     applicationId: row.application_id,
@@ -224,6 +249,7 @@ function mapDistributor(row: DistributorRow): Distributor {
     email: row.email,
     status: row.status,
     commissionRate: Number(row.commission_rate),
+    discountEnabled: row.discount_enabled,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -243,6 +269,7 @@ function mapDistributorTier(row: DistributorTierRow): DistributorTier {
 
 function mapReferralCode(row: ReferralCodeRow): ReferralCode {
   return {
+    kind: row.kind,
     id: row.id,
     code: row.code,
     distributorId: row.distributor_id,
@@ -349,73 +376,60 @@ function mapAdminUserOption(user: AuthUser): AdminUserOption | null {
 }
 
 export async function createApplication(input: {
-  userId?: string | null;
+  userId: string;
   name: string;
   email: string;
-  company?: string;
-  title?: string;
-  country?: string;
-  city?: string;
-  applicantType?: ApplicantType;
   selectedTicket: TicketId;
   selectedWeeks: Application["selectedWeeks"];
   alternateContact: string;
   message: string;
   additionalInfo: string;
+  referralCode?: string;
+  stripeCouponId?: string | null;
 }) {
-  const timestamp = now();
-  const { data, error } = await createSupabaseAdminClient()
-    .from("applications")
-    .insert({
-      id: crypto.randomUUID(),
-      user_id: input.userId || null,
-      name: input.name.trim(),
-      email: normalizeEmail(input.email),
-      company: input.company?.trim() || "",
-      title: input.title?.trim() || "",
-      country: input.country?.trim() || "",
-      city: input.city?.trim() || "",
-      applicant_type: input.applicantType || "other",
-      selected_ticket: input.selectedTicket,
-      selected_weeks: input.selectedWeeks,
-      alternate_contact: input.alternateContact.trim(),
-      message: input.message.trim(),
-      additional_info: input.additionalInfo.trim(),
-      status: "pending_review",
-      created_at: timestamp,
-      updated_at: timestamp,
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return mapApplication(data as ApplicationRow);
-}
-
-export async function deleteApplication(id: string) {
-  const { error } = await createSupabaseAdminClient().from("applications").delete().eq("id", id);
-  if (error) throw error;
-}
-
-export async function attachReferralToApplication(input: {
-  applicationId: string;
-  userId: string;
-  code: string;
-}) {
-  const { data, error } = await createSupabaseAdminClient().rpc("attach_referral_to_application", {
-    p_application_id: input.applicationId,
+  const { data, error } = await createSupabaseAdminClient().rpc("submit_application", {
     p_user_id: input.userId,
-    p_code: input.code,
+    p_details: {
+      name: input.name.trim(), email: normalizeEmail(input.email),
+      selectedTicket: input.selectedTicket, selectedWeeks: input.selectedWeeks,
+      alternateContact: input.alternateContact.trim(), message: input.message.trim(),
+      additionalInfo: input.additionalInfo.trim(),
+    },
+    p_code: normalizeReferralCode(input.referralCode || ""),
+    p_stripe_coupon_id: input.stripeCouponId || null,
   });
-
-  if (error) throw error;
+  if (error) {
+    if (error.code === "P0001" && [
+      "This code is invalid or no longer available.",
+      "This discount is only available for the 1 Week program.",
+    ].includes(error.message)) throw new ReferralCodeError(error.message);
+    throw error;
+  }
   const row = Array.isArray(data) ? data[0] : data;
-  if (!row) return null;
+  return mapApplication(row as ApplicationRow);
+}
 
-  return {
-    referralId: row.referral_id as string,
-    distributorId: row.distributor_id as string,
-  };
+export async function resolveReferralCode(code: string) {
+  const normalized = normalizeReferralCode(code);
+  if (!normalized || normalized.length > 64) throw new ReferralCodeError("This code is invalid or no longer available.");
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin.from("referral_codes").select("*").ilike("code", normalized.replace(/[\\%_]/g, "\\$&")).maybeSingle();
+  if (error) throw error;
+  if (!data || data.status !== "active") throw new ReferralCodeError("This code is invalid or no longer available.");
+  const { data: distributor, error: distributorError } = await admin.from("distributors")
+    .select("status, discount_enabled").eq("id", data.distributor_id).single();
+  if (distributorError) throw distributorError;
+  if (distributor.status !== "active" || (data.kind === "discount" && !distributor.discount_enabled)) {
+    throw new ReferralCodeError("This code is invalid or no longer available.");
+  }
+  return mapReferralCode(data as ReferralCodeRow);
+}
+
+export async function updateDistributorDiscount(id: string, enabled: boolean) {
+  const { error } = await createSupabaseAdminClient().rpc("set_distributor_discount", {
+    p_distributor_id: id, p_enabled: enabled,
+  });
+  if (error) throw error;
 }
 
 export async function listApplications() {
@@ -451,12 +465,14 @@ export async function getApplication(id: string) {
 }
 
 export async function updateApplicationStatus(id: string, status: ApplicationStatus) {
-  const { data, error } = await createSupabaseAdminClient()
+  let query = createSupabaseAdminClient()
     .from("applications")
     .update({ status, updated_at: now() })
-    .eq("id", id)
-    .select()
-    .single();
+    .eq("id", id);
+  // A payment/refund callback may finish while an administrator is saving
+  // the checkout link. Never regress its completed application state.
+  if (status === "payment_sent") query = query.not("status", "in", "(paid,canceled)");
+  const { data, error } = await query.select().single();
 
   if (error) throw error;
   return mapApplication(data as ApplicationRow);
@@ -536,28 +552,14 @@ export async function getOrderByCheckoutSession(sessionId: string) {
 }
 
 export async function createOrderForApplication(application: Application) {
-  const timestamp = now();
-  const { data, error } = await createSupabaseAdminClient()
-    .from("orders")
-    .insert({
-      id: crypto.randomUUID(),
-      user_id: application.userId,
-      application_id: application.id,
-      selected_ticket: application.selectedTicket,
-      amount: getConfiguredTicketAmount(application.selectedTicket),
-      currency: getCurrency(),
-      status: "pending",
-      referral_id: application.referralId,
-      referral_code: application.referralCode,
-      distributor_id: application.distributorId,
-      created_at: timestamp,
-      updated_at: timestamp,
-    })
-    .select()
-    .single();
-
+  const { data, error } = await createSupabaseAdminClient().rpc("create_application_order", {
+    p_application_id: application.id,
+    p_amount: application.discountCode ? application.amountDue : getConfiguredTicketAmount(application.selectedTicket),
+    p_currency: application.pricingCurrency || getCurrency(),
+  });
   if (error) throw error;
-  return mapOrder(data as OrderRow);
+  const row = Array.isArray(data) ? data[0] : data;
+  return mapOrder(row as OrderRow);
 }
 
 export async function updateOrder(id: string, patch: Partial<Omit<Order, "id" | "createdAt">>) {
@@ -585,12 +587,11 @@ export async function updateOrder(id: string, patch: Partial<Omit<Order, "id" | 
     if (fields[key]) rowPatch[fields[key]] = value;
   }
 
-  const { data, error } = await createSupabaseAdminClient()
-    .from("orders")
-    .update(rowPatch)
-    .eq("id", id)
-    .select()
-    .single();
+  let query = createSupabaseAdminClient().from("orders").update(rowPatch).eq("id", id);
+  if (patch.status && !["paid", "partially_refunded", "refunded"].includes(patch.status)) {
+    query = query.not("status", "in", "(paid,partially_refunded,refunded)");
+  }
+  const { data, error } = await query.select().single();
 
   if (error) throw error;
   return mapOrder(data as OrderRow);
@@ -941,6 +942,7 @@ export async function markOrderStatusBySession(sessionId: string, status: OrderS
     .from("orders")
     .update({ status, updated_at: now() })
     .eq("stripe_checkout_session_id", sessionId)
+    .in("status", ["pending", "checkout_created", "payment_failed", "expired", "canceled"])
     .select()
     .maybeSingle();
 

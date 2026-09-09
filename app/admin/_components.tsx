@@ -27,6 +27,9 @@ export function AdminShell({ children, title }: { children: React.ReactNode; tit
           <Link className="border border-line bg-paper px-4 py-3 hover:border-ink" href="/admin/referrals">
             Referrals
           </Link>
+          <Link className="border border-navy bg-marigold/20 px-4 py-3 text-navy hover:bg-marigold/40" href="/admin/referrals#discount-codes">
+            Discount codes
+          </Link>
           <form action={logoutAction}>
             <SubmitButton pendingLabel="Signing out..." className="border border-line bg-ink px-4 py-3 text-paper hover:bg-sun hover:text-ink">
               Sign out

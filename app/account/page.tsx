@@ -1,3 +1,4 @@
+import { DiscountSummary } from "@/app/_components/discount-summary";
 import Link from "next/link";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { logoutAction } from "@/app/auth/actions";
@@ -141,6 +142,8 @@ export default async function AccountPage({
                       <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">{application ? programLabel(application.selectedTicket, application.selectedWeeks) : ticketLabel(order.selectedTicket)}</p>
                       <h3 className="mt-2 font-serif text-2xl font-semibold text-navy">{application?.name || "The Arch. application"}</h3>
                       <p className="mt-2 font-mono text-xs text-ink/50">Submitted {formatDate(application?.createdAt || order.createdAt)}</p>
+                      {order.discountCode ? <DiscountSummary code={order.discountCode} originalAmount={order.originalAmount!}
+                        discountAmount={order.discountAmount} amountDue={order.amountDue!} currency={order.pricingCurrency!} /> : null}
                     </div>
                     <dl className="grid grid-cols-2 gap-4 text-sm">
                       <div>
@@ -222,6 +225,8 @@ export default async function AccountPage({
                         : applicationStatusLabel(application.status)}
                     </span>
                     </div>
+                    {application.discountCode ? <DiscountSummary code={application.discountCode} originalAmount={application.originalAmount!}
+                      discountAmount={application.discountAmount} amountDue={application.amountDue!} currency={application.pricingCurrency!} /> : null}
                     <p className="mt-5 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-ink/65">{application.message}</p>
                     {canEdit ? (
                     <details className="mt-5 border-t border-ink/15 pt-5">

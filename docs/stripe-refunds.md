@@ -15,6 +15,7 @@ Subscribe to these events:
 
 ```text
 checkout.session.completed
+checkout.session.async_payment_succeeded
 checkout.session.expired
 checkout.session.async_payment_failed
 refund.created
@@ -41,7 +42,7 @@ With the Stripe CLI authenticated, forward events to the local application:
 
 ```bash
 stripe listen \
-  --events checkout.session.completed,checkout.session.expired,checkout.session.async_payment_failed,refund.created,refund.updated,refund.failed,charge.refund.updated,charge.refunded \
+  --events checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.expired,checkout.session.async_payment_failed,refund.created,refund.updated,refund.failed,charge.refund.updated,charge.refunded \
   --forward-to localhost:3000/api/stripe/webhook
 ```
 

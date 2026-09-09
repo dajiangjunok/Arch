@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
-import { createStripeCheckoutSession, createStripeRefund } from "@/lib/stripe";
+import { createStripeCheckoutSession, createStripeRefund, validateDistributorDiscountConfiguration } from "@/lib/stripe";
 import { parseMoneyInput } from "@/lib/money";
 import {
   attachStripeRefundToRequest,
@@ -22,6 +22,7 @@ import {
   updateCommissionStatus,
   updateApplicationStatus,
   updateDistributorStatus,
+  updateDistributorDiscount,
   updateOrder,
 } from "@/lib/store";
 import type { ApplicationStatus, CommissionStatus, DistributorStatus } from "@/lib/types";
@@ -150,6 +151,26 @@ export async function updateDistributorTiersAction(formData: FormData) {
     metadata: { tiers },
   });
   redirectWithMessage("/admin/referrals", "notice", "Distributor tiers updated.");
+}
+
+export async function updateDistributorDiscountAction(formData: FormData) {
+  const session = await requireAdmin();
+  const distributorId = String(formData.get("distributorId") || "");
+  const setting = String(formData.get("enabled") || "");
+  if (!distributorId || !["true", "false"].includes(setting)) redirectWithMessage("/admin/referrals", "error", "Invalid discount setting.");
+  const enabled = setting === "true";
+  try {
+    if (enabled) await validateDistributorDiscountConfiguration();
+    await updateDistributorDiscount(distributorId, enabled);
+    await recordAdminAuditLog({
+      adminUserId: session.userId, adminEmail: session.email, action: "distributor.discount_updated",
+      targetType: "distributor", targetId: distributorId, metadata: { enabled, amount: 129900, currency: "usd" },
+    });
+  } catch (error) {
+    console.error("Unable to update distributor discount", error);
+    redirectWithMessage("/admin/referrals", "error", error instanceof Error ? error.message : "Unable to update discount. Check the distributor status and Stripe configuration.");
+  }
+  redirectWithMessage("/admin/referrals", "notice", enabled ? "USD 1,299 discount enabled." : "Discount disabled for new applications. Submitted prices are preserved.");
 }
 
 export async function updateDistributorStatusAction(formData: FormData) {
@@ -325,9 +346,7 @@ export async function approveApplicationAction(formData: FormData) {
   }
 
   try {
-    if (!order) {
-      order = await createOrderForApplication(application);
-    }
+    order = await createOrderForApplication(application);
 
     const checkoutSession = await createStripeCheckoutSession(application, order);
 
@@ -336,7 +355,7 @@ export async function approveApplicationAction(formData: FormData) {
     }
 
     await updateOrder(order.id, {
-      amount: checkoutSession.amount_total || order.amount,
+      amount: checkoutSession.amount_total ?? order.amount,
       currency: checkoutSession.currency || order.currency,
       status: "checkout_created",
       checkoutUrl: checkoutSession.url,
@@ -362,7 +381,7 @@ export async function approveApplicationAction(formData: FormData) {
     redirectWithMessage(
       `/admin/applications/${application.id}`,
       "error",
-      "The application was approved, but Stripe could not create a payment link. Please try again.",
+      error instanceof Error ? error.message : "The application was approved, but Stripe could not create a payment link. Please try again.",
     );
   }
 

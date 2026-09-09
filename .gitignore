@@ -27,4 +27,5 @@ example/
 todo/
 .vercel
 .env*
-docs/
+docs/*
+!docs/distributor-discounts.md

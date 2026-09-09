@@ -23,6 +23,7 @@ import {
 import { CopyLinkButton } from "./_components/copy-link-button";
 import { logoutAction } from "@/app/auth/actions";
 import { getUserIdentity } from "@/lib/user-identity";
+import { DISTRIBUTOR_OFFER } from "@/lib/discounts";
 
 export default async function PartnerPage() {
   const user = await requireUser("/partner");
@@ -59,6 +60,12 @@ export default async function PartnerPage() {
   );
   const currency = unsettled[0]?.currency || commissions[0]?.currency || "usd";
   const siteUrl = getSiteUrl();
+  const visibleCodes = codes
+    .filter((code) => code.kind === "referral" || distributor.discountEnabled)
+    .sort((a, b) => Number(a.kind === "discount") - Number(b.kind === "discount"));
+  const fullPrice = formatMoney(DISTRIBUTOR_OFFER.originalAmount, DISTRIBUTOR_OFFER.currency);
+  const discountPrice = formatMoney(DISTRIBUTOR_OFFER.amountDue, DISTRIBUTOR_OFFER.currency);
+  const discountAmount = formatMoney(DISTRIBUTOR_OFFER.discountAmount, DISTRIBUTOR_OFFER.currency);
 
   return (
     <main className="min-h-screen bg-ivory px-6 py-8 text-ink sm:px-10 lg:px-20">
@@ -95,42 +102,58 @@ export default async function PartnerPage() {
         <section className="border-t border-ink/20 py-10">
           <div className="mb-7 flex flex-wrap items-baseline justify-between gap-5">
             <div>
-              <h2 className="font-serif text-3xl font-semibold text-navy sm:text-4xl">Invite links</h2>
-              <p className="mt-2 text-sm text-ink-soft">Share an active link to attribute new applications to your partner account.</p>
+              <h2 className="font-serif text-3xl font-semibold text-navy sm:text-4xl">Choose what to share</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-ink-soft">Share your full-price invitation for standard pricing. When you decide to offer a customer {discountAmount} off the 1 Week program, share your discount code or link.</p>
             </div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/45">{codes.length} codes</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/45">{visibleCodes.length} codes</span>
           </div>
-          {codes.length === 0 ? (
+          {visibleCodes.length === 0 ? (
             <p className="border border-dashed border-ink/30 bg-card px-5 py-8 text-sm text-ink-soft">Your partner account does not have an invite code yet. Ask the Arch. team to create one.</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
-              {codes.map((code) => {
+              {visibleCodes.map((code) => {
                 const link = `${siteUrl}/r/${encodeURIComponent(code.code)}`;
+                const isDiscount = code.kind === "discount";
+                const price = isDiscount ? discountPrice : fullPrice;
                 return (
-                  <article key={code.id} className="border border-ink/20 bg-card p-5">
+                  <article key={code.id} className={`flex min-w-0 flex-col border p-5 ${isDiscount ? "border-navy/40 bg-marigold/10" : "border-ink/20 bg-card"}`}>
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
-                        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">Invite code</p>
-                        <h3 className="mt-2 font-serif text-3xl font-semibold text-navy">{code.code}</h3>
+                        <h3 className="font-serif text-2xl font-semibold text-navy">{isDiscount ? "Discount invitation" : "Full-price invitation"}</h3>
+                        <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-soft">1 Week total · USD</p>
+                        <p className="mt-1 font-serif text-4xl font-semibold text-navy">{price}</p>
                       </div>
                       <span className={`border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] ${code.status === "active" ? "border-navy/25 text-navy" : "border-ink/20 text-ink/45"}`}>{code.status}</span>
                     </div>
-                    <p className="mt-5 break-all border border-ink/15 bg-ivory px-3 py-3 font-mono text-xs text-ink/65">{link}</p>
-                    <div className="mt-4 flex items-center justify-between gap-4">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink/45">{code.usedCount} uses</p>
-                      {code.status === "active" ? <CopyLinkButton value={link} /> : null}
+                    <p className="mt-3 text-sm leading-6 text-ink-soft">{isDiscount
+                      ? `${fullPrice} − ${discountAmount} = ${discountPrice}. Share this offer with customers you choose to give a discount. Available for the 1 Week program only.`
+                      : "Records your referral at the standard program price. This invitation applies no discount, even when your discount code is enabled."}</p>
+                    <div className="mt-5">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-soft">{isDiscount ? "Discount code" : "Invite code"}</p>
+                      <p className="mt-2 select-all break-all font-mono text-lg font-semibold text-navy">{code.code}</p>
+                    </div>
+                    <div className="mt-auto pt-5">
+                      <p className="select-all break-all border border-ink/15 bg-ivory px-3 py-3 font-mono text-xs text-ink/65">{link}</p>
+                      {code.status === "active" ? (
+                        <div className="mt-4 flex flex-wrap gap-3">
+                          <CopyLinkButton value={link} label={`Copy ${isDiscount ? "discount" : "full-price"} link · ${price}`} />
+                          <CopyLinkButton value={code.code} label={isDiscount ? "Copy discount code" : "Copy invite code"} />
+                        </div>
+                      ) : null}
+                      <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-ink/45">{code.usedCount} applications</p>
                     </div>
                   </article>
                 );
               })}
             </div>
           )}
+          <p className="mt-5 max-w-3xl text-sm leading-6 text-ink-soft">Customers can enter either code in the application and click Apply, or follow its link to apply it automatically. Both types of invitation credit you as the referring partner. Paid referrals from both count toward the same tier, and commission uses the combined amount paid, adjusted for refunds.</p>
         </section>
 
         <section className="border-t border-ink/20 py-10">
           <div className="mb-7 flex flex-wrap items-baseline justify-between gap-5">
             <h2 className="font-serif text-3xl font-semibold text-navy sm:text-4xl">Invite activity</h2>
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/45">Application status only</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/45">Applications and payments</span>
           </div>
           {inviteeRows.length === 0 ? (
             <p className="border border-dashed border-ink/30 bg-card px-5 py-8 text-sm text-ink-soft">No one has applied through your links yet.</p>
@@ -138,7 +161,7 @@ export default async function PartnerPage() {
             <div className="overflow-x-auto border border-ink/20 bg-card">
               <table className="w-full min-w-[900px] text-left text-sm">
                 <thead className="bg-navy text-ivory">
-                  <tr className="font-mono text-[10px] uppercase tracking-[0.16em]"><th className="px-4 py-4">Applicant</th><th className="px-4 py-4">Code</th><th className="px-4 py-4">Program</th><th className="px-4 py-4">Application</th><th className="px-4 py-4">Payment</th><th className="px-4 py-4">Submitted</th></tr>
+                  <tr className="font-mono text-[10px] uppercase tracking-[0.16em]"><th className="px-4 py-4">Applicant</th><th className="px-4 py-4">Code</th><th className="px-4 py-4">Program</th><th className="px-4 py-4">Application</th><th className="px-4 py-4">Payment</th><th className="px-4 py-4">Program total / paid</th><th className="px-4 py-4">Submitted</th></tr>
                 </thead>
                 <tbody>
                   {inviteeRows.map(({ referral, application, order }) => (
@@ -148,6 +171,11 @@ export default async function PartnerPage() {
                       <td className="px-4 py-4">{application ? `${ticketLabel(application.selectedTicket)} · ${programWeeksLabel(application.selectedWeeks)}` : "-"}</td>
                       <td className="px-4 py-4">{application ? applicationStatusLabel(application.status) : "Unavailable"}</td>
                       <td className="px-4 py-4">{order ? orderStatusLabel(order.status) : "Not created"}</td>
+                      <td className="px-4 py-4">
+                        {order ? formatMoney(order.amount, order.currency) : application?.amountDue ? formatMoney(application.amountDue, application.pricingCurrency || "usd") : "Awaiting review"}
+                        {application?.discountCode ? <p className="mt-1 text-xs text-ink-soft">$1,299 discount applied</p> : null}
+                        {order && order.refundedAmount > 0 ? <p className="mt-1 text-xs text-ink-soft">{formatMoney(order.refundedAmount, order.currency)} refunded</p> : null}
+                      </td>
                       <td className="px-4 py-4 text-ink-soft">{formatDate(application?.createdAt || referral.createdAt)}</td>
                     </tr>
                   ))}

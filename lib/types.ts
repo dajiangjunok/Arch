@@ -39,7 +39,16 @@ export type UserRole = "admin";
 
 export type TicketId = "single_week" | "two_weeks" | "full_program" | "fellowship";
 
-export type Application = {
+export type DiscountSnapshot = {
+  discountCode: string | null;
+  originalAmount: number | null;
+  discountAmount: number;
+  amountDue: number | null;
+  pricingCurrency: string | null;
+  stripeCouponId: string | null;
+};
+
+export type Application = DiscountSnapshot & {
   id: string;
   userId: string | null;
   name: string;
@@ -62,7 +71,7 @@ export type Application = {
   updatedAt: string;
 };
 
-export type Order = {
+export type Order = DiscountSnapshot & {
   id: string;
   userId: string | null;
   applicationId: string;
@@ -151,6 +160,7 @@ export type Distributor = {
   email: string | null;
   status: DistributorStatus;
   commissionRate: number;
+  discountEnabled: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -169,6 +179,7 @@ export type ReferralCode = {
   id: string;
   code: string;
   distributorId: string;
+  kind: "referral" | "discount";
   usedCount: number;
   status: ReferralCodeStatus;
   createdAt: string;

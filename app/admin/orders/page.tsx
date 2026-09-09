@@ -50,7 +50,8 @@ export default async function OrdersPage() {
                       )}
                     </td>
                     <td className="px-4 py-4">{ticketLabel(order.selectedTicket)}</td>
-                    <td className="px-4 py-4">{formatMoney(order.amount, order.currency)}</td>
+                    <td className="px-4 py-4">{formatMoney(order.amount, order.currency)}
+                          {order.discountCode ? <p className="mt-1 max-w-48 break-all text-xs text-ink-soft">{order.discountCode}<br />Original {formatMoney(order.originalAmount, order.currency)} · discount −{formatMoney(order.discountAmount, order.currency)}</p> : null}</td>
                     <td className="px-4 py-4">{formatMoney(order.refundedAmount, order.currency)}</td>
                     <td className="px-4 py-4">{orderStatusLabel(order.status)}</td>
                     <td className="px-4 py-4 font-mono text-xs text-ink-soft">{order.referralCode || "-"}</td>

@@ -1,3 +1,4 @@
+import { DiscountSummary } from "@/app/_components/discount-summary";
 import Link from "next/link";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { notFound } from "next/navigation";
@@ -102,6 +103,9 @@ export default async function ApplicationDetailPage({
             <Info label="Submitted" value={formatDate(application.createdAt)} />
             <Info label="Updated" value={formatDate(application.updatedAt)} />
           </dl>
+
+          {application.discountCode ? <DiscountSummary code={application.discountCode} originalAmount={application.originalAmount!}
+            discountAmount={application.discountAmount} amountDue={application.amountDue!} currency={application.pricingCurrency!} /> : null}
 
           {application.message ? (
             <div className="mt-6 border border-line bg-cloud p-5">

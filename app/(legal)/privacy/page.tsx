@@ -39,7 +39,7 @@ const sections: readonly LegalSection[] = [
         <li><strong>Applications:</strong> your name, preferred contact email, alternate contact details, selected program and weeks, background and goals, and any additional information you submit. Please share only information relevant to your application; do not include passwords or payment card details.</li>
         <li><strong>Program communications:</strong> enquiries, interview arrangements, application review records and information you provide when contacting our team or arranging participation.</li>
         <li><strong>Orders and payments:</strong> your selected pass, price, currency, transaction identifiers, payment status, and refund requests and records. Stripe processes checkout details; we do not collect card numbers or security codes in our application forms.</li>
-        <li><strong>Referrals:</strong> the invite or referral code you use, its connection to your application, and related payment and commission records.</li>
+        <li><strong>Referrals:</strong> the invite or discount code you use, its connection to your application, and related payment and commission records.</li>
         <li><strong>Technical information:</strong> authentication cookies and operational or security logs. Our hosting, authentication and payment providers may process IP addresses, browser information, request timestamps and error details when delivering their services.</li>
       </ul>
     ),
@@ -72,7 +72,7 @@ const sections: readonly LegalSection[] = [
           <li><strong>Google</strong> provides sign-in and receives the information needed to authenticate your account. Our pages also load Google Fonts, which sends your browser&apos;s font requests to Google.</li>
           <li><strong>Stripe</strong> processes payments and refunds and receives contact and order information needed for checkout and transaction records.</li>
           <li><strong>Our team and service providers</strong> handle hosting, support and program operations. Relevant details may be shared with accommodation, transport or visit providers to arrange services you request.</li>
-          <li><strong>Your referring partner:</strong> if you submit an application with a referral code, the associated partner can see your submitted name and contact email, selected program, application and payment status, and submission date to manage that referral. Clear the referral code before submitting if you do not want your application attributed to that partner.</li>
+          <li><strong>Your referring partner:</strong> if you submit an application with an invite or discount code, the associated partner can see your submitted name and contact email, selected program, application and payment status, program price, discount, paid and refunded amounts, and submission date to manage that referral. Clear the referral code before submitting if you do not want your application attributed to that partner.</li>
           <li><strong>Legal and security recipients:</strong> we may disclose information when required by law or necessary to address fraud, security incidents or legal claims.</li>
         </ul>
         <p>We do not sell personal information. Third-party services also process information under their own policies: <a href="https://policies.google.com/privacy">Google</a>, <a href="https://supabase.com/privacy">Supabase</a> and <a href="https://stripe.com/privacy">Stripe</a>.</p>

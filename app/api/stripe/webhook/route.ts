@@ -48,8 +48,10 @@ export async function POST(request: Request) {
   }
 
   switch (event.type) {
-    case "checkout.session.completed": {
+    case "checkout.session.completed":
+    case "checkout.session.async_payment_succeeded": {
       const session = event.data.object as Stripe.Checkout.Session;
+      if (session.payment_status !== "paid") break;
       const orderId = session.metadata?.orderId || session.client_reference_id;
 
       if (!orderId) {

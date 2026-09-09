@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export function CopyLinkButton({ value }: { value: string }) {
+export function CopyLinkButton({ value, label = "Copy link" }: { value: string; label?: string }) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -19,10 +19,11 @@ export function CopyLinkButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={copy}
-      title="Copy referral link"
+      title={label}
+      aria-live="polite"
       className="min-h-10 border border-navy px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-navy transition hover:bg-navy hover:text-ivory focus:outline-none focus:ring-4 focus:ring-marigold/30"
     >
-      {copied ? "Copied" : "Copy link"}
+      {copied ? "Copied" : label}
     </button>
   );
 }

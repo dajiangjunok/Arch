@@ -1,3 +1,4 @@
+import { DiscountCodesPanel } from "./discount-codes-panel";
 import { requireAdmin } from "@/lib/admin-auth";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { formatDate, formatMoney } from "@/lib/format";
@@ -78,7 +79,13 @@ export default async function ReferralsAdminPage({
         <Metric label="Open commission balance" value={formatMoney(totalPending(commissions), "usd")} />
       </section>
 
-      <section className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
+      <DiscountCodesPanel
+        distributors={distributors}
+        codes={codes}
+        couponConfigured={Boolean(process.env.STRIPE_COUPON_DISTRIBUTOR_1299?.trim())}
+      />
+
+      <section className="mt-8 grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
         <Panel eyebrow="Network" title="Add distributor">
           <form action={createDistributorAction} className="grid gap-3">
             <label className="grid gap-1">
@@ -107,7 +114,7 @@ export default async function ReferralsAdminPage({
                 <tr>
                   <th className="px-3 py-3">User</th>
                   <th className="px-3 py-3">Tier / commission</th>
-                  <th className="px-3 py-3">Invite code</th>
+                  <th className="px-3 py-3">Full-price invite code</th>
                   <th className="px-3 py-3">Uses</th>
                   <th className="px-3 py-3">Status</th>
                   <th className="px-3 py-3">Action</th>
@@ -116,7 +123,7 @@ export default async function ReferralsAdminPage({
               <tbody>
                 {distributors.map((distributor) => {
                   const distributorCodes = codesByDistributorId.get(distributor.id) || [];
-                  const primaryCode = distributorCodes[0];
+                  const primaryCode = distributorCodes.find((code) => code.kind === "referral" || !code.kind);
                   const referralCount = referralCountByDistributorId.get(distributor.id) || 0;
                   const paidReferralCount = paidReferralCountByDistributorId.get(distributor.id) || 0;
                   const currentTier = [...tiers]
@@ -139,6 +146,7 @@ export default async function ReferralsAdminPage({
                           <>
                             <p className="font-mono font-bold">{primaryCode.code}</p>
                             <p className="mt-1 font-mono text-xs text-ink-soft">/r/{primaryCode.code}</p>
+                            <p className="mt-1 text-xs text-ink-soft">Standard pricing · no discount</p>
                           </>
                         ) : (
                           <span className="text-ink-soft">-</span>
@@ -264,7 +272,7 @@ function Metric({ label, value }: { label: string; value: string | number }) {
 }
 
 function Panel({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
-  return <section className="border border-ink bg-paper p-5 shadow-[5px_5px_0_rgba(18,18,18,0.12)]"><p className="label">{eyebrow}</p><h2 className="mt-2 font-poster text-3xl uppercase tracking-[0.04em]">{title}</h2><div className="mt-5">{children}</div></section>;
+  return <section className="min-w-0 border border-ink bg-paper p-5 shadow-[5px_5px_0_rgba(18,18,18,0.12)]"><p className="label">{eyebrow}</p><h2 className="mt-2 font-poster text-3xl uppercase tracking-[0.04em]">{title}</h2><div className="mt-5">{children}</div></section>;
 }
 
 function Input({ label, name, type = "text", required = false, defaultValue, placeholder, min, max, step }: { label: string; name: string; type?: string; required?: boolean; defaultValue?: string; placeholder?: string; min?: string; max?: string; step?: string }) {

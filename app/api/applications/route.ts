@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
 import { isValidEmailAddress } from "@/lib/email";
 import { ticketOptions } from "@/lib/tickets";
-import {
-  attachReferralToApplication,
-  createApplication,
-  deleteApplication,
-} from "@/lib/store";
+import { createApplication } from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { ProgramWeek, TicketId } from "@/lib/types";
+import { getApplicationCodeQuote } from "@/lib/referral-pricing";
+import { ReferralCodeError } from "@/lib/discounts";
 import { cookies } from "next/headers";
 
 const programWeeks: ProgramWeek[] = ["week_1", "week_2", "week_3"];
@@ -30,6 +28,7 @@ export async function POST(request: Request) {
 
   try {
     body = (await request.json()) as Record<string, unknown>;
+    if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("Invalid body");
   } catch {
     return NextResponse.json({ error: "The application data is invalid." }, { status: 400 });
   }
@@ -87,6 +86,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    const offer = referralCode ? await getApplicationCodeQuote(referralCode, selectedTicket) : null;
     const application = await createApplication({
       userId: user.id,
       name,
@@ -96,20 +96,9 @@ export async function POST(request: Request) {
       alternateContact,
       message,
       additionalInfo,
+      referralCode,
+      stripeCouponId: offer?.stripeCouponId,
     });
-
-    const referral = referralCode
-      ? await attachReferralToApplication({
-          applicationId: application.id,
-          userId: user.id,
-          code: referralCode,
-        })
-      : null;
-
-    if (referralCode && !referral) {
-      await deleteApplication(application.id);
-      return NextResponse.json({ error: "This invite code is invalid or expired." }, { status: 400 });
-    }
 
     const response = NextResponse.json(
       { applicationId: application.id, status: application.status },
@@ -118,6 +107,7 @@ export async function POST(request: Request) {
     response.cookies.delete("arch_referral_code");
     return response;
   } catch (error) {
+    if (error instanceof ReferralCodeError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Unable to create application", error);
     return NextResponse.json(
       { error: "We could not submit your application. Please try again." },
