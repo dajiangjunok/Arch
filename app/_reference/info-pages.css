@@ -388,6 +388,14 @@
   max-height: 760px;
 }
 
+.arch-reference.arch-faq .faq-item--comparison.open .faq-a-wrap {
+  max-height: 1600px;
+}
+
+.arch-reference.arch-faq .faq-item--comparison .faq-a p + p {
+  margin-top: 1rem;
+}
+
 .arch-reference.arch-faq .faq-item--visa.open .faq-a-wrap {
   max-height: 2400px;
 }

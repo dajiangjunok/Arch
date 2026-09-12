@@ -19,7 +19,7 @@ const questions: readonly {
   category: Exclude<CategoryId, "all">;
   question: string;
   answer: ReactNode;
-  answerVariant?: "visa";
+  answerVariant?: "visa" | "comparison";
 }[] = [
   {
     category: "app",
@@ -94,6 +94,36 @@ const questions: readonly {
         <strong> group arrangements</strong>.
       </p>
     ),
+  },
+  {
+    category: "incl",
+    question: "What’s the difference between Single-Week Access and the Fellowship?",
+    answer: (
+      <>
+        <p>
+          We offer different passes to fit different needs, schedules, and goals.
+        </p>
+        <p>
+          Single-Week Access and the Fellowship are two separate programs with
+          their own agendas. Single-Week participants follow the full itinerary
+          for their selected week, including full access to the scheduled company,
+          factory, and lab visits.
+        </p>
+        <p>
+          The Fellowship follows a separate three-week residency agenda based in
+          Shanghai, with partial access to selected company visits. Some of these
+          visits may overlap with the Single-Week itinerary, but Fellows do not
+          join the full company-visit schedule and do not travel to other cities
+          as part of the program.
+        </p>
+        <p>
+          So while there may be some overlap, the two tracks are designed as
+          independent experiences rather than different access levels to the same
+          itinerary.
+        </p>
+      </>
+    ),
+    answerVariant: "comparison",
   },
   {
     category: "incl",
