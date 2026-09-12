@@ -214,44 +214,6 @@
   box-shadow: 0 8px 20px -6px rgba(232, 163, 23, 0.55);
 }
 
-.arch-reference.arch-faq footer,
-.arch-reference.arch-partners footer {
-  margin-top: 1px;
-  padding: 4rem 0 2.5rem;
-  border-radius: 2rem 2rem 0 0;
-  background: var(--navy);
-  color: var(--ivory);
-}
-
-.arch-reference.arch-faq .foot-tag,
-.arch-reference.arch-partners .foot-tag {
-  color: var(--marigold-soft);
-  font-family: Fraunces, serif;
-  font-size: 1.15rem;
-  font-style: italic;
-  text-align: center;
-}
-
-.arch-reference.arch-faq .foot-links,
-.arch-reference.arch-partners .foot-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px dashed #faf6ea33;
-  color: #faf6eaa6;
-  font-size: 10.5px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.arch-reference.arch-faq .foot-links a:hover,
-.arch-reference.arch-partners .foot-links a:hover {
-  color: var(--marigold-soft);
-}
-
 /* FAQ */
 .arch-reference.arch-faq .faq-hero {
   position: relative;

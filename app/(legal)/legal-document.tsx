@@ -83,11 +83,6 @@ export function LegalDocument({
             </article>
           </div>
         </main>
-
-        <footer className="mt-4 flex flex-wrap items-center justify-between gap-6 border-t border-ink/20 py-8">
-          <p className="font-serif text-base italic text-navy">A bridge is worth what crosses it.</p>
-          <LegalLinks />
-        </footer>
       </div>
     </div>
   );

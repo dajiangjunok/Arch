@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { LegalLinks } from "@/app/_components/legal-links";
 import { useState, type ReactNode } from "react";
 import { RevealSection } from "./components/interactive";
 import { VisaFaqAnswer } from "./components/visa-faq-answer";
@@ -291,20 +290,6 @@ export function FaqPage() {
           </div>
         </div>
       </RevealSection>
-
-      <footer>
-        <div className="wrap">
-          <p className="foot-tag">A bridge is worth what crosses it.</p>
-          <div className="foot-links">
-            <Link href="/">← Full three-week program</Link>
-            <a href="mailto:business@globalpropeller.com">
-              business@globalpropeller.com
-            </a>
-            <Link href="/partners">Partners →</Link>
-          </div>
-          <LegalLinks className="mt-8 border-t border-ivory/20 pt-6 text-ivory/80" />
-        </div>
-      </footer>
     </>
   );
 }

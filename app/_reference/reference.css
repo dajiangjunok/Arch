@@ -46,7 +46,7 @@
 .arch-reference.arch-home{
   margin:0;background:var(--ivory);color:var(--ink);
   font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:15px;line-height:1.6;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 .arch-reference.arch-home::before{
   content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
@@ -407,10 +407,6 @@
 .arch-reference.arch-home .logi-block p{font-size:.88rem;color:#4a4638;margin-top:.75rem;line-height:1.65;}
 .arch-reference.arch-home .logi-ph{height:110px;margin-top:1.25rem;}
 
-.arch-reference.arch-home footer{background:var(--navy);color:var(--ivory);padding:4rem 0 2.5rem;margin-top:1px;border-radius:2.5rem 2.5rem 0 0;}
-.arch-reference.arch-home .foot-tag{font-family:Fraunces,serif;font-style:italic;color:var(--marigold-soft);font-size:1.15rem;text-align:center;}
-.arch-reference.arch-home .foot-links{margin-top:2rem;padding-top:1.5rem;border-top:1px dashed #faf6ea33;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#faf6eaa6;}
-.arch-reference.arch-home .foot-links a:hover{color:var(--marigold-soft);}
 
 @media (prefers-reduced-motion:reduce){
   .arch-reference.arch-home .ticket,.arch-reference.arch-home .detail-content,.arch-reference.arch-home .pillar,.arch-reference.arch-home .flip-inner,.arch-reference.arch-home .gflip-inner,.arch-reference.arch-home .price-card,.arch-reference.arch-home .gain-item,.arch-reference.arch-home .logi-block,.arch-reference.arch-home #heroBlob{transition:none!important;animation:none!important;}
@@ -552,7 +548,7 @@
 .arch-reference.arch-week1{
   margin:0;background:var(--ivory);color:var(--ink);
   font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:15px;line-height:1.6;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 .arch-reference.arch-week1::before{
   content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
@@ -931,10 +927,6 @@
 .arch-reference.arch-week1 .logi-block p{font-size:.88rem;color:#4a4638;margin-top:.75rem;line-height:1.65;}
 .arch-reference.arch-week1 .logi-ph{height:110px;margin-top:1.25rem;}
 
-.arch-reference.arch-week1 footer{background:var(--navy);color:var(--ivory);padding:4rem 0 2.5rem;margin-top:1px;border-radius:2rem 2rem 0 0;}
-.arch-reference.arch-week1 .foot-tag{font-family:Fraunces,serif;font-style:italic;color:var(--marigold-soft);font-size:1.15rem;text-align:center;}
-.arch-reference.arch-week1 .foot-links{margin-top:2rem;padding-top:1.5rem;border-top:1px dashed #faf6ea33;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#faf6eaa6;}
-.arch-reference.arch-week1 .foot-links a:hover{color:var(--marigold-soft);}
 
 @media (prefers-reduced-motion:reduce){
   .arch-reference.arch-week1 .ticket,.arch-reference.arch-week1 .detail-content,.arch-reference.arch-week1 .pillar,.arch-reference.arch-week1 .flip-inner,.arch-reference.arch-week1 .gflip-inner,.arch-reference.arch-week1 .price-card,.arch-reference.arch-week1 .gain-item,.arch-reference.arch-week1 .logi-block,.arch-reference.arch-week1 #heroBlob{transition:none!important;animation:none!important;}
@@ -963,7 +955,7 @@
 .arch-reference.arch-week2{
   margin:0;background:var(--ivory);color:var(--ink);
   font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:15px;line-height:1.6;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 .arch-reference.arch-week2::before{
   content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
@@ -1338,10 +1330,6 @@
 .arch-reference.arch-week2 .logi-block p{font-size:.88rem;color:#4a4638;margin-top:.75rem;line-height:1.65;}
 .arch-reference.arch-week2 .logi-ph{height:110px;margin-top:1.25rem;}
 
-.arch-reference.arch-week2 footer{background:var(--navy);color:var(--ivory);padding:4rem 0 2.5rem;margin-top:1px;border-radius:2rem 2rem 0 0;}
-.arch-reference.arch-week2 .foot-tag{font-family:Fraunces,serif;font-style:italic;color:var(--marigold-soft);font-size:1.15rem;text-align:center;}
-.arch-reference.arch-week2 .foot-links{margin-top:2rem;padding-top:1.5rem;border-top:1px dashed #faf6ea33;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#faf6eaa6;}
-.arch-reference.arch-week2 .foot-links a:hover{color:var(--marigold-soft);}
 
 @media (prefers-reduced-motion:reduce){
   .arch-reference.arch-week2 .ticket,.arch-reference.arch-week2 .detail-content,.arch-reference.arch-week2 .pillar,.arch-reference.arch-week2 .flip-inner,.arch-reference.arch-week2 .gflip-inner,.arch-reference.arch-week2 .price-card,.arch-reference.arch-week2 .gain-item,.arch-reference.arch-week2 .logi-block,.arch-reference.arch-week2 #heroBlob{transition:none!important;animation:none!important;}
@@ -1370,7 +1358,7 @@
 .arch-reference.arch-week3{
   margin:0;background:var(--ivory);color:var(--ink);
   font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:15px;line-height:1.6;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 .arch-reference.arch-week3::before{
   content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
@@ -1746,17 +1734,20 @@
 .arch-reference.arch-week3 .logi-block p{font-size:.88rem;color:#4a4638;margin-top:.75rem;line-height:1.65;}
 .arch-reference.arch-week3 .logi-ph{height:110px;margin-top:1.25rem;}
 
-.arch-reference.arch-week3 footer{background:var(--navy);color:var(--ivory);padding:4rem 0 2.5rem;margin-top:1px;border-radius:2rem 2rem 0 0;}
-.arch-reference.arch-week3 .foot-tag{font-family:Fraunces,serif;font-style:italic;color:var(--marigold-soft);font-size:1.15rem;text-align:center;}
-.arch-reference.arch-week3 .foot-links{margin-top:2rem;padding-top:1.5rem;border-top:1px dashed #faf6ea33;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#faf6eaa6;}
-.arch-reference.arch-week3 .foot-links a:hover{color:var(--marigold-soft);}
 
 @media (prefers-reduced-motion:reduce){
   .arch-reference.arch-week3 .ticket,.arch-reference.arch-week3 .detail-content,.arch-reference.arch-week3 .pillar,.arch-reference.arch-week3 .flip-inner,.arch-reference.arch-week3 .gflip-inner,.arch-reference.arch-week3 .price-card,.arch-reference.arch-week3 .gain-item,.arch-reference.arch-week3 .logi-block,.arch-reference.arch-week3 #heroBlob{transition:none!important;animation:none!important;}
 }
 
 
-.arch-reference{min-height:100vh;background:#faf6ea;overflow-x:hidden;}
+.arch-reference {
+  display: flow-root;
+  min-height: 100vh;
+  background: #faf6ea;
+  /* Clip decorative horizontal overflow without creating a nested scroll container. */
+  overflow-x: clip;
+  overflow-y: visible;
+}
 body:has(.arch-reference)::before{display:none;}
 .arch-reference .auth-link{opacity:.72;}
 .arch-reference .auth-link:hover{opacity:1;}

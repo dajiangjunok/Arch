@@ -90,5 +90,4 @@ export type WeekPageData = {
     body: string;
     image: ImageData;
   }[];
-  footerRows: readonly (readonly { href?: string; text: string }[])[];
 };

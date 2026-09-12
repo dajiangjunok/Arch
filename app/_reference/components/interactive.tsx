@@ -234,15 +234,3 @@ export function CompanyCard({
     </div>
   );
 }
-
-export function FooterLink({
-  href,
-  children,
-}: {
-  href?: string;
-  children: ReactNode;
-}) {
-  if (!href) return <span>{children}</span>;
-  if (href.startsWith("mailto:")) return <a href={href}>{children}</a>;
-  return <Link href={href}>{children}</Link>;
-}

@@ -63,12 +63,6 @@
   white-space: nowrap;
 }
 
-.arch-reference .foot-links[data-secondary="true"] {
-  margin-top: 1.25rem;
-  padding-top: 0;
-  border-top: 0;
-}
-
 .arch-reference .nav-links {
   align-items: center;
   gap: clamp(0.8rem, 1.7vw, 1.75rem);

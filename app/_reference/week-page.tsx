@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { LegalLinks } from "@/app/_components/legal-links";
 import { useRef, useState } from "react";
 import type { WeekPageData } from "./types";
 import {
@@ -14,7 +13,6 @@ import {
 import {
   CompanyCard,
   DossierLink,
-  FooterLink,
   HeroSurface,
   PillarCard,
   RevealSection,
@@ -375,26 +373,6 @@ export function WeekPage({ data }: { data: WeekPageData }) {
           </div>
         </div>
       </RevealSection>
-
-      <footer>
-        <div className="wrap">
-          <p className="foot-tag">A bridge is worth what crosses it.</p>
-          {data.footerRows.map((row, index) => (
-            <div
-              className="foot-links"
-              data-secondary={index > 0 ? "true" : undefined}
-              key={index}
-            >
-              {row.map((item) => (
-                <FooterLink key={item.text} href={item.href}>
-                  {item.text}
-                </FooterLink>
-              ))}
-            </div>
-          ))}
-          <LegalLinks className="mt-8 border-t border-ivory/20 pt-6 text-ivory/80" />
-        </div>
-      </footer>
     </>
   );
 }

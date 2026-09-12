@@ -286,32 +286,6 @@ export const weekPages = {
         },
       },
     ],
-    footerRows: [
-      [
-        {
-          href: "/",
-          text: "← Full three-week program",
-        },
-        {
-          href: "mailto:business@globalpropeller.com",
-          text: "business@globalpropeller.com",
-        },
-        {
-          href: "/week2",
-          text: "Week 2 →",
-        },
-      ],
-      [
-        {
-          href: "/",
-          text: "← Back to full program",
-        },
-        {
-          href: "/week2",
-          text: "Week 2 — Embodied AI & Humanoid Robots →",
-        },
-      ],
-    ],
   },
   week2: {
     id: "week2",
@@ -593,32 +567,6 @@ export const weekPages = {
           rotation: "0deg",
         },
       },
-    ],
-    footerRows: [
-      [
-        {
-          href: "/",
-          text: "← Full three-week program",
-        },
-        {
-          href: "mailto:business@globalpropeller.com",
-          text: "business@globalpropeller.com",
-        },
-        {
-          href: "/week3",
-          text: "Week 3 →",
-        },
-      ],
-      [
-        {
-          href: "/week1",
-          text: "← Week 1 — AI Everywhere in Work & Life",
-        },
-        {
-          href: "/week3",
-          text: "Week 3 — Smart Hardware & Wearables →",
-        },
-      ],
     ],
   },
   week3: {
@@ -903,32 +851,6 @@ export const weekPages = {
           rotation: "0deg",
         },
       },
-    ],
-    footerRows: [
-      [
-        {
-          href: "/",
-          text: "← Full three-week program",
-        },
-        {
-          href: "mailto:business@globalpropeller.com",
-          text: "business@globalpropeller.com",
-        },
-        {
-          href: "/week2",
-          text: "Week 2 →",
-        },
-      ],
-      [
-        {
-          href: "/week2",
-          text: "← Week 2 — Embodied AI & Humanoid Robots",
-        },
-        {
-          href: "/",
-          text: "Back to full program →",
-        },
-      ],
     ],
   },
 } as const satisfies Record<WeekPageId, WeekPageData>;

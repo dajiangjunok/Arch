@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { LegalLinks } from "@/app/_components/legal-links";
 import { useState } from "react";
 import { RevealSection } from "./components/interactive";
 
@@ -301,20 +299,6 @@ export function PartnersPage() {
           </a>
         </div>
       </RevealSection>
-
-      <footer>
-        <div className="wrap">
-          <p className="foot-tag">A bridge is worth what crosses it.</p>
-          <div className="foot-links">
-            <Link href="/">← Full three-week program</Link>
-            <a href="mailto:business@globalpropeller.com">
-              business@globalpropeller.com
-            </a>
-            <Link href="/">Back to home →</Link>
-          </div>
-          <LegalLinks className="mt-8 border-t border-ivory/20 pt-6 text-ivory/80" />
-        </div>
-      </footer>
     </>
   );
 }

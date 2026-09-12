@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteFooter } from "@/app/_components/site-footer";
 import { HomePage } from "./home-page";
 import { FaqPage } from "./faq-page";
 import { PartnersPage } from "./partners-page";
@@ -46,15 +47,18 @@ export const referenceMetadata: Record<ReferencePageId, Metadata> = {
 
 export function ReferencePage({ page }: { page: ReferencePageId }) {
   return (
-    <main className={`arch-reference arch-${page}`}>
-      <ScrollProgress />
-      <ReferenceHeader page={page} />
-      {page === "home" ? <HomePage /> : null}
-      {page === "faq" ? <FaqPage /> : null}
-      {page === "partners" ? <PartnersPage /> : null}
-      {page === "week1" || page === "week2" || page === "week3" ? (
-        <WeekPage data={weekPages[page]} />
-      ) : null}
-    </main>
+    <>
+      <main className={`arch-reference arch-${page}`}>
+        <ScrollProgress />
+        <ReferenceHeader page={page} />
+        {page === "home" ? <HomePage /> : null}
+        {page === "faq" ? <FaqPage /> : null}
+        {page === "partners" ? <PartnersPage /> : null}
+        {page === "week1" || page === "week2" || page === "week3" ? (
+          <WeekPage data={weekPages[page]} />
+        ) : null}
+      </main>
+      <SiteFooter separated={page === "home"} />
+    </>
   );
 }
