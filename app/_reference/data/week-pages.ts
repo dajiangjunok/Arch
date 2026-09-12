@@ -175,11 +175,11 @@ export const weekPages = {
     },
     companies: [
       {
-        name: "SenseTime",
+        name: "Alibaba",
         description:
-          "Applied AI infrastructure, from computer vision to generative AI at scale.",
-        image: "/reference/59df25b169b0a349.png",
-        imageAlt: "SenseTime logo",
+          "Model development, cloud infrastructure, and chip design under one roof.",
+        image: "/reference/16e9af4852ce2f3a.png",
+        imageAlt: "Alibaba logo",
         rotation: "-4deg",
       },
       {
@@ -199,23 +199,20 @@ export const weekPages = {
         rotation: "-2deg",
       },
       {
-        name: "Alibaba Cloud",
+        name: "Shanghai Innovation Institute",
         description:
-          "Model development, cloud infrastructure, and chip design under one roof.",
-        image: "/reference/16e9af4852ce2f3a.png",
-        imageAlt: "Alibaba Cloud logo",
+          "A new-model research institute in Shanghai focused on foundation models and training the next generation of AI talent.",
+        image: "/reference/86a28ac5fd55a821.png",
+        imageAlt: "Shanghai Innovation Institute logo",
         rotation: "5deg",
       },
     ],
     marquee: [
       "Hei Hu Manufacturing",
       "MiniMax",
-      "StepFun",
       "Ctrip",
-      "Shanghai Institute for Innovation",
       "HKUST",
       "Sequoia China",
-      "Fudan University",
       "Volcano Engine",
       "VC / PE Roundtable",
     ],
