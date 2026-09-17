@@ -11,6 +11,7 @@ const links = [
   { id: "week1", href: "/week1", label: "Week 1" },
   { id: "week2", href: "/week2", label: "Week 2" },
   { id: "week3", href: "/week3", label: "Week 3" },
+  { id: "about", href: "/about", label: "About" },
   { id: "faq", href: "/faq", label: "FAQ" },
   { id: "partners", href: "/partners", label: "Partners" },
 ] as const;
@@ -59,6 +60,7 @@ export async function ReferenceHeader({ page }: { page: ReferencePageId }) {
               key={link.id}
               href={link.href}
               className={page === link.id ? "active" : undefined}
+              aria-current={page === link.id ? "page" : undefined}
             >
               {link.label}
             </Link>

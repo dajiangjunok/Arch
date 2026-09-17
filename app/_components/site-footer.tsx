@@ -22,7 +22,7 @@ const navigation: readonly { title: string; items: readonly FooterItem[] }[] = [
   {
     title: "Navigate",
     items: [
-      { label: "About Us" },
+      { label: "About Us", href: "/about" },
       { label: "Partners", href: "/partners" },
       { label: "FAQ", href: "/faq" },
       { label: "Apply", href: "/apply" },

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/app/_components/site-footer";
+import { AboutPage } from "./about-page";
+import aboutStyles from "./about-page.module.css";
 import { HomePage } from "./home-page";
 import { FaqPage } from "./faq-page";
 import { PartnersPage } from "./partners-page";
@@ -12,6 +14,7 @@ import "./reference.css";
 import "./account-menu.css";
 import "./react-components.css";
 import "./info-pages.css";
+import "./reference-header.css";
 
 export const referenceMetadata: Record<ReferencePageId, Metadata> = {
   home: {
@@ -38,6 +41,11 @@ export const referenceMetadata: Record<ReferencePageId, Metadata> = {
     description:
       "Answers about applications, pricing, inclusions, logistics and partnerships for The Arch.",
   },
+  about: {
+    title: "About Us | The Arch.",
+    description:
+      "The Arch is a three-week China innovation immersion, co-hosted with PROPELLER. Meet the team connecting the world with China's builders.",
+  },
   partners: {
     title: "Partners | The Arch.",
     description:
@@ -48,10 +56,11 @@ export const referenceMetadata: Record<ReferencePageId, Metadata> = {
 export function ReferencePage({ page }: { page: ReferencePageId }) {
   return (
     <>
-      <main className={`arch-reference arch-${page}`}>
+      <main className={`arch-reference arch-${page}${page === "about" ? ` ${aboutStyles.shell}` : ""}`}>
         <ScrollProgress />
         <ReferenceHeader page={page} />
         {page === "home" ? <HomePage /> : null}
+        {page === "about" ? <AboutPage /> : null}
         {page === "faq" ? <FaqPage /> : null}
         {page === "partners" ? <PartnersPage /> : null}
         {page === "week1" || page === "week2" || page === "week3" ? (
