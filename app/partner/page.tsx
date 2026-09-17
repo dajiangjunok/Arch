@@ -63,7 +63,7 @@ export default async function PartnerPage() {
   const visibleCodes = codes
     .filter((code) => code.kind === "referral" || distributor.discountEnabled)
     .sort((a, b) => Number(a.kind === "discount") - Number(b.kind === "discount"));
-  const fullPrice = formatMoney(DISTRIBUTOR_OFFER.originalAmount, DISTRIBUTOR_OFFER.currency);
+  const singleWeekPrice = formatMoney(DISTRIBUTOR_OFFER.originalAmount, DISTRIBUTOR_OFFER.currency);
   const discountPrice = formatMoney(DISTRIBUTOR_OFFER.amountDue, DISTRIBUTOR_OFFER.currency);
   const discountAmount = formatMoney(DISTRIBUTOR_OFFER.discountAmount, DISTRIBUTOR_OFFER.currency);
 
@@ -104,7 +104,7 @@ export default async function PartnerPage() {
           <div className="mb-7 flex flex-wrap items-baseline justify-between gap-5">
             <div>
               <h2 className="font-serif text-3xl font-semibold text-navy sm:text-4xl">Choose what to share</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-ink-soft">Share your full-price invitation for standard pricing. When you decide to offer a customer {discountAmount} off the 1 Week program, share your discount code or link.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-ink-soft">Your standard invite code and link work with all tickets at their regular prices. Discount invitations apply only to the {singleWeekPrice} Single Week Access 1 Week ticket.</p>
             </div>
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/45">{visibleCodes.length} codes</span>
           </div>
@@ -115,20 +115,19 @@ export default async function PartnerPage() {
               {visibleCodes.map((code) => {
                 const link = `${siteUrl}/r/${encodeURIComponent(code.code)}`;
                 const isDiscount = code.kind === "discount";
-                const price = isDiscount ? discountPrice : fullPrice;
                 return (
                   <article key={code.id} className={`flex min-w-0 flex-col border p-5 ${isDiscount ? "border-navy/40 bg-marigold/10" : "border-ink/20 bg-card"}`}>
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
-                        <h3 className="font-serif text-2xl font-semibold text-navy">{isDiscount ? "Discount invitation" : "Full-price invitation"}</h3>
-                        <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-soft">1 Week total · USD</p>
-                        <p className="mt-1 font-serif text-4xl font-semibold text-navy">{price}</p>
+                        <h3 className="font-serif text-2xl font-semibold text-navy">{isDiscount ? "Discount invitation" : "Standard invitation"}</h3>
+                        <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-soft">{isDiscount ? "Single Week Access · 1 Week only · USD" : "Ticket eligibility"}</p>
+                        <p className="mt-1 font-serif text-4xl font-semibold text-navy">{isDiscount ? discountPrice : "All tickets"}</p>
                       </div>
                       <span className={`border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] ${code.status === "active" ? "border-navy/25 text-navy" : "border-ink/20 text-ink/45"}`}>{code.status}</span>
                     </div>
                     <p className="mt-3 text-sm leading-6 text-ink-soft">{isDiscount
-                      ? `${fullPrice} − ${discountAmount} = ${discountPrice}. Share this offer with customers you choose to give a discount. Available for the 1 Week program only.`
-                      : "Records your referral at the standard program price. This invitation applies no discount, even when your discount code is enabled."}</p>
+                      ? `Save ${discountAmount}: ${singleWeekPrice} → ${discountPrice}. This discount code and link apply only to the Single Week Access 1 Week ticket. Multi-week tickets and Fellowship are excluded.`
+                      : "This invite code and link record your referral for all Single Week Access and Fellowship tickets, for any duration. Each ticket uses its standard price; no discount is applied."}</p>
                     <div className="mt-5">
                       <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-soft">{isDiscount ? "Discount code" : "Invite code"}</p>
                       <p className="mt-2 select-all break-all font-mono text-lg font-semibold text-navy">{code.code}</p>
@@ -137,7 +136,7 @@ export default async function PartnerPage() {
                       <p className="select-all break-all border border-ink/15 bg-ivory px-3 py-3 font-mono text-xs text-ink/65">{link}</p>
                       {code.status === "active" ? (
                         <div className="mt-4 flex flex-wrap gap-3">
-                          <CopyLinkButton value={link} label={`Copy ${isDiscount ? "discount" : "full-price"} link · ${price}`} />
+                          <CopyLinkButton value={link} label={isDiscount ? "Copy discount link" : "Copy invite link"} />
                           <CopyLinkButton value={code.code} label={isDiscount ? "Copy discount code" : "Copy invite code"} />
                         </div>
                       ) : null}
@@ -148,7 +147,7 @@ export default async function PartnerPage() {
               })}
             </div>
           )}
-          <p className="mt-5 max-w-3xl text-sm leading-6 text-ink-soft">Customers can enter either code in the application and click Apply, or follow its link to apply it automatically. Both types of invitation credit you as the referring partner. Paid Single Week Access referrals from both codes count toward the same tier. Fellowship referrals through your full-price invitation earn a fixed 10% and do not count toward tiers.</p>
+          <p className="mt-5 max-w-3xl text-sm leading-6 text-ink-soft">Customers can enter either code in the application and click Apply, or follow its link to apply it automatically. Both types of invitation credit you as the referring partner. Paid Single Week Access referrals from both codes count toward the same tier. Fellowship referrals through your standard invitation earn a fixed 10% and do not count toward tiers.</p>
         </section>
 
         <section className="border-t border-ink/20 py-10">
