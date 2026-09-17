@@ -56,12 +56,12 @@ export const programWeeks = [
       "AI + Enterprise Productivity",
       "AI + Health Across All Ages",
     ],
-    flag: "Most Popular",
   },
   {
     number: "02",
     href: "/week2",
     className: "wk2 wk-featured",
+    flag: "Most Popular",
     title: "Week 2 — Embodied AI & Humanoid Robots",
     location: "Shanghai + Beijing + Hangzhou · Nov 8–14",
     image: "/reference/567a5c65454c411c.jpg",
@@ -178,4 +178,42 @@ export const audiences = [
     tag: "Platform · Policy · Partnerships",
     className: "a3",
   },
+] as const;
+
+export const singleWeekBenefits = [
+  "Full access to the week's company, factory and lab visits",
+  "Closed-door founder and investor sessions, plus B2B meetings with Chinese companies",
+  "Accommodation for the week",
+  "Breakfast, lunch and dinner, including the program's official dinners",
+  "All transport within China for the week, including domestic flights between cities and airport pickups",
+  "Professional interpretation",
+  "A team on the ground with you throughout",
+] as const;
+
+export const fellowshipBenefits = [
+  "Hotel accommodation in Shanghai for your selected week(s)",
+  "Coworking and build space, shared with the rest of the cohort",
+  "Member-led events: Arch mixers, talks and meetups, or host your own",
+  "The global builder network: founders, makers, creators and remote professionals",
+  "Group meals at select community gatherings",
+  "Flexible 1 to 3 week stay, on your own work rhythm",
+] as const;
+
+export const fellowshipStays = [
+  { weeks: 1, label: "1 Week", note: "One week in Shanghai", saving: null },
+  { weeks: 2, label: "2 Weeks", note: "Two weeks in Shanghai", saving: "Save 20%" },
+  { weeks: 3, label: "3 Weeks", note: "Three weeks in Shanghai", saving: "Save 33%" },
+] as const;
+
+export const excludedExpenses = [
+  "International flights to and from China",
+  "Travel insurance",
+  "Personal spending outside the program",
+  "Any side trips or self-arranged travel",
+] as const;
+
+export const travelNotes = [
+  { title: "Visa", description: "we provide an official invitation letter to support your application" },
+  { title: "Flights", description: "we’ll share the best routes into Shanghai once you’re confirmed" },
+  { title: "Insurance", description: "a vetted list, so you’re covered before you land" },
 ] as const;

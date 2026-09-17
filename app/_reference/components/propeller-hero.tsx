@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import { PosterSurface } from "./home/poster-surface";
 
 function RouteMark({
   x,
@@ -148,12 +150,14 @@ function BridgeIllustration() {
 
 export function PropellerHero() {
   return (
-    <section id="top" className="ph-hero" data-ph-hero>
+    <PosterSurface>
       <div className="ph-hero-illo" aria-hidden="true">
         <div className="ph-hero-illo-inner"><BridgeIllustration /></div>
       </div>
       <div className="ph-wordmark">
-        <div className="ph-wordmark-icon"><img src="/logo.png" alt="The Arch logo" /></div>
+        <div className="ph-wordmark-icon">
+          <Image src="/logo.png" alt="The Arch logo" width={50} height={56} priority />
+        </div>
         <div className="ph-wordmark-divider" />
         <div>
           <h1>THE ARCH</h1>
@@ -174,6 +178,6 @@ export function PropellerHero() {
         <p>Nov.1 — Nov.21, 2026 <span className="ph-slash">/</span> Shanghai, Beijing, Hangzhou &amp; Shenzhen</p>
         <p className="ph-exno">Application Only</p>
       </div>
-    </section>
+    </PosterSurface>
   );
 }

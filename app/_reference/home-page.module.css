@@ -1,0 +1,355 @@
+/* Scope the reference refinements to the homepage body, below the shared header. */
+.content {
+  min-width: 0;
+}
+
+:global(.arch-reference.arch-home) .content :global(.ph-hero) {
+  padding-bottom: 7.5rem;
+}
+
+:global(.arch-reference.arch-home) .content :global(.ph-px-sun) {
+  translate: calc(var(--poster-x, 0) * -14px) calc(var(--poster-y, 0) * -10px);
+}
+
+:global(.arch-reference.arch-home) .content :global(.ph-px-bridge) {
+  translate: calc(var(--poster-x, 0) * 7px) calc(var(--poster-y, 0) * 5px);
+}
+
+:global(.arch-reference.arch-home) .content :global(.ph-wordmark h1) {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: 0.28em;
+}
+
+:global(.arch-reference.arch-home) .content :global(.ph-btn-navy) {
+  padding: 16px 36px;
+  border: 0;
+}
+
+:global(.arch-reference.arch-home) .content :global(.ph-btn-line) {
+  padding: 16px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--navy);
+  border-radius: 0;
+  background: transparent;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+:global(.arch-reference.arch-home) .content :global(.ph-btn-line:hover) {
+  color: var(--navy);
+  opacity: 1;
+  transform: none;
+}
+
+:global(.arch-reference.arch-home) .content :global(.ph-hero-bottom) {
+  bottom: 2.25rem;
+}
+
+:global(.arch-reference.arch-home) .content :global(.wk-flag) {
+  top: -0.9rem;
+  right: 1.5rem;
+  padding: 0.4rem 0.9rem;
+  border: 0;
+  background: var(--navy);
+  box-shadow: 0 6px 14px -4px rgb(0 0 0 / 35%);
+  color: var(--marigold-soft);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 1.6;
+  transform: none;
+}
+
+.offerIntro {
+  max-width: 52ch;
+  margin: 0 0 2.6rem;
+  color: var(--navy);
+  font-family: Fraunces, serif;
+  font-size: 1.02rem;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.travelNotes {
+  margin-top: 2.2rem;
+  padding-top: 1.8rem;
+  border-top: 1px dashed #1b3a6b26;
+}
+
+:global(.arch-reference.arch-home) .content .travelNotesHeading,
+:global(.arch-reference.arch-home) .content :global(.incl-list-heading) {
+  margin: 0 0 1.1rem;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.travelNotesHeading {
+  color: var(--marigold);
+}
+
+.travelNotesList {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.travelNotesList li {
+  display: flex;
+  gap: 0.75rem;
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.travelNotesList li::before {
+  flex: none;
+  margin-top: 0.05rem;
+  color: var(--marigold);
+  font-size: 0.95rem;
+  font-weight: 700;
+  content: "→";
+}
+
+.travelNotesList b {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+:global(.arch-reference.arch-home) .content :global(.not-incl-list) {
+  gap: 0.75rem;
+}
+
+:global(.arch-reference.arch-home) .content :global(.incl-price-photo-overlay) {
+  background: linear-gradient(180deg, transparent, rgb(27 58 107 / 85%) 55%);
+}
+
+:global(.arch-reference.arch-home) .content :global(.incl-price-photo-tag) {
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.14em;
+}
+
+:global(.arch-reference.arch-home) .content :global(.fee-row) {
+  gap: 1rem;
+}
+
+:global(.arch-reference.arch-home) .content :global(.fee-row .fee-contact) {
+  font-family: Fraunces, serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  text-align: right;
+  white-space: normal;
+}
+
+.staySelector {
+  margin-top: 1.5rem;
+}
+
+.stayOptions {
+  display: inline-flex;
+  gap: 0.35rem;
+  max-width: 100%;
+  padding: 0.3rem;
+  border-radius: 999px;
+  background: rgb(27 58 107 / 12%);
+}
+
+.stayOption {
+  min-height: 40px;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+
+.stayOption:hover {
+  background: rgb(27 58 107 / 12%);
+}
+
+.stayOption[aria-pressed="true"] {
+  background: var(--navy);
+  color: var(--ivory);
+}
+
+.stayNote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 1.6rem;
+  margin-top: 0.7rem;
+  color: var(--navy);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.staySaving {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: var(--navy);
+  color: var(--marigold-soft);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* Let the longer reverse face determine the height at every screen width. */
+:global(.arch-reference.arch-home) .content :global(.builder-pass-inner) {
+  display: grid;
+  min-height: 400px;
+  cursor: default;
+}
+
+:global(.arch-reference.arch-home) .content :global(.builder-pass-face) {
+  position: relative;
+  inset: auto;
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+:global(.arch-reference.arch-home) .content :global(.builder-pass-front) {
+  width: 100%;
+  border: 1.5px dashed rgb(250 246 234 / 40%);
+  gap: 0.5rem;
+}
+
+:global(.arch-reference.arch-home) .content :global(.builder-pass-back) {
+  border: 1px solid rgb(27 58 107 / 15%);
+}
+
+:global(.arch-reference.arch-home) .content :global(.builder-pass-front .bp-badge) {
+  font-family: Fraunces, serif;
+  letter-spacing: 0.01em;
+}
+
+:global(.arch-reference.arch-home) .content :global(.builder-pass-front .bp-sub) {
+  letter-spacing: 0.16em;
+  opacity: 0.9;
+}
+
+:global(.arch-reference.arch-home) .content :global(.builder-pass-back .incl-mini) {
+  gap: 0.5rem;
+}
+
+:global(.arch-reference.arch-home) .content :global(.builder-pass-back .incl-mini li) {
+  gap: 0.5rem;
+  font-size: 0.84rem;
+}
+
+.passHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.passBack {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--harbor-soft);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--navy);
+  font-size: 1.25rem;
+}
+
+.stayOption:focus-visible,
+.passBack:focus-visible,
+.content :global(a:focus-visible),
+.content :global(.flip-card:focus-visible),
+.content :global(.builder-pass-front:focus-visible) {
+  outline: 2px solid var(--marigold-soft);
+  outline-offset: 4px;
+}
+
+.stayOption:focus-visible,
+.passBack:focus-visible {
+  outline-color: var(--navy);
+}
+
+:global(.arch-reference.arch-home) .content :global(.pricing-note) {
+  color: #faf6eab3;
+}
+
+@media (max-width: 639px) {
+  :global(.arch-reference.arch-home) .content :global(.ph-hero) {
+    min-height: max(760px, calc(100svh - 5rem));
+    padding-bottom: 11rem;
+  }
+
+  :global(.arch-reference.arch-home) .content :global(.ph-hero-bottom) {
+    bottom: 1.5rem;
+  }
+
+  :global(.arch-reference.arch-home) .content :global(.hero-eyebrow) {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+  }
+
+  :global(.arch-reference.arch-home) .content :global(.incl-list-col),
+  :global(.arch-reference.arch-home) .content :global(.incl-price-photo-overlay) {
+    padding: 1.5rem;
+  }
+
+  :global(.arch-reference.arch-home) .content :global(.price-card) {
+    padding: 2rem 1.5rem;
+    border-radius: 2rem;
+  }
+
+  :global(.arch-reference.arch-home) .content :global(.price-card .kicker) {
+    max-width: calc(100% - 1.5rem);
+    font-size: 10px;
+  }
+
+  :global(.arch-reference.arch-home) .content :global(.builder-pass-face) {
+    padding: 1.25rem;
+  }
+
+  .stayOption {
+    padding-inline: 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  :global(.arch-reference.arch-home) .content :global(.fee-row) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  :global(.arch-reference.arch-home) .content :global(.fee-row .fee-contact) {
+    text-align: left;
+  }
+
+  .stayOption {
+    padding-inline: 0.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content :global(.ph-flight) {
+    stroke-dashoffset: 0;
+  }
+
+  :global(.arch-reference.arch-home) .content :global(.ph-px-sun),
+  :global(.arch-reference.arch-home) .content :global(.ph-px-bridge) {
+    translate: none;
+  }
+}
