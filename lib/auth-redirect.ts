@@ -1,5 +1,7 @@
+import { ticketOptions } from "./tickets";
+
 const plainPaths = new Set(["/", "/account", "/partner", "/admin"]);
-const ticketIds = new Set(["single_week", "two_weeks", "full_program", "fellowship"]);
+const ticketIds = new Set<string>(["fellowship", ...ticketOptions.map((ticket) => ticket.id)]);
 const weekIds = new Set(["week_1", "week_2", "week_3"]);
 
 export function safeAuthNext(value: string | null | undefined) {

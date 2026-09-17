@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { getTicket } from "@/lib/tickets";
 import { fellowshipBenefits, fellowshipStays } from "../../data/home-page";
 import styles from "../../home-page.module.css";
 
@@ -12,6 +13,7 @@ export function FellowshipPass() {
   const backButtonRef = useRef<HTMLButtonElement>(null);
   const previousFlipped = useRef(false);
   const stay = fellowshipStays.find((option) => option.weeks === selectedWeeks)!;
+  const ticket = getTicket(stay.ticketId);
 
   useEffect(() => {
     if (previousFlipped.current === flipped) return;
@@ -37,6 +39,7 @@ export function FellowshipPass() {
           ))}
         </div>
         <p className={styles.stayNote} aria-live="polite" aria-atomic="true">
+          <strong>{ticket.priceLabel}</strong>
           <span>{stay.note}</span>
           {stay.saving ? <span className={styles.staySaving}>{stay.saving}</span> : null}
         </p>
@@ -80,7 +83,7 @@ export function FellowshipPass() {
                 {fellowshipBenefits.map((benefit) => <li key={benefit}>{benefit}</li>)}
               </ul>
             </div>
-            <Link className="bp-apply" href="/apply?pass=fellowship">
+            <Link className="bp-apply" href={`/apply?pass=${ticket.id}`}>
               Apply for Fellowship →
             </Link>
           </div>

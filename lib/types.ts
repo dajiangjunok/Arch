@@ -37,7 +37,8 @@ export type ReferralCodeStatus = "active" | "inactive";
 export type CommissionStatus = "pending" | "approved" | "paid" | "reversed";
 export type UserRole = "admin";
 
-export type TicketId = "single_week" | "two_weeks" | "full_program" | "fellowship";
+export type TicketId = "single_week" | "two_weeks" | "full_program" | "fellowship"
+  | "fellowship_single_week" | "fellowship_two_weeks" | "fellowship_full_program";
 
 export type DiscountSnapshot = {
   discountCode: string | null;

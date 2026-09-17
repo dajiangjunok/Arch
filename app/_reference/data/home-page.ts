@@ -200,9 +200,9 @@ export const fellowshipBenefits = [
 ] as const;
 
 export const fellowshipStays = [
-  { weeks: 1, label: "1 Week", note: "One week in Shanghai", saving: null },
-  { weeks: 2, label: "2 Weeks", note: "Two weeks in Shanghai", saving: "Save 20%" },
-  { weeks: 3, label: "3 Weeks", note: "Three weeks in Shanghai", saving: "Save 33%" },
+  { weeks: 1, ticketId: "fellowship_single_week", label: "1 Week", note: "Choose Week 1, 2, or 3", saving: null },
+  { weeks: 2, ticketId: "fellowship_two_weeks", label: "2 Weeks", note: "Choose any two weeks", saving: "Save 20%" },
+  { weeks: 3, ticketId: "fellowship_full_program", label: "3 Weeks", note: "Includes all three weeks", saving: "Save 33%" },
 ] as const;
 
 export const excludedExpenses = [

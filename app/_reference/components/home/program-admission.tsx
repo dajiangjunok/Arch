@@ -77,8 +77,8 @@ export function ProgramAdmission() {
           </AdmissionCard>
         </div>
         <p className="pricing-note">
-          Applying to two or more weeks, or as a group? Write to us and we will
-          quote directly.
+          Choose any 1, 2, or all 3 weeks when you apply. For group bookings,
+          write to us for a quote.
         </p>
       </div>
     </RevealSection>

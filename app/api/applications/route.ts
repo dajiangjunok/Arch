@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isValidEmailAddress } from "@/lib/email";
-import { ticketOptions } from "@/lib/tickets";
+import { getTicket, ticketOptions } from "@/lib/tickets";
 import { createApplication } from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { ProgramWeek, TicketId } from "@/lib/types";
@@ -59,29 +59,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please select a valid program option." }, { status: 400 });
   }
 
-  const uniqueSelectedWeeks = [...new Set(selectedWeeks)];
+  const uniqueSelectedWeeks = [...new Set(selectedWeeks)].sort();
 
   if (selectedWeeks.length !== submittedWeeks.length) {
     return NextResponse.json({ error: "Please select a valid program week." }, { status: 400 });
   }
 
-  if (selectedTicket === "fellowship" && uniqueSelectedWeeks.length !== 0) {
-    return NextResponse.json({ error: "The Fellowship does not require a week selection." }, { status: 400 });
+  const expectedWeekCount = getTicket(selectedTicket).weekCount;
+
+  if (uniqueSelectedWeeks.length !== expectedWeekCount || selectedWeeks.length !== uniqueSelectedWeeks.length) {
+    return NextResponse.json({ error: `Please select exactly ${expectedWeekCount} different program week(s).` }, { status: 400 });
   }
 
-  const expectedWeekCount = selectedTicket === "single_week"
-    ? 1
-    : selectedTicket === "two_weeks"
-      ? 2
-      : selectedTicket === "full_program"
-        ? 3
-        : 0;
-
-  if (uniqueSelectedWeeks.length !== expectedWeekCount) {
-    return NextResponse.json({ error: "Please select the week you want to attend." }, { status: 400 });
-  }
-
-  if (selectedTicket === "full_program" && !programWeeks.every((week) => uniqueSelectedWeeks.includes(week))) {
+  if (expectedWeekCount === 3 && !programWeeks.every((week) => uniqueSelectedWeeks.includes(week))) {
     return NextResponse.json({ error: "The full program includes all three weeks." }, { status: 400 });
   }
 

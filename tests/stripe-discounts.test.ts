@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { beforeEach, mock, test } from "node:test";
 import { getStripe, createStripeCheckoutSession, validateDistributorDiscountConfiguration } from "../lib/stripe";
+import { getConfiguredTicketAmount, getTicket, ticketOptions } from "../lib/tickets";
 import type { Application, Order } from "../lib/types";
 
 const application = { id: "app_test", email: "applicant@example.test", selectedWeeks: ["week_1"], userId: "user_test", referralId: "ref_test", referralCode: "SAVE-TEST", distributorId: "partner_test" } as Application;
@@ -79,6 +80,49 @@ test("ordinary referrals create a full-price checkout without a discount Coupon"
   delete process.env.STRIPE_COUPON_DISTRIBUTOR_1299;
   await createStripeCheckoutSession(application, {...order, discountCode: null, amount: 979900, stripeCouponId: null});
   assert.equal(created[0].params.discounts, undefined);
+});
+
+test("each Fellowship duration selects its own Stripe Price and keeps the chosen weeks", async () => {
+  for (const ticket of ticketOptions.filter((ticket) => ticket.program === "fellowship")) {
+    const amount = { 1: 150000, 2: 240000, 3: 300000 }[ticket.weekCount]!;
+    process.env[ticket.priceEnv] = `price_${ticket.id}`;
+    process.env[ticket.amountEnv] = String(amount);
+    try {
+      assert.equal(getConfiguredTicketAmount(ticket.id), amount);
+      const selectedWeeks = ticket.weekCount === 1 ? ["week_3"] : ticket.weekCount === 2 ? ["week_1", "week_3"] : ["week_1", "week_2", "week_3"];
+      await createStripeCheckoutSession({ ...application, selectedWeeks } as Application, {
+        ...order, selectedTicket: ticket.id, amount, discountCode: null, stripeCouponId: null,
+      });
+      const params = created.at(-1)!.params;
+      assert.deepEqual(params.line_items, [{ price: `price_${ticket.id}`, quantity: 1 }]);
+      assert.equal(params.metadata.selectedWeeks, selectedWeeks.join(","));
+      assert.equal(params.payment_intent_data.metadata.selectedWeeks, selectedWeeks.join(","));
+      assert.equal(params.metadata.selectedTicket, ticket.id);
+      assert.equal(params.discounts, undefined);
+    } finally {
+      delete process.env[ticket.priceEnv];
+      delete process.env[ticket.amountEnv];
+    }
+  }
+});
+
+test("Fellowship dynamic checkout charges the total package price once", async () => {
+  for (const [selectedTicket, amount] of [["fellowship_single_week", 150000], ["fellowship_two_weeks", 240000], ["fellowship_full_program", 300000]] as const) {
+    delete process.env[getTicket(selectedTicket).priceEnv];
+    await createStripeCheckoutSession(application, { ...order, selectedTicket, amount, discountCode: null, stripeCouponId: null });
+    const item = created.at(-1)!.params.line_items[0];
+    assert.equal(item.quantity, 1);
+    assert.equal(item.price_data.unit_amount, amount);
+    assert.equal(item.price_data.currency, "usd");
+  }
+});
+
+test("unconfigured Fellowship prices report the matching environment variables", async () => {
+  delete process.env.STRIPE_PRICE_FELLOWSHIP_TWO_WEEKS;
+  await assert.rejects(createStripeCheckoutSession(application, {
+    ...order, selectedTicket: "fellowship_two_weeks", amount: null, discountCode: null,
+  }), /STRIPE_PRICE_FELLOWSHIP_TWO_WEEKS or ARCH_TICKET_AMOUNT_FELLOWSHIP_TWO_WEEKS/);
+  assert.equal(created.length, 0);
 });
 
 test("repeated approval shares an idempotency key and an existing open checkout is reused", async () => {

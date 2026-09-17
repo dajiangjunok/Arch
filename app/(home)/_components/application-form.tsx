@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { isValidEmailAddress } from "@/lib/email";
 import { DiscountSummary } from "@/app/_components/discount-summary";
 import { normalizeReferralCode, type CodeQuote } from "@/lib/discounts";
-import { ticketOptions } from "@/lib/tickets";
+import { getTicket, ticketOptions } from "@/lib/tickets";
 import type { ProgramWeek, TicketId } from "@/lib/types";
 
 const weekOptions = [
@@ -14,9 +14,6 @@ const weekOptions = [
   { value: "week_3", label: "Week 3" },
 ];
 
-const accessTicketOptions = ticketOptions.filter((ticket) => ticket.id !== "fellowship");
-
-type AccessTicketId = Exclude<TicketId, "fellowship">;
 type ProgramOption = "single_week_access" | "fellowship";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
@@ -42,17 +39,15 @@ export function ApplicationForm({
   const [codeError, setCodeError] = useState("");
   const [checkingCode, setCheckingCode] = useState(false);
   const [checkAttempt, setCheckAttempt] = useState(0);
-  const [selectedTicket, setSelectedTicket] = useState<TicketId>(defaultTicket);
-  const [lastAccessTicket, setLastAccessTicket] = useState<AccessTicketId>(
-    defaultTicket === "fellowship" ? "single_week" : defaultTicket,
-  );
+  const initialTicket = defaultTicket === "fellowship" ? "fellowship_single_week" : defaultTicket;
+  const [selectedTicket, setSelectedTicket] = useState<TicketId>(initialTicket);
   const [selectedWeeks, setSelectedWeeks] = useState<ProgramWeek[]>(
-    defaultTicket === "fellowship"
-      ? []
-      : defaultTicket === "full_program"
-        ? weekOptions.map((week) => week.value as ProgramWeek)
-        : [defaultWeek],
+    getTicket(initialTicket).weekCount === 3
+      ? weekOptions.map((week) => week.value as ProgramWeek)
+      : [defaultWeek],
   );
+  const currentTicket = getTicket(selectedTicket);
+  const programTicketOptions = ticketOptions.filter((ticket) => ticket.program === currentTicket.program);
 
   const normalizedCode = normalizeReferralCode(inviteCode);
   const appliedQuote = codeQuote?.code === normalizedCode && codeQuote.selectedTicket === selectedTicket ? codeQuote : null;
@@ -115,28 +110,23 @@ export function ApplicationForm({
     return !error;
   }
 
-  function changeTicket(ticket: AccessTicketId) {
+  function changeTicket(ticket: TicketId) {
     setSelectedTicket(ticket);
-    setLastAccessTicket(ticket);
-    if (ticket === "single_week") setSelectedWeeks((weeks) => [weeks[0] || defaultWeek]);
-    if (ticket === "two_weeks") {
+    const weekCount = getTicket(ticket).weekCount;
+    if (weekCount === 1) setSelectedWeeks((weeks) => [weeks[0] || defaultWeek]);
+    if (weekCount === 2) {
       setSelectedWeeks((weeks) => weeks.length ? weeks.slice(0, 2) : [defaultWeek]);
     }
-    if (ticket === "full_program") setSelectedWeeks(weekOptions.map((week) => week.value as ProgramWeek));
+    if (weekCount === 3) setSelectedWeeks(weekOptions.map((week) => week.value as ProgramWeek));
   }
 
   function changeProgramOption(option: ProgramOption) {
-    if (option === "fellowship") {
-      setSelectedTicket("fellowship");
-      setSelectedWeeks([]);
-      return;
-    }
-
-    changeTicket(lastAccessTicket);
+    const ticket = ticketOptions.find((ticket) => ticket.program === option && ticket.weekCount === currentTicket.weekCount)!;
+    changeTicket(ticket.id);
   }
 
   function toggleWeek(week: ProgramWeek) {
-    if (selectedTicket === "single_week") {
+    if (currentTicket.weekCount === 1) {
       setSelectedWeeks([week]);
       return;
     }
@@ -155,6 +145,11 @@ export function ApplicationForm({
 
     if (normalizedCode && !appliedQuote) {
       setCodeError("Apply your code successfully before submitting, or clear it to continue without a code.");
+      return;
+    }
+    if (selectedWeeks.length !== currentTicket.weekCount) {
+      setStatus("error");
+      setMessage(`Please select exactly ${currentTicket.weekCount} different program week(s).`);
       return;
     }
     setStatus("submitting");
@@ -240,7 +235,7 @@ export function ApplicationForm({
         <select
           name="programOption"
           required
-          value={selectedTicket === "fellowship" ? "fellowship" : "single_week_access"}
+          value={currentTicket.program}
           onChange={(event) => changeProgramOption(event.target.value as ProgramOption)}
           className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
         >
@@ -249,43 +244,39 @@ export function ApplicationForm({
         </select>
       </label>
 
-      {selectedTicket === "fellowship" ? (
-        <input type="hidden" name="selectedTicket" value="fellowship" />
-      ) : (
-        <label className="grid min-w-0 gap-2">
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
-            Choose Your Week
-          </span>
-          <select
-            name="selectedTicket"
-            required
-            value={selectedTicket}
-            onChange={(event) => changeTicket(event.target.value as AccessTicketId)}
-            className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
-          >
-            {accessTicketOptions.map((ticket) => (
-              <option key={ticket.id} value={ticket.id}>
-                {ticket.label} - {ticket.priceLabel} - {ticket.description}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
+      <label className="grid min-w-0 gap-2">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
+          Choose your duration
+        </span>
+        <select
+          name="selectedTicket"
+          required
+          value={selectedTicket}
+          onChange={(event) => changeTicket(event.target.value as TicketId)}
+          className="min-h-12 w-full min-w-0 rounded-none border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink outline-none focus:border-ink focus:ring-4 focus:ring-marigold/25"
+        >
+          {programTicketOptions.map((ticket) => (
+            <option key={ticket.id} value={ticket.id}>
+              {ticket.label} - {ticket.priceLabel} - {ticket.description}
+            </option>
+          ))}
+        </select>
+      </label>
 
-      {selectedTicket !== "full_program" && selectedTicket !== "fellowship" ? (
+      {currentTicket.weekCount < 3 ? (
         <fieldset className="grid min-w-0 gap-2">
           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
-            {selectedTicket === "single_week" ? "Which week would you like to attend?" : "Which weeks would you like to attend?"}
+            {currentTicket.weekCount === 1 ? "Which week would you like to attend?" : "Which weeks would you like to attend?"}
           </span>
           <div className="grid gap-2 sm:grid-cols-3">
             {weekOptions.map((week) => (
               <label key={week.value} className="flex min-h-12 cursor-pointer items-center gap-3 border border-ink/20 bg-ivory px-4 font-mono text-sm text-ink has-[:checked]:border-navy has-[:checked]:bg-navy has-[:checked]:text-ivory">
-                <input type={selectedTicket === "single_week" ? "radio" : "checkbox"} checked={selectedWeeks.includes(week.value as ProgramWeek)} onChange={() => toggleWeek(week.value as ProgramWeek)} className="accent-current" />
+                <input type={currentTicket.weekCount === 1 ? "radio" : "checkbox"} name="programWeek" value={week.value} checked={selectedWeeks.includes(week.value as ProgramWeek)} onChange={() => toggleWeek(week.value as ProgramWeek)} className="accent-current" />
                 {week.label}
               </label>
             ))}
           </div>
-          {selectedTicket === "two_weeks" ? <span className="text-xs text-ink/65">Select exactly 2 weeks ({selectedWeeks.length}/2 selected).</span> : null}
+          {currentTicket.weekCount === 2 ? <span className="text-xs text-ink/65">Select exactly 2 weeks ({selectedWeeks.length}/2 selected).</span> : null}
         </fieldset>
       ) : null}
 

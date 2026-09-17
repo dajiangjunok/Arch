@@ -48,3 +48,4 @@ todo/
 # Local docs
 docs/*
 !docs/distributor-discounts.md
+!docs/fellowship-tickets.md

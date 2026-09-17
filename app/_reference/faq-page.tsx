@@ -110,7 +110,7 @@ const questions: readonly {
           factory, and lab visits.
         </p>
         <p>
-          The Fellowship follows a separate three-week residency agenda based in
+          The Fellowship offers a choice of any one, two, or all three weeks based in
           Shanghai, with partial access to selected company visits. Some of these
           visits may overlap with the Single-Week itinerary, but Fellows do not
           join the full company-visit schedule and do not travel to other cities
@@ -225,15 +225,12 @@ const questions: readonly {
     question: "What is the Fellowship?",
     answer: (
       <p>
-        The Fellowship is a small number of places The Arch sets aside each
-        cohort for people who are heads-down on something real, before the
-        funding has arrived. It works less like a discount and more like a
-        <strong> scholarship</strong>{" "}— earned by what you&apos;ve built and
-        where it&apos;s headed, not by what you can afford. We look for
-        <strong> genuine conviction</strong>, even when the round hasn&apos;t
-        closed and the runway is thin. If that&apos;s where you are, apply and
-        tell us what you&apos;re building. We&apos;ll
-        <strong> reach out personally</strong> to talk it through.
+        The Fellowship is a place to live, work and build in Shanghai with a
+        global community of builders and makers. Choose any of the three program
+        weeks: <strong>$1,500 USD for one week</strong>,{" "}
+        <strong>$2,400 USD for any two weeks</strong>, or{" "}
+        <strong>$3,000 USD for all three weeks</strong>. Apply and tell us what
+        you&apos;re building. Payment is requested after your application is approved.
       </p>
     ),
   },

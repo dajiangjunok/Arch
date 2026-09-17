@@ -236,11 +236,8 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
         <p className="kicker">Limited · Fellowship Program</p>
         <h3>Fellowship Pass</h3>
         <p className="card-hook">
-          Most of the room pays their way, and that&apos;s what keeps The Arch
-          independent and sustainable. Every cohort, The Arch holds a handful of seats for
-          builders who don&apos;t have funding yet, don&apos;t have a travel budget,
-          and have nothing to show the world but the thing they&apos;re actually
-          building. Apply below, and see the <Link href="/faq">FAQ</Link> for
+          Live, work and build in Shanghai with a global community. Choose any
+          one, two, or all three program weeks. Apply below, and see the <Link href="/faq">FAQ</Link> for
           how it works.
         </p>
         <div className="for-row">
@@ -288,11 +285,11 @@ export function PriceCards({ weekNumber }: { weekNumber?: number }) {
                   <li>Partial access to the week&apos;s company visits</li>
                   <li>Shared workspace on Fuxing Island to build</li>
                 </ul>
-                <p className="incl-heading bp-not-included">FUNDED</p>
+                <p className="incl-heading bp-not-included">1 week: $1,500 · 2 weeks: $2,400 · 3 weeks: $3,000 USD</p>
               </div>
               <Link
                 className="bp-apply"
-                href="/apply?pass=fellowship"
+                href={weekNumber ? `/apply?pass=fellowship&week=week_${weekNumber}` : "/apply?pass=fellowship"}
                 onClick={(event) => event.stopPropagation()}
               >
                 Apply for Fellowship →

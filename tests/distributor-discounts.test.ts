@@ -87,7 +87,7 @@ test("one discount code is reused across permission toggles; normal invites rema
 
 test("invalid codes and unsupported programs are rejected without orphan records", async () => {
   for (const code of ["INVALID", "%", "_"]) await assert.rejects(submit(code), /no longer available/);
-  for (const selectedTicket of ["two_weeks", "full_program", "fellowship"]) {
+  for (const selectedTicket of ["two_weeks", "full_program", "fellowship", "fellowship_single_week", "fellowship_two_weeks", "fellowship_full_program"]) {
     await assert.rejects(submit(discountCode, { selectedTicket }), /only available for the 1 Week/);
   }
   await assert.rejects(submit(discountCode, {}, null), /not configured/);
@@ -107,6 +107,48 @@ test("server fixes price and attribution, ignoring client-supplied amounts and d
   assert.equal(application.referral_code, discountCode);
   assert.equal(application.distributor_id, distributorId);
   assert.equal((await db.query("select * from referrals where id=$1", [application.referral_id])).rows.length, 1);
+});
+
+test("Fellowship accepts every week combination and supports approval, checkout and payment", async () => {
+  const combinations = [
+    { ticket: "fellowship_single_week", amount: 150000, weeks: [["week_1"], ["week_2"], ["week_3"]] },
+    { ticket: "fellowship_two_weeks", amount: 240000, weeks: [["week_1", "week_2"], ["week_1", "week_3"], ["week_2", "week_3"]] },
+    { ticket: "fellowship_full_program", amount: 300000, weeks: [["week_1", "week_2", "week_3"]] },
+  ];
+  for (const option of combinations) {
+    for (const selectedWeeks of option.weeks) {
+      const application = await submit("", { selectedTicket: option.ticket, selectedWeeks }, null);
+      assert.deepEqual(application.selected_weeks, selectedWeeks);
+      await assert.rejects(db.query("select * from create_application_order($1,$2,'usd')", [application.id, option.amount]), /not approved/);
+      await db.query("update applications set status='approved' where id=$1", [application.id]);
+      const order = (await db.query<Record<string, any>>("select * from create_application_order($1,$2,'usd')", [application.id, option.amount])).rows[0];
+      assert.equal(order.selected_ticket, option.ticket);
+      assert.equal(order.amount, option.amount);
+      const repeated = (await db.query<Record<string, any>>("select * from create_application_order($1,$2,'usd')", [application.id, option.amount])).rows[0];
+      assert.equal(repeated.id, order.id);
+      await db.query("update orders set stripe_checkout_session_id=$2 where id=$1", [order.id, `cs_${order.id}`]);
+      await pay(order.id, option.amount);
+      assert.equal((await db.query<{ status: string }>("select status from applications where id=$1", [application.id])).rows[0].status, "paid");
+    }
+  }
+});
+
+test("Fellowship rejects missing, duplicate, invalid and wrong-count weeks", async () => {
+  for (const [selectedTicket, selections] of [
+    ["fellowship_single_week", [[], ["week_4"], [null], ["week_1", "week_2"]]],
+    ["fellowship_two_weeks", [[], ["week_1"], ["week_1", "week_1"], ["week_1", "week_4"], ["week_1", null], ["week_1", "week_2", "week_3"]]],
+    ["fellowship_full_program", [[], ["week_1", "week_2"], ["week_1", "week_2", "week_2"]]],
+  ] as const) {
+    for (const selectedWeeks of selections) {
+      await assert.rejects(submit("", { selectedTicket, selectedWeeks }, null), /constraint/);
+    }
+  }
+});
+
+test("historical funded Fellowship applications remain readable and cannot be charged", async () => {
+  const application = await submit("", { selectedTicket: "fellowship", selectedWeeks: [] }, null);
+  await db.query("update applications set status='approved' where id=$1", [application.id]);
+  await assert.rejects(db.query("select * from create_application_order($1,300000,'usd')", [application.id]), /not approved for payment/);
 });
 
 test("submitted offer survives revocation and is copied to one reusable order", async () => {

@@ -41,7 +41,7 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
   }
 
   const identity = getUserIdentity(user);
-  const defaultTicket = ticketOptions.some((ticket) => ticket.id === pass)
+  const defaultTicket = pass === "fellowship" ? "fellowship_single_week" : ticketOptions.some((ticket) => ticket.id === pass)
     ? (pass as TicketId)
     : "single_week";
   const defaultWeek = validWeeks.includes(week as ProgramWeek) ? (week as ProgramWeek) : "week_1";
@@ -99,7 +99,7 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
           <div className="w-full max-w-[720px] border border-ink bg-card p-5 shadow-ink sm:p-7 lg:justify-self-end">
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-ink">Application form</p>
             <p className="mt-2 text-sm leading-6 text-ink/65">
-              Choose Single Week Access or apply for a Fellowship. For Single Week Access, choose how many weeks you would like to join and select your preferred week or weeks.
+              Choose Single Week Access or Fellowship, then choose how many weeks you would like to join and select your preferred week or weeks. Fellowship costs $1,500 for 1 week, $2,400 for 2 weeks, or $3,000 for all 3 weeks.
             </p>
             <div className="mt-5">
               {identity.email ? (
