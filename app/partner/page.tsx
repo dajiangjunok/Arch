@@ -91,12 +91,13 @@ export default async function PartnerPage() {
             <div className="grid w-full max-w-[640px] grid-cols-3 gap-px justify-self-end border border-ink/20 bg-ink/20">
               <Stat label="Invited" value={referrals.length} />
               <Stat label="Tier" value={currentTier?.name || "Not qualified"} />
-              <Stat label="Commission" value={currentTier ? `${currentTier.commissionRate}%` : "0%"} />
-              <Stat label="Paid" value={paidCount} />
+              <Stat label="Tier commission" value={currentTier ? `${currentTier.commissionRate}%` : "0%"} />
+              <Stat label="Paid toward tier" value={paidCount} />
               <Stat label="Pending review" value={pendingCount} />
               <Stat label="Open balance" value={formatMoney(unsettledAmount, currency)} />
             </div>
           </div>
+          <p className="mt-5 text-sm leading-6 text-ink-soft">Single Week Access (1, 2 or 3 weeks) earns your tier commission rate. Fellowship earns a fixed 10% and does not count toward your tier. Both use payments after refunds.</p>
         </section>
 
         <section className="border-t border-ink/20 py-10">
@@ -147,7 +148,7 @@ export default async function PartnerPage() {
               })}
             </div>
           )}
-          <p className="mt-5 max-w-3xl text-sm leading-6 text-ink-soft">Customers can enter either code in the application and click Apply, or follow its link to apply it automatically. Both types of invitation credit you as the referring partner. Paid referrals from both count toward the same tier, and commission uses the combined amount paid, adjusted for refunds.</p>
+          <p className="mt-5 max-w-3xl text-sm leading-6 text-ink-soft">Customers can enter either code in the application and click Apply, or follow its link to apply it automatically. Both types of invitation credit you as the referring partner. Paid Single Week Access referrals from both codes count toward the same tier. Fellowship referrals through your full-price invitation earn a fixed 10% and do not count toward tiers.</p>
         </section>
 
         <section className="border-t border-ink/20 py-10">

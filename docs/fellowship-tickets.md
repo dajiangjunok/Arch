@@ -8,7 +8,7 @@ Fellowship 可选 Week 1、Week 2、Week 3 中任意一周、任意两周（包�
 | 2 | $2,400 | `STRIPE_PRICE_FELLOWSHIP_TWO_WEEKS` | `ARCH_TICKET_AMOUNT_FELLOWSHIP_TWO_WEEKS=240000` |
 | 3 | $3,000 | `STRIPE_PRICE_FELLOWSHIP_FULL_PROGRAM` | `ARCH_TICKET_AMOUNT_FELLOWSHIP_FULL_PROGRAM=300000` |
 
-上线前先执行 `supabase/migrations/018_fellowship_week_options.sql`，再部署代码。
+上线前按顺序执行数据库迁移至 `supabase/migrations/019_fellowship_fixed_commissions.sql`（包含 `018_fellowship_week_options.sql`），再部署代码。
 
 在 Stripe 中创建对应金额、USD 币种的一次性 Price，将 `price_...` 填入部署环境的三个 `STRIPE_PRICE_FELLOWSHIP_*` 变量。每个 Price 是整个套餐的总价，结账数量固定为 1。测试和正式环境使用各自的 Price ID。
 
@@ -17,3 +17,5 @@ Fellowship 可选 Week 1、Week 2、Week 3 中任意一周、任意两周（包�
 新票种 ID 为 `fellowship_single_week`、`fellowship_two_weeks`、`fellowship_full_program`。已有 `fellowship` 免费资助申请保留原条件，不转换为收费票。旧的 `/apply?pass=fellowship` 链接会默认打开新的单周 Fellowship 报名。
 
 原有 $1,299 分销优惠仅适用于 Single Week Access，Fellowship 不适用；普通邀请码仍可使用。
+
+Fellowship 所有周数套餐按实付净额（扣除退款）固定返佣 10%，默认价格对应 $150 / $240 / $300。Fellowship 的付费人数和金额不计入 Single Week Access 的阶梯佣金；阶梯升级、降级和比例调整均不改变 Fellowship 的 10% 返佣比例。无付款的历史资助票不产生佣金。

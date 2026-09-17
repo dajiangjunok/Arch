@@ -179,6 +179,7 @@ type CommissionRow = {
   rate: number;
   basis_amount: number;
   commission_amount: number;
+  commission_model: Commission["commissionModel"];
   entry_type: Commission["entryType"];
   refunded_basis_amount: number;
   refunded_commission_amount: number;
@@ -304,6 +305,7 @@ function mapCommission(row: CommissionRow): Commission {
     rate: Number(row.rate),
     basisAmount: row.basis_amount,
     commissionAmount: row.commission_amount,
+    commissionModel: row.commission_model,
     entryType: row.entry_type,
     refundedBasisAmount: row.refunded_basis_amount,
     refundedCommissionAmount: row.refunded_commission_amount,

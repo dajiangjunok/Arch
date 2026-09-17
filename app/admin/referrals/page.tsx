@@ -139,7 +139,8 @@ export default async function ReferralsAdminPage({
                       </td>
                       <td className="px-3 py-3">
                         <p className="font-semibold">{currentTier?.name || "Not qualified"}</p>
-                        <p className="mt-1 text-xs text-ink-soft">{currentTier ? `${currentTier.commissionRate}%` : "0%"} · {paidReferralCount} paid / {referralCount} invited</p>
+                        <p className="mt-1 text-xs text-ink-soft">Single Week Access: {currentTier ? `${currentTier.commissionRate}%` : "0%"} · {paidReferralCount} paid</p>
+                        <p className="mt-1 text-xs text-ink-soft">Fellowship: 10% fixed · {referralCount} total invited</p>
                       </td>
                       <td className="px-3 py-3">
                         {primaryCode ? (
@@ -177,12 +178,12 @@ export default async function ReferralsAdminPage({
 
       <section className="mt-8">
         <Panel eyebrow="Commission" title="Distributor tiers">
-          <p className="mb-5 text-sm text-ink-soft">The current rate applies to the combined net amount of all paid referrals. Tier upgrades retroactively adjust the full earned commission.</p>
+          <p className="mb-5 text-sm text-ink-soft">Only paid Single Week Access referrals (1, 2 or 3 weeks) count toward tiers. The current tier rate applies retroactively to their combined payments after refunds. All Fellowship packages earn a fixed 10% after refunds and do not count toward tiers.</p>
           <form action={updateDistributorTiersAction}>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[620px] text-left text-sm">
                 <thead className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-soft">
-                  <tr><th className="px-3 py-3">Tier</th><th className="px-3 py-3">Minimum paid referrals</th><th className="px-3 py-3">Commission</th></tr>
+                  <tr><th className="px-3 py-3">Tier</th><th className="px-3 py-3">Minimum paid Single Week Access referrals</th><th className="px-3 py-3">Commission</th></tr>
                 </thead>
                 <tbody>
                   {tiers.map((tier) => (
@@ -228,7 +229,10 @@ export default async function ReferralsAdminPage({
                 {commissions.map((commission) => (
                   <tr key={commission.id} className="border-t border-line">
                     <td className="px-3 py-3">{distributorById.get(commission.beneficiaryDistributorId)?.name || "-"}</td>
-                    <td className="px-3 py-3">{commissionEntryLabel(commission)} · {commission.rate}%</td>
+                    <td className="px-3 py-3">
+                      {commissionEntryLabel(commission)} · {commission.rate}%
+                      <p className="mt-1 text-xs text-ink-soft">{commission.commissionModel === "fellowship" ? "Fellowship · fixed rate" : "Cumulative tiers"}</p>
+                    </td>
                     <td className="px-3 py-3 font-semibold">
                       {formatMoney(commission.commissionAmount, commission.currency)}
                     </td>

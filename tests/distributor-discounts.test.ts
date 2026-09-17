@@ -32,9 +32,9 @@ async function toggle(enabled: boolean) { await db.query("select set_distributor
 async function submit(code = discountCode, overrides = {}, coupon: string | null = "coupon_fixed") {
   return (await db.query<Record<string, any>>("select * from submit_application($1,$2,$3,$4)", [userId, { ...details, ...overrides }, code, coupon])).rows[0];
 }
-async function orderFor(applicationId: string) {
+async function orderFor(applicationId: string, amount = 979900) {
   await db.query("update applications set status='approved' where id=$1", [applicationId]);
-  const order = (await db.query<Record<string, any>>("select * from create_application_order($1,979900,'usd')", [applicationId])).rows[0];
+  const order = (await db.query<Record<string, any>>("select * from create_application_order($1,$2,'usd')", [applicationId, amount])).rows[0];
   await db.query("update orders set stripe_checkout_session_id=$2, status='checkout_created' where id=$1", [order.id, `cs_${order.id}`]);
   return order;
 }
@@ -43,6 +43,15 @@ async function pay(orderId: string, amount = 850000, currency = "usd", status = 
 }
 async function commission() {
   return Number((await db.query<{total: string}>("select coalesce(sum(commission_amount),0) as total from commissions where status <> 'reversed'")).rows[0].total);
+}
+async function paidTierCount() {
+  return Number((await db.query<{paid_referral_count: number}>("select paid_referral_count from list_distributor_paid_referral_counts() where distributor_id=$1", [distributorId])).rows[0].paid_referral_count);
+}
+async function fellowshipOrder(ticket = "fellowship_single_week", amount = 150000, weeks = ["week_1"]) {
+  return orderFor((await submit("INVITE-TEST", { selectedTicket: ticket, selectedWeeks: weeks }, null)).id, amount);
+}
+async function modelCommission(model: "tiered" | "fellowship") {
+  return Number((await db.query<{total: string}>("select coalesce(sum(commission_amount),0) as total from commissions where status <> 'reversed' and commission_model=$1", [model])).rows[0].total);
 }
 
 test("ordinary invites and no-code applications retain full-price behavior", async () => {
@@ -197,6 +206,178 @@ test("all four tiers, retroactive adjustments, refunds and late payment events u
   assert.equal(await commission(), 1520000);
   assert.equal((await db.query<{status: string}>("select status from orders where id=$1", [orders[0].id])).rows[0].status, "refunded");
   assert.equal((await db.query<{status: string}>("select status from orders where id=$1", [orders[1].id])).rows[0].status, "partially_refunded");
+});
+
+test("all Fellowship packages earn 10% without qualifying for a tier or duplicating payments", async () => {
+  let expected = 0;
+  for (const [ticket, amount, weeks] of [
+    ["fellowship_single_week", 150000, ["week_1"]],
+    ["fellowship_two_weeks", 240000, ["week_1", "week_3"]],
+    ["fellowship_full_program", 300000, ["week_1", "week_2", "week_3"]],
+  ] as const) {
+    const order = await fellowshipOrder(ticket, amount, [...weeks]);
+    assert.equal(await commission(), expected);
+    await pay(order.id, amount);
+    await pay(order.id, amount);
+    expected += amount / 10;
+    assert.equal(await commission(), expected);
+    assert.equal(await modelCommission("fellowship"), expected);
+    assert.equal(await paidTierCount(), 0);
+  }
+  const entries = (await db.query<{rate: string; commission_model: string}>("select rate, commission_model from commissions")).rows;
+  assert.equal(entries.length, 3);
+  assert.ok(entries.every((entry) => Number(entry.rate) === 10 && entry.commission_model === "fellowship"));
+});
+
+test("Fellowship does not advance any tier or receive retroactive tier increases", async () => {
+  const fellowship = await fellowshipOrder();
+  await pay(fellowship.id, 150000);
+  let netTierPayments = 0;
+  for (let count = 1; count <= 10; count++) {
+    const isDiscount = count % 2 === 0;
+    const amount = isDiscount ? 850000 : 979900;
+    const order = await orderFor((await submit(isDiscount ? discountCode : "INVITE-TEST")).id);
+    await pay(order.id, amount);
+    netTierPayments += amount;
+    const rate = count >= 10 ? 0.3 : count >= 5 ? 0.2 : count >= 3 ? 0.15 : 0.09;
+    assert.equal(await paidTierCount(), count);
+    assert.equal(await modelCommission("tiered"), Math.floor(netTierPayments * rate));
+    assert.equal(await modelCommission("fellowship"), 15000);
+    assert.equal(await commission(), Math.floor(netTierPayments * rate) + 15000);
+  }
+  const fellowshipEntries = await db.query("select * from commissions where commission_model='fellowship'");
+  assert.equal(fellowshipEntries.rows.length, 1);
+});
+
+test("Single Week Access two- and three-week packages each count as one tier referral", async () => {
+  for (const [ticket, amount, weeks] of [
+    ["two_weeks", 1959800, ["week_1", "week_2"]],
+    ["full_program", 2939700, ["week_1", "week_2", "week_3"]],
+  ] as const) {
+    const order = await orderFor((await submit("INVITE-TEST", { selectedTicket: ticket, selectedWeeks: weeks }, null)).id, amount);
+    await pay(order.id, amount);
+  }
+  assert.equal(await paidTierCount(), 2);
+  assert.equal(await modelCommission("tiered"), 440955);
+  assert.equal(await modelCommission("fellowship"), 0);
+});
+
+test("mixed refunds downgrade only Single Week Access and preserve fixed Fellowship commission", async () => {
+  const fellowship = await fellowshipOrder();
+  await pay(fellowship.id, 150000);
+  const orders = [];
+  for (let count = 0; count < 3; count++) {
+    const order = await orderFor((await submit()).id);
+    await pay(order.id);
+    orders.push(order);
+  }
+  assert.equal(await commission(), 397500);
+  await db.query("select sync_charge_refund_totals($1,50001)", [`pi_${fellowship.id}`]);
+  assert.equal(await paidTierCount(), 3);
+  assert.equal(await modelCommission("fellowship"), 9999);
+  assert.equal(await modelCommission("tiered"), 382500);
+  await db.query("select sync_charge_refund_totals($1,850000)", [`pi_${orders[0].id}`]);
+  assert.equal(await paidTierCount(), 2);
+  assert.equal(await modelCommission("tiered"), 153000);
+  assert.equal(await modelCommission("fellowship"), 9999);
+  await db.query("select sync_charge_refund_totals($1,150000)", [`pi_${fellowship.id}`]);
+  assert.equal(await commission(), 153000);
+  assert.equal(await paidTierCount(), 2);
+  const entryCount = (await db.query("select id from commissions")).rows.length;
+  await pay(fellowship.id, 150000);
+  await db.query("select sync_charge_refund_totals($1,150000)", [`pi_${fellowship.id}`]);
+  await db.query("select recalculate_all_distributor_commissions()");
+  assert.equal((await db.query("select id from commissions")).rows.length, entryCount);
+  assert.equal((await db.query("select id from commissions where commission_amount < 0 and status <> 'approved'")).rows.length, 0);
+});
+
+test("editing tier settings leaves Fellowship at 10%", async () => {
+  const fellowship = await fellowshipOrder();
+  await pay(fellowship.id, 150000);
+  await pay((await orderFor((await submit()).id)).id);
+  await db.exec("begin");
+  try {
+    await db.exec("update distributor_tiers set commission_rate=45 where tier_key='single_seat'");
+    await db.query("select recalculate_all_distributor_commissions()");
+    assert.equal(await modelCommission("tiered"), 382500);
+    assert.equal(await modelCommission("fellowship"), 15000);
+    assert.equal((await db.query("select id from commissions where commission_model='fellowship'")).rows.length, 1);
+  } finally { await db.exec("rollback"); }
+});
+
+test("Fellowship honors distributor status and permanent manual commission reversals", async () => {
+  const fellowship = await fellowshipOrder();
+  await pay(fellowship.id, 150000);
+  const entryId = (await db.query<{id: string}>("select id from commissions")).rows[0].id;
+  await db.query("select set_commission_status($1,'reversed')", [entryId]);
+  await db.query("select recalculate_all_distributor_commissions()");
+  assert.equal(await commission(), 0);
+  const second = await fellowshipOrder();
+  await pay(second.id, 150000);
+  assert.equal(await commission(), 15000);
+  await db.query("select set_distributor_status($1,'inactive')", [distributorId]);
+  assert.equal(await commission(), 0);
+  await db.query("select set_distributor_status($1,'active')", [distributorId]);
+  assert.equal(await commission(), 15000);
+  await db.query("select recalculate_all_distributor_commissions()");
+  assert.equal(await commission(), 15000);
+});
+
+test("migration reconciles historical mixed paid commissions without rewriting settlements", async () => {
+  await db.exec("begin");
+  try {
+    // Recreate the deployed calculation before migration 019 with existing data.
+    await db.exec("alter table commissions drop column commission_model");
+    await db.exec(await readFile("supabase/migrations/015_commission_ledger_consistency.sql", "utf8"));
+    for (let count = 0; count < 2; count++) await pay((await orderFor((await submit()).id)).id);
+    const fellowship = await fellowshipOrder();
+    await pay(fellowship.id, 150000);
+    assert.equal(await commission(), 277500); // Three referrals previously qualified for 15%.
+    await db.exec("update commissions set status='paid', paid_at=now()");
+    const oldEntries = (await db.query("select id, commission_amount, rate, status, paid_at from commissions order by id")).rows;
+    await db.exec(await readFile("supabase/migrations/019_fellowship_fixed_commissions.sql", "utf8"));
+    assert.equal(await paidTierCount(), 2);
+    assert.equal(await modelCommission("tiered"), 153000);
+    assert.equal(await modelCommission("fellowship"), 15000);
+    assert.equal(await commission(), 168000);
+    assert.deepEqual((await db.query("select id, commission_amount, rate, status, paid_at from commissions where status='paid' order by id")).rows, oldEntries);
+    assert.equal(Number((await db.query<{total: string}>("select sum(commission_amount) as total from commissions where status in ('pending','approved')")).rows[0].total), -109500);
+    const entryCount = (await db.query("select id from commissions")).rows.length;
+    await db.query("select recalculate_all_distributor_commissions()");
+    assert.equal((await db.query("select id from commissions")).rows.length, entryCount);
+  } finally { await db.exec("rollback"); }
+});
+
+test("manual reversal of Fellowship is not recreated when tiered commissions also exist", async () => {
+  await pay((await orderFor((await submit()).id)).id);
+  const fellowship = await fellowshipOrder();
+  await pay(fellowship.id, 150000);
+  const entryId = (await db.query<{id: string}>("select id from commissions where commission_model='fellowship'")).rows[0].id;
+  await db.query("select set_commission_status($1,'reversed')", [entryId]);
+  await db.query("select recalculate_all_distributor_commissions()");
+  assert.equal(await modelCommission("fellowship"), 0);
+  assert.equal(await modelCommission("tiered"), 76500);
+  assert.equal((await db.query("select id from commissions")).rows.length, 2);
+  await db.query("select sync_charge_refund_totals($1,150000)", [`pi_${fellowship.id}`]);
+  assert.equal(await commission(), 61500); // Keep the existing currency-wide permanent waiver.
+});
+
+test("migration preserves legacy manual waivers even when all orders are Fellowship", async () => {
+  await db.exec("begin");
+  try {
+    await db.exec("alter table commissions drop column commission_model");
+    await db.exec(await readFile("supabase/migrations/015_commission_ledger_consistency.sql", "utf8"));
+    const fellowship = await fellowshipOrder();
+    await pay(fellowship.id, 150000);
+    assert.equal(await commission(), 13500);
+    const entryId = (await db.query<{id: string}>("select id from commissions")).rows[0].id;
+    await db.query("select set_commission_status($1,'reversed')", [entryId]);
+    await db.exec(await readFile("supabase/migrations/019_fellowship_fixed_commissions.sql", "utf8"));
+    assert.equal(await commission(), 1500); // 10% entitlement less the original $135 waiver.
+    assert.equal(await paidTierCount(), 0);
+    await db.query("select recalculate_all_distributor_commissions()");
+    assert.equal(await commission(), 1500);
+  } finally { await db.exec("rollback"); }
 });
 
 test("client roles cannot invoke price/permission RPCs or bypass submission with direct inserts", async () => {
