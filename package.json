@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "deploy": "npm run build && node --env-file=.env scripts/deploy.mjs",
+    "deploy": "npm run build && node --env-file=.env.local scripts/deploy.mjs",
     "start": "next start",
     "lint": "next lint",
-    "db:migrate-local": "node scripts/migrate-local-data.mjs",
+    "db:migrate-local": "node --env-file=.env.local scripts/migrate-local-data.mjs",
     "test": "node --import tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit --incremental false"
   },

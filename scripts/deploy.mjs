@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 const token = process.env.VERCEL_TOKEN;
 
 if (!token) {
-  console.error("VERCEL_TOKEN is missing from .env.");
+  console.error("VERCEL_TOKEN is missing from .env.local.");
   process.exit(1);
 }
 
