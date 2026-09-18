@@ -26,7 +26,7 @@ import { logoutAction } from "@/app/auth/actions";
 import { getUserIdentity } from "@/lib/user-identity";
 import { DISTRIBUTOR_OFFER } from "@/lib/discounts";
 import { getCurrency, getTicket } from "@/lib/tickets";
-import { getOpenCommissionBalances, getPartnerProgramStats, type MoneyBalance } from "@/lib/partner-stats";
+import { getPartnerProgramStats, type MoneyBalance } from "@/lib/partner-stats";
 
 export default async function PartnerPage() {
   const user = await requireUser("/partner");
@@ -55,10 +55,8 @@ export default async function PartnerPage() {
   const currentTier = [...tiers]
     .reverse()
     .find((tier) => paidCount >= tier.minimumReferrals);
-  const pendingCount = inviteeRows.filter((row) => row.application?.status === "pending_review").length;
   const currency = getCurrency();
   const programStats = getPartnerProgramStats(inviteeRows, commissions, currency);
-  const openBalances = getOpenCommissionBalances(commissions, currency);
   const programs = [
     {
       name: "Single Week Access",
@@ -73,7 +71,7 @@ export default async function PartnerPage() {
       badge: "Fixed rate",
       rate: 10,
       rateLabel: "Fixed commission",
-      description: "1, 2 or 3 weeks. Earn 10% from your first paid referral, independently of your tier.",
+      description: "Earn a fixed 10% commission on paid referrals.",
       stats: programStats.fellowship,
     },
   ];
@@ -100,27 +98,19 @@ export default async function PartnerPage() {
         </header>
 
         <section className="py-10 sm:py-12">
-          <div className="grid items-end gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-            <div>
-              <p className="arch-eyebrow">Partner network</p>
-              <h1 className="mt-4 whitespace-nowrap font-serif text-[clamp(2.35rem,3.5vw,3.25rem)] font-semibold leading-none text-navy">Your referrals</h1>
-              <span className="title-rule" />
-            </div>
-            <div className="grid w-full max-w-[640px] grid-cols-2 gap-px justify-self-end border border-ink/20 bg-ink/20 sm:grid-cols-4">
-              <Stat label="Invited" value={referrals.length} />
-              <Stat label="Paid referrals" value={paidCount + programStats.fellowship.paidCount} />
-              <Stat label="Pending review" value={pendingCount} />
-              <Stat label="Open balance" value={<MoneyValues balances={openBalances} />} />
-            </div>
+          <div>
+            <p className="arch-eyebrow">Partner network</p>
+            <h1 className="mt-4 whitespace-nowrap font-serif text-[clamp(2.35rem,3.5vw,3.25rem)] font-semibold leading-none text-navy">Your referrals</h1>
+            <span className="title-rule" />
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             {programs.map((program) => (
-              <article key={program.name} className="min-w-0 border border-ink/20 bg-card p-5 sm:p-6">
+              <article key={program.name} className="flex min-w-0 flex-col border border-ink/20 bg-card p-5 sm:p-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <h2 className="font-serif text-2xl font-semibold text-navy sm:text-3xl">{program.name}</h2>
                   <span className="border border-navy/25 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-navy">{program.badge}</span>
                 </div>
-                <p className="mt-4 text-sm leading-6 text-ink-soft">{program.description}</p>
+                <p className="mt-4 flex-1 text-sm leading-6 text-ink-soft">{program.description}</p>
                 <div className="my-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <p className="font-serif text-4xl font-semibold text-navy">{program.rate}%</p>
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft">{program.rateLabel}</p>
@@ -135,7 +125,6 @@ export default async function PartnerPage() {
               </article>
             ))}
           </div>
-          <p className="mt-5 text-sm leading-6 text-ink-soft">Paid referrals have a payment remaining after refunds. Fellowship does not count toward your tier. Open balances include pending and approved commissions, after adjustments.</p>
         </section>
 
         <section className="border-t border-ink/20 py-10">
