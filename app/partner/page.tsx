@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { requireUser } from "@/lib/auth";
 import { getSiteUrl } from "@/lib/stripe";
@@ -24,6 +25,8 @@ import { CopyLinkButton } from "./_components/copy-link-button";
 import { logoutAction } from "@/app/auth/actions";
 import { getUserIdentity } from "@/lib/user-identity";
 import { DISTRIBUTOR_OFFER } from "@/lib/discounts";
+import { getCurrency, getTicket } from "@/lib/tickets";
+import { getOpenCommissionBalances, getPartnerProgramStats, type MoneyBalance } from "@/lib/partner-stats";
 
 export default async function PartnerPage() {
   const user = await requireUser("/partner");
@@ -45,7 +48,7 @@ export default async function PartnerPage() {
     referrals.map(async (referral) => {
       const application = await getApplication(referral.applicationId);
       const orders = await getOrdersForApplication(referral.applicationId);
-      return { referral, application, order: orders[0] || null };
+      return { referral, application, orders, order: orders[0] || null };
     }),
   );
   const paidCount = paidReferralCounts.find((item) => item.distributorId === distributor.id)?.paidReferralCount || 0;
@@ -53,12 +56,27 @@ export default async function PartnerPage() {
     .reverse()
     .find((tier) => paidCount >= tier.minimumReferrals);
   const pendingCount = inviteeRows.filter((row) => row.application?.status === "pending_review").length;
-  const unsettled = commissions.filter((commission) => commission.status === "pending" || commission.status === "approved");
-  const unsettledAmount = unsettled.reduce(
-    (total, commission) => total + commission.commissionAmount,
-    0,
-  );
-  const currency = unsettled[0]?.currency || commissions[0]?.currency || "usd";
+  const currency = getCurrency();
+  const programStats = getPartnerProgramStats(inviteeRows, commissions, currency);
+  const openBalances = getOpenCommissionBalances(commissions, currency);
+  const programs = [
+    {
+      name: "Single Week Access",
+      badge: currentTier?.name || "Not qualified",
+      rate: currentTier?.commissionRate || 0,
+      rateLabel: "Tier commission",
+      description: "1, 2 or 3 weeks. Paid referrals count toward your tier and earn its commission rate.",
+      stats: { ...programStats.tiered, paidCount },
+    },
+    {
+      name: "Fellowship",
+      badge: "Fixed rate",
+      rate: 10,
+      rateLabel: "Fixed commission",
+      description: "1, 2 or 3 weeks. Earn 10% from your first paid referral, independently of your tier.",
+      stats: programStats.fellowship,
+    },
+  ];
   const siteUrl = getSiteUrl();
   const visibleCodes = codes
     .filter((code) => code.kind === "referral" || distributor.discountEnabled)
@@ -88,16 +106,36 @@ export default async function PartnerPage() {
               <h1 className="mt-4 whitespace-nowrap font-serif text-[clamp(2.35rem,3.5vw,3.25rem)] font-semibold leading-none text-navy">Your referrals</h1>
               <span className="title-rule" />
             </div>
-            <div className="grid w-full max-w-[640px] grid-cols-3 gap-px justify-self-end border border-ink/20 bg-ink/20">
+            <div className="grid w-full max-w-[640px] grid-cols-2 gap-px justify-self-end border border-ink/20 bg-ink/20 sm:grid-cols-4">
               <Stat label="Invited" value={referrals.length} />
-              <Stat label="Tier" value={currentTier?.name || "Not qualified"} />
-              <Stat label="Tier commission" value={currentTier ? `${currentTier.commissionRate}%` : "0%"} />
-              <Stat label="Paid toward tier" value={paidCount} />
+              <Stat label="Paid referrals" value={paidCount + programStats.fellowship.paidCount} />
               <Stat label="Pending review" value={pendingCount} />
-              <Stat label="Open balance" value={formatMoney(unsettledAmount, currency)} />
+              <Stat label="Open balance" value={<MoneyValues balances={openBalances} />} />
             </div>
           </div>
-          <p className="mt-5 text-sm leading-6 text-ink-soft">Single Week Access (1, 2 or 3 weeks) earns your tier commission rate. Fellowship earns a fixed 10% and does not count toward your tier. Both use payments after refunds.</p>
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            {programs.map((program) => (
+              <article key={program.name} className="min-w-0 border border-ink/20 bg-card p-5 sm:p-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <h2 className="font-serif text-2xl font-semibold text-navy sm:text-3xl">{program.name}</h2>
+                  <span className="border border-navy/25 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-navy">{program.badge}</span>
+                </div>
+                <p className="mt-4 text-sm leading-6 text-ink-soft">{program.description}</p>
+                <div className="my-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <p className="font-serif text-4xl font-semibold text-navy">{program.rate}%</p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft">{program.rateLabel}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-px border border-ink/15 bg-ink/15 sm:grid-cols-4">
+                  <Stat label="Invited" value={program.stats.invitedCount} />
+                  <Stat label={program.name === "Fellowship" ? "Paid referrals" : "Paid toward tier"} value={program.stats.paidCount} />
+                  <Stat label="Pending review" value={program.stats.pendingCount} />
+                  <Stat label="Open balance" value={<MoneyValues balances={program.stats.openBalances} />} />
+                </div>
+                {program.stats.invitedCount === 0 ? <p className="mt-4 text-sm text-ink-soft">No {program.name} referrals yet.</p> : null}
+              </article>
+            ))}
+          </div>
+          <p className="mt-5 text-sm leading-6 text-ink-soft">Paid referrals have a payment remaining after refunds. Fellowship does not count toward your tier. Open balances include pending and approved commissions, after adjustments.</p>
         </section>
 
         <section className="border-t border-ink/20 py-10">
@@ -168,7 +206,7 @@ export default async function PartnerPage() {
                     <tr key={referral.id} className="border-t border-ink/15 align-top">
                       <td className="px-4 py-4"><p className="font-semibold">{application?.name || "Applicant"}</p><p className="mt-1 text-ink-soft">{application?.email || "-"}</p></td>
                       <td className="px-4 py-4 font-mono text-xs">{referral.codeSnapshot}</td>
-                      <td className="px-4 py-4">{application ? `${ticketLabel(application.selectedTicket)} · ${programWeeksLabel(application.selectedWeeks)}` : "-"}</td>
+                      <td className="px-4 py-4">{application ? <><p className="font-semibold text-navy">{getTicket(application.selectedTicket).program === "fellowship" ? "Fellowship" : "Single Week Access"}</p><p className="mt-1 text-xs text-ink-soft">{ticketLabel(application.selectedTicket)} · {programWeeksLabel(application.selectedWeeks)}</p></> : "-"}</td>
                       <td className="px-4 py-4">{application ? applicationStatusLabel(application.status) : "Unavailable"}</td>
                       <td className="px-4 py-4">{order ? orderStatusLabel(order.status) : "Not created"}</td>
                       <td className="px-4 py-4">
@@ -189,8 +227,12 @@ export default async function PartnerPage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number | string }) {
-  return <div className="min-w-0 bg-card px-2.5 py-2.5 text-center"><p className="whitespace-nowrap font-serif text-xl font-semibold text-navy">{value}</p><p className="mt-1 whitespace-nowrap font-mono text-[8px] uppercase tracking-[0.1em] text-ink/50">{label}</p></div>;
+function Stat({ label, value }: { label: string; value: ReactNode }) {
+  return <div className="min-w-0 bg-card px-2.5 py-2.5 text-center"><p className="break-words font-serif text-lg font-semibold text-navy sm:text-xl">{value}</p><p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-ink/50">{label}</p></div>;
+}
+
+function MoneyValues({ balances }: { balances: MoneyBalance[] }) {
+  return <>{balances.map(({ currency, amount }) => <span key={currency} className="block">{formatMoney(amount, currency)}</span>)}</>;
 }
 
 function PartnerAccessDenied({ identity }: { identity: ReturnType<typeof getUserIdentity> }) {
