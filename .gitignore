@@ -46,6 +46,4 @@ todo/
 .DS_Store
 
 # Local docs
-docs/*
-!docs/distributor-discounts.md
-!docs/fellowship-tickets.md
+/docs/
