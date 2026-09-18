@@ -7,6 +7,7 @@
     "build": "next build",
     "deploy": "npm run build && node --env-file=.env.local scripts/deploy.mjs",
     "vercel": "node --env-file=.env.local scripts/vercel.mjs",
+    "vercel:env": "node scripts/vercel-env.mjs",
     "start": "next start",
     "lint": "next lint",
     "db:migrate-local": "node --env-file=.env.local scripts/migrate-local-data.mjs",
