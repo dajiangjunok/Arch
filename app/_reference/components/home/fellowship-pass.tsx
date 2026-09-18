@@ -39,7 +39,6 @@ export function FellowshipPass() {
           ))}
         </div>
         <p className={styles.stayNote} aria-live="polite" aria-atomic="true">
-          <strong>{ticket.priceLabel}</strong>
           <span>{stay.note}</span>
           {stay.saving ? <span className={styles.staySaving}>{stay.saving}</span> : null}
         </p>
