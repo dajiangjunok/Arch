@@ -316,7 +316,7 @@ export function ApplicationForm({
         {normalizedCode ? (
           <div className="grid min-w-0 gap-2 border-t border-ink/15 pt-4">
             <label htmlFor="application-invited-by" className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
-              Invited by (optional)
+              Invited by (required)
             </label>
             <p id="application-invited-by-help" className="text-xs leading-5 text-ink-soft">
               Who invited you? Enter the name of the person, community, or partner who shared this link or code with you.
@@ -324,6 +324,7 @@ export function ApplicationForm({
             <input id="application-invited-by" name="invitedBy" value={invitedBy}
               onChange={(event) => dispatchReferral({ type: "edit_invited_by", value: event.target.value })}
               autoComplete="off" maxLength={200} placeholder="Person, community, or partner name"
+              required pattern={".*\\S.*"} title="Please enter the name of the person, community, or partner who invited you."
               disabled={status === "submitting" || status === "success"}
               aria-describedby="application-invited-by-help"
               className="min-h-12 w-full min-w-0 border border-ink/25 bg-ivory px-4 font-mono text-sm outline-none focus:ring-4 focus:ring-marigold/25" />

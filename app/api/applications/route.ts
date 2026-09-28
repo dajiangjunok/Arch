@@ -56,6 +56,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please enter a valid contact email address." }, { status: 400 });
   }
 
+  if (referralCode && !invitedBy) {
+    return NextResponse.json({ error: "Please enter the name of the person, community, or partner who invited you." }, { status: 400 });
+  }
+
   if (invitedBy.length > 200) {
     return NextResponse.json({ error: "Invited by must be 200 characters or fewer." }, { status: 400 });
   }
