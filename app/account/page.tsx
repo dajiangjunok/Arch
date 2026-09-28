@@ -205,7 +205,7 @@ export default async function AccountPage({
             <div className="mt-7 grid gap-4 md:grid-cols-2">
               {applications.map((application) => {
                 const applicationOrders = ordersByApplicationId.get(application.id) || [];
-                const canEdit = !(["paid", "rejected", "canceled"] as ApplicationStatus[]).includes(application.status) &&
+                const canEdit = (["pending_review", "interview_invited", "interview_scheduled", "more_info_required"] as ApplicationStatus[]).includes(application.status) &&
                   !applicationOrders.some((order) => {
                     const payment = paymentByOrderId.get(order.id);
                     return ["paid", "partially_refunded", "refunded"].includes(order.status) ||
@@ -240,7 +240,7 @@ export default async function AccountPage({
                         Edit application
                       </summary>
                       <p className="mt-3 text-xs leading-5 text-ink-soft">
-                        Contact details{application.distributorId ? ", inviter information," : ""} and written responses can be updated until payment. Program choice and invite code are locked.
+                        Contact details{application.distributorId ? ", inviter information," : ""} and written responses can be updated before approval. Program choice and invite code are locked.
                       </p>
                       <form action={updateApplicationAction} className="mt-4 grid gap-4">
                         <input type="hidden" name="applicationId" value={application.id} />
@@ -264,8 +264,10 @@ export default async function AccountPage({
                         ? "This application is closed and can no longer be edited."
                         : application.status === "canceled"
                           ? "This application has been canceled and can no longer be edited."
-                          : "Application details are locked after payment."}
-                      {application.distributorId ? " Contact the Arch. team to correct inviter information." : ""}
+                          : application.status === "approved" || application.status === "payment_sent"
+                            ? "Application details are locked after approval."
+                            : "Application details are locked once payment begins."}
+                      {" Contact the Arch. team if you need to make a correction."}
                     </p>
                     )}
                     <ApplicationNextStep

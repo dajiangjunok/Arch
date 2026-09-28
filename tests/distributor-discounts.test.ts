@@ -173,9 +173,43 @@ test("applicants cannot edit another user's inviter or a closed application", as
   assert.equal((await db.query<{ invited_by: string }>("select invited_by from applications where id=$1", [application.id])).rows[0].invited_by, "Original");
 });
 
-test("payment and refund records lock applicant edits even when the application is still approved", async () => {
+test("applications remain editable in review and interview states", async () => {
+  const application = await submit("INVITE-TEST");
+  for (const status of ["pending_review", "interview_invited", "interview_scheduled", "more_info_required"]) {
+    await db.query("update applications set status=$2 where id=$1", [application.id, status]);
+    const [edited] = await editInviter(application.id, `Inviter for ${status}`);
+    assert.equal(edited.invited_by, `Inviter for ${status}`);
+    assert.equal(edited.status, status);
+  }
+});
+
+test("approval locks all applicant fields before checkout and after unpaid checkout changes", async () => {
+  const application = await submit("INVITE-TEST", { invitedBy: "Original" });
+  let order: Record<string, any> | undefined;
+  for (const orderStatus of [null, "pending", "checkout_created", "payment_failed", "expired", "canceled"]) {
+    if (orderStatus) {
+      order ??= await orderFor(application.id);
+      await db.query("update orders set status=$2 where id=$1", [order.id, orderStatus]);
+    }
+    for (const status of ["approved", "payment_sent"]) {
+      await db.query("update applications set status=$2 where id=$1", [application.id, status]);
+      const before = (await db.query("select * from applications where id=$1", [application.id])).rows[0];
+      for (const includeInviter of [false, true]) {
+        const args = [application.id, userId, "Changed name", "changed@example.test", "Changed contact", "Changed response", "Changed notes"];
+        if (includeInviter) args.push("Changed inviter");
+        const placeholders = args.map((_, index) => `$${index + 1}`).join(",");
+        const edited = await db.query(`select * from update_unpaid_application(${placeholders})`, args);
+        assert.deepEqual(edited.rows, [], `${status} / ${orderStatus ?? "no order"}`);
+        assert.deepEqual((await db.query("select * from applications where id=$1", [application.id])).rows[0], before);
+      }
+    }
+  }
+});
+
+test("payment and refund records still lock applicant edits if the application returns to review", async () => {
   const application = await submit("INVITE-TEST", { invitedBy: "Original" });
   const order = await orderFor(application.id);
+  await db.query("update applications set status='pending_review' where id=$1", [application.id]);
   for (const status of ["paid", "partially_refunded", "refunded"]) {
     await db.query("update orders set status=$2 where id=$1", [order.id, status]);
     assert.deepEqual(await editInviter(application.id, "Changed"), []);
