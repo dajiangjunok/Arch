@@ -185,15 +185,16 @@ export default async function PartnerPage() {
             <p className="border border-dashed border-ink/30 bg-card px-4 py-5 text-sm text-ink-soft">No one has applied through your links yet.</p>
           ) : (
             <div className="overflow-x-auto border border-ink/20 bg-card">
-              <table className="w-full min-w-[900px] text-left text-sm">
+              <table className="w-full min-w-[1040px] text-left text-sm">
                 <thead className="bg-navy text-ivory">
-                  <tr className="font-mono text-[10px] uppercase tracking-[0.16em]"><th className="px-4 py-3">Applicant</th><th className="px-4 py-3">Code</th><th className="px-4 py-3">Program</th><th className="px-4 py-3">Application</th><th className="px-4 py-3">Payment</th><th className="px-4 py-3">Program total / paid</th><th className="px-4 py-3">Submitted</th></tr>
+                  <tr className="font-mono text-[10px] uppercase tracking-[0.16em]"><th className="px-4 py-3">Applicant</th><th className="px-4 py-3">Code</th><th className="px-4 py-3">Invited by</th><th className="px-4 py-3">Program</th><th className="px-4 py-3">Application</th><th className="px-4 py-3">Payment</th><th className="px-4 py-3">Program total / paid</th><th className="px-4 py-3">Submitted</th></tr>
                 </thead>
                 <tbody>
                   {inviteeRows.map(({ referral, application, order }) => (
                     <tr key={referral.id} className="border-t border-ink/15 align-top">
                       <td className="px-4 py-3"><p className="font-semibold">{application?.name || "Applicant"}</p><p className="mt-1 text-ink-soft">{application?.email || "-"}</p></td>
                       <td className="px-4 py-3 font-mono text-xs">{referral.codeSnapshot}</td>
+                      <td className="min-w-40 max-w-64 break-words px-4 py-3 text-ink-soft">{application?.invitedBy || "—"}</td>
                       <td className="px-4 py-3">{application ? <><p className="font-semibold text-navy">{getTicket(application.selectedTicket).program === "fellowship" ? "Fellowship" : "Single Week Access"}</p><p className="mt-1 text-xs text-ink-soft">{ticketLabel(application.selectedTicket)} · {programWeeksLabel(application.selectedWeeks)}</p></> : "-"}</td>
                       <td className="px-4 py-3">{application ? applicationStatusLabel(application.status) : "Unavailable"}</td>
                       <td className="px-4 py-3">{order ? orderStatusLabel(order.status) : "Not created"}</td>

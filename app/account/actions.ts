@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { parseMoneyInput } from "@/lib/money";
 import {
@@ -74,6 +75,7 @@ export async function updateApplicationAction(formData: FormData) {
   const alternateContact = String(formData.get("alternateContact") || "").trim();
   const message = String(formData.get("message") || "").trim();
   const additionalInfo = String(formData.get("additionalInfo") || "").trim();
+  const invitedBy = formData.has("invitedBy") ? String(formData.get("invitedBy") || "").trim() : undefined;
 
   if (!applicationId || !name || !email || !alternateContact || !message) {
     redirectWithMessage("error", "Please complete all required application fields.");
@@ -91,6 +93,10 @@ export async function updateApplicationAction(formData: FormData) {
     redirectWithMessage("error", "Application responses must be 5,000 characters or fewer.");
   }
 
+  if (invitedBy && invitedBy.length > 200) {
+    redirectWithMessage("error", "Invited by must be 200 characters or fewer.");
+  }
+
   let application;
   try {
     application = await updateUnpaidApplicationForUser({
@@ -101,6 +107,7 @@ export async function updateApplicationAction(formData: FormData) {
       alternateContact,
       message,
       additionalInfo,
+      invitedBy,
     });
   } catch (error) {
     console.error("Unable to update application", error);
@@ -108,8 +115,11 @@ export async function updateApplicationAction(formData: FormData) {
   }
 
   if (!application) {
-    redirectWithMessage("error", "This application cannot be edited after payment, or it could not be found.");
+    redirectWithMessage("error", "This application is no longer editable, or it could not be found.");
   }
 
+  revalidatePath("/account");
+  revalidatePath("/partner");
+  revalidatePath(`/admin/applications/${application.id}`);
   redirectWithMessage("notice", "Your application has been updated.");
 }

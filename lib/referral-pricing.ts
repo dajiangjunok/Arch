@@ -12,6 +12,7 @@ export async function getApplicationCodeQuote(code: string, selectedTicket: Tick
   }
   const quote: CodeQuote = {
     code: normalizeReferralCode(referral.code),
+    distributorId: referral.distributorId,
     kind: referral.kind,
     selectedTicket,
     ...(referral.kind === "discount" ? DISTRIBUTOR_OFFER : {

@@ -32,6 +32,18 @@ async function toggle(enabled: boolean) { await db.query("select set_distributor
 async function submit(code = discountCode, overrides = {}, coupon: string | null = "coupon_fixed") {
   return (await db.query<Record<string, any>>("select * from submit_application($1,$2,$3,$4)", [userId, { ...details, ...overrides }, code, coupon])).rows[0];
 }
+async function editInviter(applicationId: string, invitedBy: string, editorId = userId) {
+  return (await db.query<Record<string, any>>(
+    "select * from update_unpaid_application($1,$2,$3,$4,$5,$6,$7,$8)",
+    [applicationId, editorId, details.name, details.email, details.alternateContact, details.message, details.additionalInfo, invitedBy],
+  )).rows;
+}
+async function adminEditInviter(applicationId: string, invitedBy: string, email: string | null = "admin@example.test") {
+  return (await db.query<Record<string, any>>(
+    "select * from admin_update_application_invited_by($1,$2,$3,$4)",
+    [applicationId, invitedBy, userId, email],
+  )).rows[0];
+}
 async function orderFor(applicationId: string, amount = 979900) {
   await db.query("update applications set status='approved' where id=$1", [applicationId]);
   const order = (await db.query<Record<string, any>>("select * from create_application_order($1,$2,'usd')", [applicationId, amount])).rows[0];
@@ -65,6 +77,160 @@ test("ordinary invites and no-code applications retain full-price behavior", asy
   assert.equal(order.amount, 979900);
   await pay(order.id, 979900);
   assert.equal(await commission(), 88191);
+});
+
+test("inviter names distinguish sources under one distributor for invite and discount codes", async () => {
+  for (const [code, name] of [["INVITE-TEST", "  ABC Community / 김민수  "], [discountCode, "  张三 / Partner B  "]]) {
+    const application = await submit(code, { invitedBy: name });
+    assert.equal(application.invited_by, name.trim());
+    assert.equal(application.distributor_id, distributorId);
+    const referral = (await db.query<{ distributor_id: string; code_snapshot: string }>(
+      "select distributor_id, code_snapshot from referrals where id=$1", [application.referral_id],
+    )).rows[0];
+    assert.equal(referral.distributor_id, distributorId);
+    assert.equal(referral.code_snapshot, code);
+    const saved = (await db.query<{ invited_by: string }>("select invited_by from applications where id=$1", [application.id])).rows[0];
+    assert.equal(saved.invited_by, name.trim());
+    const order = await orderFor(application.id);
+    await pay(order.id, code === discountCode ? 850000 : 979900);
+  }
+  assert.equal(await commission(), Math.floor((979900 + 850000) * 0.09));
+});
+
+test("invited by is optional for every application and whitespace is stored as null", async () => {
+  for (const code of ["", "INVITE-TEST", discountCode]) {
+    for (const overrides of [{}, { invitedBy: "" }, { invitedBy: "   " }, { invitedBy: null }]) {
+      const application = await submit(code, overrides);
+      assert.equal(application.invited_by, null);
+    }
+  }
+});
+
+test("direct applications discard inviter data and cannot acquire attribution from a name", async () => {
+  for (const code of ["", "   "]) {
+    const application = await submit(code, { invitedBy: "ABC Community", distributorId });
+    assert.equal(application.invited_by, null);
+    assert.equal(application.distributor_id, null);
+    assert.equal(application.referral_id, null);
+    await assert.rejects(db.query("update applications set invited_by='ABC Community' where id=$1", [application.id]), /applications_invited_by_check/);
+  }
+  assert.equal((await db.query("select * from referrals")).rows.length, 0);
+});
+
+test("invalid referrals and oversized inviter names leave no applications or referrals", async () => {
+  await assert.rejects(submit("INVALID", { invitedBy: "ABC Community" }), /no longer available/);
+  for (const code of ["INVITE-TEST", discountCode]) {
+    await assert.rejects(submit(code, { invitedBy: "가".repeat(201) }), /200 characters or fewer/);
+  }
+  assert.equal((await db.query("select * from applications")).rows.length, 0);
+  assert.equal((await db.query("select * from referrals")).rows.length, 0);
+  assert.equal((await db.query<{ count: number }>("select sum(used_count)::int as count from referral_codes")).rows[0].count, 0);
+  assert.equal((await submit("INVITE-TEST", { invitedBy: "가".repeat(200) })).invited_by, "가".repeat(200));
+});
+
+test("editing contact details preserves the inviter recorded on the application", async () => {
+  const application = await submit("INVITE-TEST", { invitedBy: "ABC Community" });
+  const edited = (await db.query<{ invited_by: string; name: string; distributor_id: string }>(
+    "select * from update_unpaid_application($1,$2,$3,$4,$5,$6,$7)",
+    [application.id, userId, "Updated name", details.email, details.alternateContact, details.message, "Updated notes"],
+  )).rows[0];
+  assert.equal(edited.name, "Updated name");
+  assert.equal(edited.invited_by, "ABC Community");
+  assert.equal(edited.distributor_id, distributorId);
+});
+
+test("applicants can add, correct and clear their inviter without changing referral or pricing", async () => {
+  for (const code of ["INVITE-TEST", discountCode]) {
+    const original = await submit(code);
+    for (const value of ["  ABC Community / 김민수  ", "张三 / Partner B", "가".repeat(200), "   "]) {
+      const [edited] = await editInviter(original.id, value);
+      assert.equal(edited.invited_by, value.trim() || null);
+      const { invited_by, updated_at, ...savedFields } = edited;
+      const { invited_by: originalInviter, updated_at: originalUpdated, ...originalFields } = original;
+      assert.deepEqual(savedFields, originalFields);
+    }
+  }
+});
+
+test("editing cannot add inviter information to direct applications or exceed the length limit", async () => {
+  const direct = await submit("", {}, null);
+  const [edited] = await editInviter(direct.id, "ABC Community");
+  assert.equal(edited.invited_by, null);
+  assert.equal(edited.distributor_id, null);
+  assert.equal(edited.referral_id, null);
+  const referred = await submit("INVITE-TEST", { invitedBy: "Original" });
+  await assert.rejects(editInviter(referred.id, "가".repeat(201)), /200 characters or fewer/);
+  assert.equal((await db.query<{ invited_by: string }>("select invited_by from applications where id=$1", [referred.id])).rows[0].invited_by, "Original");
+});
+
+test("applicants cannot edit another user's inviter or a closed application", async () => {
+  const application = await submit("INVITE-TEST", { invitedBy: "Original" });
+  assert.deepEqual(await editInviter(application.id, "Changed", randomUUID()), []);
+  for (const status of ["paid", "rejected", "canceled"]) {
+    await db.query("update applications set status=$2 where id=$1", [application.id, status]);
+    assert.deepEqual(await editInviter(application.id, "Changed"), []);
+  }
+  assert.equal((await db.query<{ invited_by: string }>("select invited_by from applications where id=$1", [application.id])).rows[0].invited_by, "Original");
+});
+
+test("payment and refund records lock applicant edits even when the application is still approved", async () => {
+  const application = await submit("INVITE-TEST", { invitedBy: "Original" });
+  const order = await orderFor(application.id);
+  for (const status of ["paid", "partially_refunded", "refunded"]) {
+    await db.query("update orders set status=$2 where id=$1", [order.id, status]);
+    assert.deepEqual(await editInviter(application.id, "Changed"), []);
+  }
+  await db.query("update orders set status='checkout_created' where id=$1", [order.id]);
+  const paymentId = randomUUID();
+  await db.query("insert into payments(id,order_id,provider,status,currency) values($1,$2,'stripe','processing','usd')", [paymentId, order.id]);
+  for (const status of ["processing", "succeeded", "partially_refunded", "refunded"]) {
+    await db.query("update payments set status=$2 where id=$1", [paymentId, status]);
+    assert.deepEqual(await editInviter(application.id, "Changed"), []);
+  }
+});
+
+test("administrators can correct paid applications with an audit trail and unchanged commissions", async () => {
+  await db.query("insert into user_roles(user_id,role) values($1,'admin')", [userId]);
+  const application = await submit(discountCode, { invitedBy: "Original" });
+  const order = await orderFor(application.id);
+  await pay(order.id);
+  const before = (await db.query<Record<string, any>>("select * from applications where id=$1", [application.id])).rows[0];
+  const previousOrders = (await db.query("select * from orders where application_id=$1", [application.id])).rows;
+  const previousCommissions = (await db.query("select * from commissions")).rows;
+  const edited = await adminEditInviter(application.id, "  Corrected / 김민수  ");
+  assert.equal(edited.invited_by, "Corrected / 김민수");
+  const { invited_by, updated_at, ...savedFields } = edited;
+  const { invited_by: previousInviter, updated_at: previousUpdated, ...previousFields } = before;
+  assert.deepEqual(savedFields, previousFields);
+  assert.deepEqual((await db.query("select * from orders where application_id=$1", [application.id])).rows, previousOrders);
+  assert.deepEqual((await db.query("select * from commissions")).rows, previousCommissions);
+  const audit = (await db.query<Record<string, any>>("select * from admin_audit_logs where target_id=$1", [application.id])).rows[0];
+  assert.equal(audit.admin_user_id, userId);
+  assert.equal(audit.action, "application.invited_by_updated");
+  assert.deepEqual(audit.metadata, { previousInvitedBy: "Original", invitedBy: "Corrected / 김민수" });
+  await adminEditInviter(application.id, "Corrected / 김민수");
+  assert.equal((await db.query("select * from admin_audit_logs where target_id=$1", [application.id])).rows.length, 1);
+  assert.equal((await adminEditInviter(application.id, "   ")).invited_by, null);
+  assert.equal((await db.query("select * from admin_audit_logs where target_id=$1", [application.id])).rows.length, 2);
+});
+
+test("admin inviter corrections reject non-admins, direct applications and excessive text", async () => {
+  const referred = await submit("INVITE-TEST", { invitedBy: "Original" });
+  await assert.rejects(adminEditInviter(referred.id, "Changed"), /Administrator access/);
+  await db.query("insert into user_roles(user_id,role) values($1,'admin')", [userId]);
+  const direct = await submit("", {}, null);
+  await assert.rejects(adminEditInviter(direct.id, "Changed"), /no distributor referral/);
+  await assert.rejects(adminEditInviter(randomUUID(), "Changed"), /Application not found/);
+  await assert.rejects(adminEditInviter(referred.id, "가".repeat(201)), /200 characters or fewer/);
+  assert.equal((await db.query<{ invited_by: string }>("select invited_by from applications where id=$1", [referred.id])).rows[0].invited_by, "Original");
+  assert.equal((await db.query("select * from admin_audit_logs where target_id=$1", [referred.id])).rows.length, 0);
+});
+
+test("a failed admin audit rolls back the inviter correction", async () => {
+  await db.query("insert into user_roles(user_id,role) values($1,'admin')", [userId]);
+  const application = await submit("INVITE-TEST", { invitedBy: "Original" });
+  await assert.rejects(adminEditInviter(application.id, "Changed", null), /not-null constraint/);
+  assert.equal((await db.query<{ invited_by: string }>("select invited_by from applications where id=$1", [application.id])).rows[0].invited_by, "Original");
 });
 
 test("legacy deployment interface accepts ordinary invites but cannot attach a discount without pricing", async () => {
@@ -382,7 +548,7 @@ test("migration preserves legacy manual waivers even when all orders are Fellows
 
 test("client roles cannot invoke price/permission RPCs or bypass submission with direct inserts", async () => {
   for (const role of ["anon", "authenticated"]) {
-    for (const signature of ["submit_application(uuid,jsonb,text,text)", "set_distributor_discount(uuid,boolean)", "create_application_order(uuid,integer,text)"]) {
+    for (const signature of ["submit_application(uuid,jsonb,text,text)", "set_distributor_discount(uuid,boolean)", "create_application_order(uuid,integer,text)", "update_unpaid_application(uuid,uuid,text,text,text,text,text,text)", "admin_update_application_invited_by(uuid,text,uuid,text)"]) {
       const result = await db.query<{allowed: boolean}>("select has_function_privilege($1,$2,'execute') as allowed", [role, signature]);
       assert.equal(result.rows[0].allowed, false);
     }

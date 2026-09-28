@@ -62,6 +62,7 @@ type ApplicationRow = DiscountSnapshotRow & {
   alternate_contact: string;
   message: string;
   additional_info: string;
+  invited_by: string | null;
   status: ApplicationStatus;
   referral_id: string | null;
   referral_code: string | null;
@@ -209,6 +210,7 @@ function mapApplication(row: ApplicationRow): Application {
     alternateContact: row.alternate_contact || "",
     message: row.message,
     additionalInfo: row.additional_info || "",
+    invitedBy: row.invited_by,
     status: row.status,
     referralId: row.referral_id,
     referralCode: row.referral_code,
@@ -387,6 +389,7 @@ export async function createApplication(input: {
   message: string;
   additionalInfo: string;
   referralCode?: string;
+  invitedBy?: string;
   stripeCouponId?: string | null;
 }) {
   const { data, error } = await createSupabaseAdminClient().rpc("submit_application", {
@@ -396,6 +399,7 @@ export async function createApplication(input: {
       selectedTicket: input.selectedTicket, selectedWeeks: input.selectedWeeks,
       alternateContact: input.alternateContact.trim(), message: input.message.trim(),
       additionalInfo: input.additionalInfo.trim(),
+      invitedBy: input.invitedBy?.trim() || null,
     },
     p_code: normalizeReferralCode(input.referralCode || ""),
     p_stripe_coupon_id: input.stripeCouponId || null,
@@ -404,6 +408,7 @@ export async function createApplication(input: {
     if (error.code === "P0001" && [
       "This code is invalid or no longer available.",
       "This discount is only available for the 1 Week program.",
+      "Invited by must be 200 characters or fewer.",
     ].includes(error.message)) throw new ReferralCodeError(error.message);
     throw error;
   }
@@ -488,6 +493,7 @@ export async function updateUnpaidApplicationForUser(input: {
   alternateContact: string;
   message: string;
   additionalInfo: string;
+  invitedBy?: string;
 }) {
   const { data, error } = await createSupabaseAdminClient().rpc("update_unpaid_application", {
     p_application_id: input.id,
@@ -497,11 +503,29 @@ export async function updateUnpaidApplicationForUser(input: {
     p_alternate_contact: input.alternateContact.trim(),
     p_message: input.message.trim(),
     p_additional_info: input.additionalInfo.trim(),
+    p_invited_by: input.invitedBy?.trim() ?? null,
   });
 
   if (error) throw error;
   const row = Array.isArray(data) ? data[0] : data;
   return row ? mapApplication(row as ApplicationRow) : null;
+}
+
+export async function updateApplicationInvitedByForAdmin(input: {
+  id: string;
+  invitedBy: string;
+  adminUserId: string;
+  adminEmail: string;
+}) {
+  const { data, error } = await createSupabaseAdminClient().rpc("admin_update_application_invited_by", {
+    p_application_id: input.id,
+    p_invited_by: input.invitedBy.trim(),
+    p_admin_user_id: input.adminUserId,
+    p_admin_email: input.adminEmail,
+  });
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  return mapApplication(row as ApplicationRow);
 }
 
 export async function listOrders() {

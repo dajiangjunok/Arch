@@ -42,6 +42,7 @@ export async function POST(request: Request) {
   const cookieReferralCode = cookieStore.get("arch_referral_code")?.value || "";
   const hasSubmittedReferralCode = Object.prototype.hasOwnProperty.call(body, "referralCode");
   const referralCode = hasSubmittedReferralCode ? readString(body.referralCode) : cookieReferralCode;
+  const invitedBy = referralCode ? readString(body.invitedBy) : "";
   const selectedTicket = readString(body.selectedTicket) as TicketId;
   const submittedWeeks = Array.isArray(body.selectedWeeks) ? body.selectedWeeks.map(readString) : [];
   const selectedWeeks = submittedWeeks.filter((week): week is ProgramWeek => programWeeks.includes(week as ProgramWeek));
@@ -53,6 +54,10 @@ export async function POST(request: Request) {
 
   if (!isValidEmailAddress(contactEmail)) {
     return NextResponse.json({ error: "Please enter a valid contact email address." }, { status: 400 });
+  }
+
+  if (invitedBy.length > 200) {
+    return NextResponse.json({ error: "Invited by must be 200 characters or fewer." }, { status: 400 });
   }
 
   if (!validTicketIds.includes(selectedTicket)) {
@@ -87,6 +92,7 @@ export async function POST(request: Request) {
       message,
       additionalInfo,
       referralCode,
+      invitedBy,
       stripeCouponId: offer?.stripeCouponId,
     });
 

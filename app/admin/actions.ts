@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createStripeCheckoutSession, createStripeRefund, validateDistributorDiscountConfiguration } from "@/lib/stripe";
 import { parseMoneyInput } from "@/lib/money";
@@ -21,6 +22,7 @@ import {
   resetRefundRequestAfterStripeError,
   updateCommissionStatus,
   updateApplicationStatus,
+  updateApplicationInvitedByForAdmin,
   updateDistributorStatus,
   updateDistributorDiscount,
   updateOrder,
@@ -213,6 +215,31 @@ export async function updateCommissionStatusAction(formData: FormData) {
     metadata: { status },
   });
   redirectWithMessage("/admin/referrals", "notice", "Commission status updated.");
+}
+
+export async function updateApplicationInvitedByAction(formData: FormData) {
+  const session = await requireAdmin();
+  const applicationId = String(formData.get("applicationId") || "");
+  const invitedBy = String(formData.get("invitedBy") || "").trim();
+  const application = applicationId ? await getApplication(applicationId) : null;
+
+  if (!application) redirectWithMessage("/admin/applications", "error", "Application not found.");
+  const path = `/admin/applications/${application.id}`;
+  if (!application.distributorId) redirectWithMessage(path, "error", "This application has no distributor referral.");
+  if (invitedBy.length > 200) redirectWithMessage(path, "error", "Invited by must be 200 characters or fewer.");
+
+  try {
+    await updateApplicationInvitedByForAdmin({
+      id: application.id, invitedBy, adminUserId: session.userId, adminEmail: session.email,
+    });
+  } catch (error) {
+    console.error("Unable to update application inviter", error);
+    redirectWithMessage(path, "error", "Inviter information could not be updated. Please try again.");
+  }
+  revalidatePath(path);
+  revalidatePath("/account");
+  revalidatePath("/partner");
+  redirectWithMessage(path, "notice", "Inviter information updated.");
 }
 
 export async function updateApplicationStatusAction(formData: FormData) {

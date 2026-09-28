@@ -10,6 +10,7 @@ export const DISTRIBUTOR_OFFER = {
 
 export type CodeQuote = {
   code: string;
+  distributorId: string;
   kind: "referral" | "discount";
   selectedTicket: TicketId;
   originalAmount: number | null;

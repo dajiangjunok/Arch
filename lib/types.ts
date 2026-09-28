@@ -64,6 +64,7 @@ export type Application = DiscountSnapshot & {
   alternateContact: string;
   message: string;
   additionalInfo: string;
+  invitedBy: string | null;
   status: ApplicationStatus;
   referralId: string | null;
   referralCode: string | null;

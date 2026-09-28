@@ -7,6 +7,7 @@ import {
   approveApplicationAction,
   inviteToInterviewAction,
   updateApplicationStatusAction,
+  updateApplicationInvitedByAction,
 } from "../../actions";
 import { requireAdmin } from "@/lib/admin-auth";
 import {
@@ -100,6 +101,7 @@ export default async function ApplicationDetailPage({
             <Info label="Alternate contact" value={application.alternateContact} />
             <Info label="Referral code" value={application.referralCode || "None"} />
             <Info label="Distributor" value={application.distributorId || "None"} />
+            <Info label="Invited by" value={application.invitedBy || "—"} />
             <Info label="Submitted" value={formatDate(application.createdAt)} />
             <Info label="Updated" value={formatDate(application.updatedAt)} />
           </dl>
@@ -122,6 +124,23 @@ export default async function ApplicationDetailPage({
         </article>
 
         <aside className="grid content-start gap-6">
+          {application.distributorId ? (
+            <form action={updateApplicationInvitedByAction} className="border border-line bg-paper p-5">
+              <input type="hidden" name="applicationId" value={application.id} />
+              <label htmlFor="admin-invited-by" className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">
+                Invited by (optional)
+              </label>
+              <p id="admin-invited-by-help" className="mt-3 text-sm leading-6 text-ink-soft">
+                Add or correct the person, community, or partner who invited this applicant. Leave blank to clear.
+              </p>
+              <input id="admin-invited-by" name="invitedBy" defaultValue={application.invitedBy || ""}
+                maxLength={200} placeholder="Person, community, or partner name" aria-describedby="admin-invited-by-help"
+                className="mt-3 min-h-12 w-full min-w-0 border border-line bg-cloud px-3 text-sm outline-none focus:border-ink" />
+              <SubmitButton pendingLabel="Saving..." className="mt-4 min-h-12 w-full bg-ink px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-paper hover:bg-sun hover:text-ink">
+                Save inviter
+              </SubmitButton>
+            </form>
+          ) : null}
           {isLegacyFundedFellowship && application.status === "approved" ? (
             <div className="border border-ink bg-sun p-5 text-ink">
               <p className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]">Fellowship access</p>
@@ -244,9 +263,9 @@ export default async function ApplicationDetailPage({
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-cloud p-4">
+    <div className="min-w-0 bg-cloud p-4">
       <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-ink-soft">{label}</dt>
-      <dd className="mt-2 text-sm leading-6">{value}</dd>
+      <dd className="mt-2 break-words text-sm leading-6">{value}</dd>
     </div>
   );
 }

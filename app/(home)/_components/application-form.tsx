@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { isValidEmailAddress } from "@/lib/email";
 import { DiscountSummary } from "@/app/_components/discount-summary";
 import { normalizeReferralCode, type CodeQuote } from "@/lib/discounts";
+import { createReferralFormState, referralFormReducer } from "@/lib/referral-form";
 import { getTicket, ticketOptions } from "@/lib/tickets";
 import type { ProgramWeek, TicketId } from "@/lib/types";
 
@@ -33,9 +34,8 @@ export function ApplicationForm({
   const [message, setMessage] = useState("");
   const [redirectCountdown, setRedirectCountdown] = useState(4);
   const [emailError, setEmailError] = useState("");
-  const [inviteCode, setInviteCode] = useState(referralCode);
+  const [{ code: inviteCode, quote: codeQuote, invitedBy }, dispatchReferral] = useReducer(referralFormReducer, referralCode, createReferralFormState);
   const [requestedCode, setRequestedCode] = useState(normalizeReferralCode(referralCode));
-  const [codeQuote, setCodeQuote] = useState<CodeQuote | null>(null);
   const [codeError, setCodeError] = useState("");
   const [checkingCode, setCheckingCode] = useState(false);
   const [checkAttempt, setCheckAttempt] = useState(0);
@@ -53,7 +53,7 @@ export function ApplicationForm({
   const appliedQuote = codeQuote?.code === normalizedCode && codeQuote.selectedTicket === selectedTicket ? codeQuote : null;
 
   useEffect(() => {
-    setCodeQuote(null);
+    dispatchReferral({ type: "verification_started" });
     setCodeError("");
     setCheckingCode(false);
     if (!requestedCode || normalizedCode !== requestedCode) return;
@@ -71,7 +71,7 @@ export function ApplicationForm({
           setCodeError(result.error || "Unable to apply this code.");
           return;
         }
-        setCodeQuote(result as CodeQuote);
+        dispatchReferral({ type: "verified", quote: result as CodeQuote });
       } catch {
         if (!controller.signal.aborted) setCodeError("Unable to verify this code. Please try again.");
       } finally {
@@ -287,7 +287,11 @@ export function ApplicationForm({
         {referralCode && normalizedCode === normalizeReferralCode(referralCode) ? <p className="text-xs text-ink-soft">From your partner link</p> : null}
         <div className="flex flex-wrap gap-2">
           <input id="application-code" name="referralCode" value={inviteCode}
-            onChange={(event) => { setInviteCode(event.target.value.toUpperCase()); setRequestedCode(""); setCodeQuote(null); }}
+            onChange={(event) => {
+              const code = event.target.value;
+              dispatchReferral({ type: "edit_code", code });
+              if (normalizeReferralCode(code) !== normalizedCode) setRequestedCode("");
+            }}
             autoComplete="off" maxLength={64} placeholder="Enter code"
             disabled={status === "submitting" || status === "success"}
             aria-describedby="application-code-status"
@@ -298,7 +302,7 @@ export function ApplicationForm({
             {checkingCode ? "Checking…" : "Apply"}
           </button>
           {inviteCode ? <button type="button" disabled={status === "submitting" || status === "success"}
-            onClick={() => { setInviteCode(""); setRequestedCode(""); setCodeQuote(null); }}
+            onClick={() => { dispatchReferral({ type: "remove_code" }); setRequestedCode(""); }}
             className="px-2 text-xs underline">Remove</button> : null}
         </div>
         <div id="application-code-status" aria-live="polite">
@@ -309,6 +313,22 @@ export function ApplicationForm({
           originalAmount={appliedQuote.originalAmount!} discountAmount={appliedQuote.discountAmount}
           amountDue={appliedQuote.amountDue!} currency={appliedQuote.currency} /> : null}
         {appliedQuote?.kind === "discount" ? <p className="text-xs text-ink-soft">Payment is requested after review. This price is saved when you submit your application.</p> : null}
+        {appliedQuote ? (
+          <div className="grid min-w-0 gap-2 border-t border-ink/15 pt-4">
+            <label htmlFor="application-invited-by" className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
+              Invited by (optional)
+            </label>
+            <p id="application-invited-by-help" className="text-xs leading-5 text-ink-soft">
+              Who invited you? Enter the name of the person, community, or partner who shared this link or code with you.
+            </p>
+            <input id="application-invited-by" name="invitedBy" value={invitedBy}
+              onChange={(event) => dispatchReferral({ type: "edit_invited_by", value: event.target.value })}
+              autoComplete="off" maxLength={200} placeholder="Person, community, or partner name"
+              disabled={status === "submitting" || status === "success"}
+              aria-describedby="application-invited-by-help"
+              className="min-h-12 w-full min-w-0 border border-ink/25 bg-ivory px-4 font-mono text-sm outline-none focus:ring-4 focus:ring-marigold/25" />
+          </div>
+        ) : null}
       </div>
 
       <label className="grid min-w-0 gap-2">

@@ -227,6 +227,12 @@ export default async function AccountPage({
                     </div>
                     {application.discountCode ? <DiscountSummary code={application.discountCode} originalAmount={application.originalAmount!}
                       discountAmount={application.discountAmount} amountDue={application.amountDue!} currency={application.pricingCurrency!} /> : null}
+                    {application.distributorId ? (
+                      <dl className="mt-4 text-sm">
+                        <dt className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/45">Invited by</dt>
+                        <dd className="mt-1 break-words text-ink-soft">{application.invitedBy || "—"}</dd>
+                      </dl>
+                    ) : null}
                     <p className="mt-5 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-ink/65">{application.message}</p>
                     {canEdit ? (
                     <details className="mt-5 border-t border-ink/15 pt-5">
@@ -234,13 +240,17 @@ export default async function AccountPage({
                         Edit application
                       </summary>
                       <p className="mt-3 text-xs leading-5 text-ink-soft">
-                        Contact details and written responses can be updated until payment. Program choice and invite code are locked.
+                        Contact details{application.distributorId ? ", inviter information," : ""} and written responses can be updated until payment. Program choice and invite code are locked.
                       </p>
                       <form action={updateApplicationAction} className="mt-4 grid gap-4">
                         <input type="hidden" name="applicationId" value={application.id} />
                         <ApplicationInput label="Name" name="name" defaultValue={application.name} maxLength={200} />
                         <ApplicationInput label="Best contact email" name="email" type="email" defaultValue={application.email} maxLength={320} />
                         <ApplicationInput label="Alternate contact" name="alternateContact" defaultValue={application.alternateContact} maxLength={500} />
+                        {application.distributorId ? (
+                          <ApplicationInput label="Invited by (optional)" name="invitedBy" defaultValue={application.invitedBy || ""}
+                            placeholder="Person, community, or partner name" maxLength={200} required={false} />
+                        ) : null}
                         <ApplicationTextarea label="About you and your goals" name="message" defaultValue={application.message} required />
                         <ApplicationTextarea label="Anything else we should know?" name="additionalInfo" defaultValue={application.additionalInfo} />
                         <SubmitButton pendingLabel="Saving..." className="min-h-11 justify-self-start rounded-md bg-navy px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ivory transition hover:bg-marigold hover:text-ink">
@@ -255,6 +265,7 @@ export default async function AccountPage({
                         : application.status === "canceled"
                           ? "This application has been canceled and can no longer be edited."
                           : "Application details are locked after payment."}
+                      {application.distributorId ? " Contact the Arch. team to correct inviter information." : ""}
                     </p>
                     )}
                     <ApplicationNextStep
@@ -366,11 +377,11 @@ function Stat({ label, value }: { label: string; value: number }) {
   );
 }
 
-function ApplicationInput({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+function ApplicationInput({ label, required = true, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="grid gap-1 text-xs text-ink-soft">
       {label}
-      <input {...props} required className="min-h-11 border border-ink/25 bg-ivory px-3 text-sm text-ink outline-none focus:border-navy" />
+      <input {...props} required={required} className="min-h-11 border border-ink/25 bg-ivory px-3 text-sm text-ink outline-none focus:border-navy" />
     </label>
   );
 }
