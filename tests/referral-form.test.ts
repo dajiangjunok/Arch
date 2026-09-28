@@ -14,6 +14,28 @@ function filled() {
   return reduce(verified, { type: "edit_invited_by", value: "ABC Community / 김민수" });
 }
 
+test("an inviter entered before applying a code survives verification", () => {
+  for (const quote of [invite, discount]) {
+    let state = reduce(createReferralFormState(), { type: "edit_code", code: quote.code });
+    state = reduce(state, { type: "edit_invited_by", value: "ABC Community / 김민수" });
+    state = reduce(state, { type: "verification_started" });
+    assert.equal(state.invitedBy, "ABC Community / 김민수");
+    state = reduce(state, { type: "verified", quote });
+    assert.equal(state.invitedBy, "ABC Community / 김민수");
+    assert.equal(state.distributorId, quote.distributorId);
+  }
+});
+
+test("editing the inviter for an unverified replacement code preserves the new value", () => {
+  const other = { ...invite, code: "OTHER-INVITE", distributorId: "other" };
+  let state = reduce(filled(), { type: "edit_code", code: other.code });
+  state = reduce(state, { type: "verification_started" });
+  state = reduce(state, { type: "edit_invited_by", value: "New Community" });
+  state = reduce(state, { type: "verified", quote: other });
+  assert.equal(state.invitedBy, "New Community");
+  assert.equal(state.distributorId, "other");
+});
+
 test("editing only code casing or surrounding spaces preserves the verified referral and inviter", () => {
   const state = reduce(filled(), { type: "edit_code", code: "  agwn-invite  " });
   assert.equal(state.quote, invite);

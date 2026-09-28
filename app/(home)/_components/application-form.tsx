@@ -307,13 +307,13 @@ export function ApplicationForm({
         </div>
         <div id="application-code-status" aria-live="polite">
           {codeError ? <p className="text-sm text-red-800">{codeError}</p> : null}
-          {appliedQuote ? <p className="text-sm text-emerald-800">{appliedQuote.kind === "discount" ? "Discount applied. Your partner referral is included." : "Invite code applied. This code records your partner referral without a price discount."}</p> : null}
+          {appliedQuote ? <p className="text-sm text-emerald-800">{appliedQuote.kind === "discount" ? "Discount applied." : "Invite code applied."}</p> : null}
         </div>
         {appliedQuote?.kind === "discount" ? <DiscountSummary code={appliedQuote.code}
           originalAmount={appliedQuote.originalAmount!} discountAmount={appliedQuote.discountAmount}
           amountDue={appliedQuote.amountDue!} currency={appliedQuote.currency} /> : null}
         {appliedQuote?.kind === "discount" ? <p className="text-xs text-ink-soft">Payment is requested after review. This price is saved when you submit your application.</p> : null}
-        {appliedQuote ? (
+        {normalizedCode ? (
           <div className="grid min-w-0 gap-2 border-t border-ink/15 pt-4">
             <label htmlFor="application-invited-by" className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
               Invited by (optional)

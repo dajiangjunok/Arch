@@ -37,9 +37,10 @@ export function referralFormReducer(state: ReferralFormState, action: ReferralFo
         ...state,
         quote: action.quote,
         distributorId: action.quote.distributorId,
-        invitedBy: state.distributorId === action.quote.distributorId ? state.invitedBy : "",
+        invitedBy: state.distributorId === null || state.distributorId === action.quote.distributorId ? state.invitedBy : "",
       };
     case "edit_invited_by":
-      return { ...state, invitedBy: action.value };
+      // A draft entered before verification belongs to the code currently being entered.
+      return { ...state, invitedBy: action.value, distributorId: state.quote?.distributorId ?? null };
   }
 }
