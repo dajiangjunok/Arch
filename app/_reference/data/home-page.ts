@@ -191,7 +191,7 @@ export const singleWeekBenefits = [
 ] as const;
 
 export const fellowshipBenefits = [
-  "Hotel accommodation in Shanghai for your selected week(s)",
+  "Accommodation in Shanghai",
   "Coworking and build space, shared with the rest of the cohort",
   "Member-led events: Arch mixers, talks and meetups, or host your own",
   "The global builder network: founders, makers, creators and remote professionals",
