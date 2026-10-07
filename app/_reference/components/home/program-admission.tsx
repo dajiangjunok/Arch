@@ -77,7 +77,7 @@ export function ProgramAdmission() {
           </AdmissionCard>
         </div>
         <p className="pricing-note">
-          Choose any 1, 2, or all 3 weeks when you apply. For group bookings,
+          The Fellowship includes all three weeks. For group bookings,
           write to us for a quote.
         </p>
       </div>

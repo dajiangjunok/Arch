@@ -196,14 +196,14 @@ export const fellowshipBenefits = [
   "Member-led events: Arch mixers, talks and meetups, or host your own",
   "The global builder network: founders, makers, creators and remote professionals",
   "Group meals at select community gatherings",
-  "Flexible 1 to 3 week stay, on your own work rhythm",
+  "A three-week stay, on your own work rhythm",
 ] as const;
 
-export const fellowshipStays = [
-  { weeks: 1, ticketId: "fellowship_single_week", label: "1 Week", note: "Choose Week 1, 2, or 3", saving: null },
-  { weeks: 2, ticketId: "fellowship_two_weeks", label: "2 Weeks", note: "Choose any two weeks", saving: "Save 20%" },
-  { weeks: 3, ticketId: "fellowship_full_program", label: "3 Weeks", note: "Includes all three weeks", saving: "Save 33%" },
-] as const;
+export const fellowshipStay = {
+  ticketId: "fellowship_full_program",
+  note: "Includes all three weeks",
+  saving: "Save 33%",
+} as const;
 
 export const excludedExpenses = [
   "International flights to and from China",

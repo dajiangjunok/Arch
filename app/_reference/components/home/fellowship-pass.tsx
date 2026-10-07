@@ -3,17 +3,15 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { getTicket } from "@/lib/tickets";
-import { fellowshipBenefits, fellowshipStays } from "../../data/home-page";
+import { fellowshipBenefits, fellowshipStay } from "../../data/home-page";
 import styles from "../../home-page.module.css";
 
 export function FellowshipPass() {
-  const [selectedWeeks, setSelectedWeeks] = useState<number>(1);
   const [flipped, setFlipped] = useState(false);
   const frontButtonRef = useRef<HTMLButtonElement>(null);
   const backButtonRef = useRef<HTMLButtonElement>(null);
   const previousFlipped = useRef(false);
-  const stay = fellowshipStays.find((option) => option.weeks === selectedWeeks)!;
-  const ticket = getTicket(stay.ticketId);
+  const ticket = getTicket(fellowshipStay.ticketId);
 
   useEffect(() => {
     if (previousFlipped.current === flipped) return;
@@ -24,23 +22,10 @@ export function FellowshipPass() {
 
   return (
     <>
-      <div className={styles.staySelector} role="group" aria-label="Choose your stay">
-        <div className={styles.stayOptions}>
-          {fellowshipStays.map((option) => (
-            <button
-              key={option.weeks}
-              type="button"
-              className={styles.stayOption}
-              aria-pressed={selectedWeeks === option.weeks}
-              onClick={() => setSelectedWeeks(option.weeks)}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-        <p className={styles.stayNote} aria-live="polite" aria-atomic="true">
-          <span>{stay.note}</span>
-          {stay.saving ? <span className={styles.staySaving}>{stay.saving}</span> : null}
+      <div className={styles.staySelector}>
+        <p className={styles.stayNote}>
+          <span>{fellowshipStay.note}</span>
+          <span className={styles.staySaving}>{fellowshipStay.saving}</span>
         </p>
       </div>
       <div className={`builder-pass${flipped ? " flipped" : ""}`}>

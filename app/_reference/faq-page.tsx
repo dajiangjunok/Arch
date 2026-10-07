@@ -110,8 +110,7 @@ const questions: readonly {
           factory, and lab visits.
         </p>
         <p>
-          The Fellowship offers a choice of any one, two, or all three weeks based in
-          Shanghai, with partial access to selected company visits. Some of these
+          The Fellowship is a three-week program in Shanghai, with full three-week participation required. with partial access to selected company visits. Some of these
           visits may overlap with the Single-Week itinerary, but Fellows do not
           join the full company-visit schedule and do not travel to other cities
           as part of the program.
@@ -227,9 +226,7 @@ const questions: readonly {
       <p>
         The Fellowship is a place to live, work and build in Shanghai with a
         global community of builders and makers. Choose any of the three program
-        weeks: <strong>$1,500 USD for one week</strong>,{" "}
-        <strong>$2,400 USD for any two weeks</strong>, or{" "}
-        <strong>$3,000 USD for all three weeks</strong>. Apply and tell us what
+        weeks. Apply and tell us what
         you&apos;re building. Payment is requested after your application is approved.
       </p>
     ),
