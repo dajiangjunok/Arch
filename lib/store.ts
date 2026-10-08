@@ -23,8 +23,10 @@ import type {
   ReferralCodeStatus,
   RefundRequest,
   RefundRequestStatus,
+  RegisteredUser,
   StripeEventRecord,
   TicketId,
+  UserApplicationSummary,
 } from "./types";
 
 type DiscountSnapshotRow = {
@@ -1028,7 +1030,7 @@ export async function updateDistributorTiers(
   if (error) throw error;
 }
 
-export async function listAdminUserOptions() {
+async function listAuthUsers() {
   const supabase = createSupabaseAdminClient();
   const users: AuthUser[] = [];
   let page = 1;
@@ -1043,7 +1045,48 @@ export async function listAdminUserOptions() {
     page = data.nextPage;
   }
 
-  return users
+  return users;
+}
+
+export async function listRegisteredUsers(): Promise<RegisteredUser[]> {
+  return (await listAuthUsers()).map((user) => ({
+    id: user.id,
+    displayName: getUserIdentity(user).displayName,
+    email: user.email ? normalizeEmail(user.email) : "",
+    createdAt: user.created_at,
+    lastSignInAt: user.last_sign_in_at || null,
+    emailConfirmed: Boolean(user.email_confirmed_at),
+  }));
+}
+
+export async function listUserApplicationSummaries(): Promise<UserApplicationSummary[]> {
+  const supabase = createSupabaseAdminClient();
+  const applications: UserApplicationSummary[] = [];
+  const pageSize = 1000;
+
+  for (let offset = 0; ;) {
+    const { data, error } = await supabase.from("applications")
+      .select("id, user_id, status, created_at")
+      .not("user_id", "is", null)
+      .order("created_at", { ascending: false })
+      .order("id")
+      .range(offset, offset + pageSize - 1);
+    if (error) throw error;
+    applications.push(...data.map((row) => ({
+      id: row.id,
+      userId: row.user_id,
+      status: row.status as ApplicationStatus,
+      createdAt: row.created_at,
+    })));
+    if (data.length === 0) break;
+    offset += data.length;
+  }
+
+  return applications;
+}
+
+export async function listAdminUserOptions() {
+  return (await listAuthUsers())
     .map(mapAdminUserOption)
     .filter((user): user is AdminUserOption => Boolean(user))
     .sort((a, b) => a.email.localeCompare(b.email));

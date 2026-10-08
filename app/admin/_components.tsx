@@ -15,6 +15,9 @@ export function AdminShell({ children, title }: { children: React.ReactNode; tit
           </h1>
         </div>
         <nav className="flex flex-wrap items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.2em]">
+          <Link className="border border-line bg-paper px-4 py-3 hover:border-ink" href="/admin/users">
+            Users
+          </Link>
           <Link className="border border-line bg-paper px-4 py-3 hover:border-ink" href="/admin/applications">
             Applications
           </Link>

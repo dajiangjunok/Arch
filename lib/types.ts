@@ -155,6 +155,12 @@ export type AdminUserOption = {
   lastSignInAt: string | null;
 };
 
+export type RegisteredUser = AdminUserOption & {
+  emailConfirmed: boolean;
+};
+
+export type UserApplicationSummary = Pick<Application, "id" | "userId" | "status" | "createdAt">;
+
 export type Distributor = {
   id: string;
   userId: string | null;
