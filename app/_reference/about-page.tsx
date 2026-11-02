@@ -53,7 +53,7 @@ function AboutStory() {
         <p>
           The Arch is a three-week China innovation immersion, co-hosted with{" "}
           <strong>PROPELLER</strong>. From November 1 to 21, 2026 we travel
-          through Shanghai, Beijing, Hangzhou and Shenzhen, into more than 50
+          through Shanghai, into more than 50
           companies and institutions, in conversation with more than 60 featured
           guests. Most China programs are a tour behind glass: you walk the
           showroom, take a few photographs, leave with a folder. The Arch puts

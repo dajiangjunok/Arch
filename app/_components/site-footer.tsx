@@ -107,7 +107,7 @@ export function SiteFooter({ separated = false }: { separated?: boolean }) {
         </nav>
 
         <div className={styles.base}>
-          <span>Nov 1 – Nov 21, 2026 · Shanghai, Beijing, Hangzhou &amp; Shenzhen</span>
+          <span>Nov 1 – Nov 21, 2026 · Shanghai</span>
           <nav className={styles.legal} aria-label="Legal">
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms of Service</Link>
