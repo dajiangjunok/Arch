@@ -142,6 +142,14 @@ export const homeCompanies: readonly CompanyData[] = [
     initials: "BY",
     rotation: "-5deg",
   },
+  // {
+  //   name: "Wave Young",
+  //   description: "China–Europe AI Tech Festival.",
+  //   image: "/reference/wave_young.png",
+  //   imageAlt: "Wave Young logo",
+  //   initials: "WY",
+  //   rotation: "2deg",
+  // },
 ];
 
 export const homeMarquee = [

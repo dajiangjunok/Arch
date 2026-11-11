@@ -112,6 +112,7 @@ const partnerLogos = [
     alt: "Startup Grind logo",
   },
   { src: "/reference/partner-step.png", alt: "STEP logo" },
+  { src: "/reference/wave_young.png", alt: "WAVE_YOUNG logo" },
 ] as const;
 
 function emailLink(subject: string, address = contactAddress) {
