@@ -113,6 +113,7 @@ const partnerLogos = [
   },
   { src: "/reference/partner-step.png", alt: "STEP logo" },
   { src: "/reference/wave_young.png", alt: "WAVE_YOUNG logo" },
+  { src: "/reference/openDev.svg", alt: "OpenDev logo" },
 ] as const;
 
 function emailLink(subject: string, address = contactAddress) {
