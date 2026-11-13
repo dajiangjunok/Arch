@@ -5,7 +5,8 @@ import { ProgramWeeks } from "./components/home/program-weeks";
 import { CompanyWall } from "./components/home/company-wall";
 import { ProgramThesis } from "./components/home/program-thesis";
 import { ProgramAudiences } from "./components/home/program-audiences";
-import { ProgramOffer } from "./components/home/program-offer";
+// import { ProgramOffer } from "./components/home/program-offer";
+import { FuxingIsland } from "./components/home/fuxing-island";
 import { ProgramAdmission } from "./components/home/program-admission";
 import styles from "./home-page.module.css";
 
@@ -19,7 +20,8 @@ export function HomePage() {
       <CompanyWall />
       <ProgramThesis />
       <ProgramAudiences />
-      <ProgramOffer />
+      {/* <ProgramOffer /> */}
+      <FuxingIsland />
       <ProgramAdmission />
     </div>
   );

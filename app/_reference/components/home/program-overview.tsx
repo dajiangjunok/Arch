@@ -11,7 +11,7 @@ export function ProgramOverview() {
           background={
             <div className="hero-ghost-photo" aria-hidden="true">
               <ArchImage
-                src="/reference/45609c5450c39032.jpg"
+                src="/reference/45609c5450c39032.png"
                 alt=""
                 priority
               />

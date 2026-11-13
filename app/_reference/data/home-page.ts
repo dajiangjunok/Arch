@@ -3,7 +3,7 @@ import type { CompanyData, ImageData } from "../types";
 export const homeHero = {
   moments: [
     {
-      src: "/reference/45609c5450c39032.jpg",
+      src: "/reference/45609c5450c39032.png",
       alt: "Fuxing Island",
       label: "Fuxing Island",
       rotation: "-2deg",

@@ -12,7 +12,7 @@ export function ProgramOffer() {
         <div className="incl-grid">
           <div className="incl-price-col incl-price-col-photo">
             <ArchImage
-              src="/reference/45609c5450c39032.jpg"
+              src="/reference/45609c5450c39032.png"
               alt="Fuxing Island, Shanghai"
               sizes="(min-width: 1240px) 486px, (min-width: 860px) 42vw, 100vw"
             />
